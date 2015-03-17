@@ -80,12 +80,14 @@ $nonBooleanTrue = @(
     $returnedItems = New-Object -TypeName 'System.Collections.ArrayList'
     $e1 = try {@() | Assert-PipelineAny | ForEach-Object {[System.Void]$returnedItems.Add($_)}} catch {$_.Exception}
 
+    Assert-NotNull $e1
     Assert-True $e1.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
     Assert-True (0 -eq $returnedItems.Count)
 
     $returnedItems = New-Object -TypeName 'System.Collections.ArrayList'
     $e2 = try {& {@()} | Assert-PipelineAny | ForEach-Object {[System.Void]$returnedItems.Add($_)}} catch {$_.Exception}
 
+    Assert-NotNull $e2
     Assert-True $e2.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
     Assert-True (0 -eq $returnedItems.Count)
 
@@ -93,6 +95,7 @@ $nonBooleanTrue = @(
     $returnedItems = New-Object -TypeName 'System.Collections.ArrayList'
     $e3 = try {f1 | Assert-PipelineAny | ForEach-Object {[System.Void]$returnedItems.Add($_)}} catch {$_.Exception}
 
+    Assert-NotNull $e3
     Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
     Assert-True (0 -eq $returnedItems.Count)
 }
