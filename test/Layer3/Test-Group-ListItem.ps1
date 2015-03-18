@@ -25,9 +25,13 @@ if ($Silent) {
     Assert-True ($e2 -is [System.Management.Automation.ParameterBindingException])
     Assert-True ($e3 -is [System.Management.Automation.ParameterBindingException])
 
-    Assert-True $e1.Message.StartsWith($errorMessage, [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e2.Message.StartsWith($errorMessage, [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e3.Message.StartsWith($errorMessage, [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $e1.CommandInvocation.InvocationName.Equals('Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $e2.CommandInvocation.InvocationName.Equals('Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $e3.CommandInvocation.InvocationName.Equals('Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)
+
+    Assert-True $e1.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $e2.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $e3.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
 
     Assert-Null $groups1
     Assert-Null $groups2
