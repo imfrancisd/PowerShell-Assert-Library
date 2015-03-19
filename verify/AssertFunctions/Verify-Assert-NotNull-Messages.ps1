@@ -117,7 +117,7 @@ write-host ''
     write-host '    try   {assert-notnull $null} <# line 119 #>'
     write-host '---------------------------------------------'
     try   {assert-notnull $null}
-    catch {write-host $_ -ForegroundColor red}
+    catch {$_ | out-host}
     write-host ''
     write-host ''
 }
@@ -131,7 +131,7 @@ write-host ''
     write-host '    try   {assert-notnull $null} <# line 133 #>'
     write-host '--------------------------------------------------------------'
     try   {assert-notnull $null}
-    catch {write-host $_ -ForegroundColor red}
+    catch {$_ | out-host}
     write-host ''
     write-host ''
 }
@@ -145,7 +145,7 @@ write-host ''
     write-host '    try   {assert-notnull $null} <# line 147 #>'
     write-host '------------------------------------------------------------'
     try   {assert-notnull $null}
-    catch {write-host $_ -ForegroundColor red}
+    catch {$_ | out-host}
     write-host ''
     write-host ''
 }
@@ -159,7 +159,7 @@ write-host ''
     write-host '    try   {assert-notnull $null} <# line 161 #>'
     write-host '-------------------------------------------------------------------'
     try   {assert-notnull $null}
-    catch {write-host $_ -ForegroundColor red}
+    catch {$_ | out-host}
     write-host ''
     write-host ''
 }

@@ -117,7 +117,7 @@ write-host ''
     write-host '    try   {assert-null (new-object psobject)} <# line 119 #>'
     write-host '------------------------------------------------------------'
     try   {assert-null (new-object psobject)}
-    catch {write-host $_ -ForegroundColor red}
+    catch {$_ | out-host}
     write-host ''
     write-host ''
 }
@@ -131,7 +131,7 @@ write-host ''
     write-host '    try   {assert-null (new-object psobject)} <# line 133 #>'
     write-host '--------------------------------------------------------------'
     try   {assert-null (new-object psobject)}
-    catch {write-host $_ -ForegroundColor red}
+    catch {$_ | out-host}
     write-host ''
     write-host ''
 }
@@ -145,7 +145,7 @@ write-host ''
     write-host '    try   {assert-null (new-object psobject)} <# line 147 #>'
     write-host '------------------------------------------------------------'
     try   {assert-null (new-object psobject)}
-    catch {write-host $_ -ForegroundColor red}
+    catch {$_ | out-host}
     write-host ''
     write-host ''
 }
@@ -159,7 +159,7 @@ write-host ''
     write-host '    try   {assert-null (new-object psobject)} <# line 161 #>'
     write-host '-------------------------------------------------------------------'
     try   {assert-null (new-object psobject)}
-    catch {write-host $_ -ForegroundColor red}
+    catch {$_ | out-host}
     write-host ''
     write-host ''
 }
