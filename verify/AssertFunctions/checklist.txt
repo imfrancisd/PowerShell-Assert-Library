@@ -1,10 +1,10 @@
-Verify the help files
----------------------
+STEP 1: Verify the help files
+-----------------------------
 The help files should be complete with a synopsis, description, and
 examples. Be mindful of things that are difficult to test automatically,
 such as clarity, tone, consistency, and choice of words and examples.
 
-You can invoke the following scripts to display the help files:
+You can run the following scripts to display the help files:
     Verify-Assert-False-Help.ps1
     Verify-Assert-NotNull-Help.ps1
     Verify-Assert-Null-Help.ps1
@@ -13,3 +13,29 @@ You can invoke the following scripts to display the help files:
     Verify-Assert-PipelineEmpty-Help.ps1
     Verify-Assert-PipelineSingle-Help.ps1
     Verify-Assert-True-Help.ps1
+
+STEP 2: Verify the Verbose, Debug, and Error messages
+-----------------------------------------------------
+The verbose, debug, and error messages exist only to help scripters ensure
+the correctness of their script. Be mindful of how these messages might be
+improved and suggest changes.
+
+    Make sure that the following are true:
+    * Verbose, Debug, and Error messages contain the file name
+    * Verbose, Debug, and Error messages contain the file line number
+    * Verbose, Debug, and Error messages contain pass/fail status
+    * If a command generates a Verbose, Debug, and Error messages
+        - Verbose messages are first in the output
+        - Error messages are last in the output
+        - All messages are consistent (file name, line number, pass/fail)
+
+You can run the following scripts to display the messages:
+    Verify-Assert-False-Messages.ps1
+    Verify-Assert-NotNull-Messages.ps1
+    Verify-Assert-Null-Messages.ps1
+    Verify-Assert-PipelineAny-Messages.ps1
+    Verify-Assert-PipelineCount-Messages.ps1
+    Verify-Assert-PipelineEmpty-Messages.ps1
+    Verify-Assert-PipelineSingle-Messages.ps1
+    Verify-Assert-True-Messages.ps1
+
