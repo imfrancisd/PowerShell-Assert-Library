@@ -14,7 +14,13 @@ You can run the following scripts to display the help files:
     Verify-Assert-PipelineSingle-Help.ps1
     Verify-Assert-True-Help.ps1
 
-STEP 2: Verify the Verbose, Debug, and Error messages
+
+STEP 2: Verify the examples
+---------------------------
+The examples in the help files must work.
+
+
+STEP 3: Verify the Verbose, Debug, and Error messages
 -----------------------------------------------------
 The verbose, debug, and error messages exist only to help scripters ensure
 the correctness of their script. Be mindful of how these messages might be
