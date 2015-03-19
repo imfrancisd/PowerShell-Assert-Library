@@ -13,13 +13,11 @@ if ($Silent) {
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Zip with nulls' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Zip with nulls' -Verbose:$headerVerbosity
 
     $e1 = try {$groups1 = Group-ListItem -Zip $null} catch {$_.Exception}
     $e2 = try {$groups2 = Group-ListItem -Zip @($null)} catch {$_.Exception}
     $e3 = try {$groups3 = Group-ListItem -Zip @(@(1,2,3), $null, @(4,5,6))} catch {$_.Exception}
-
-    $errorMessage = 'Cannot validate argument on parameter ''Zip''.'
 
     Assert-True ($e1 -is [System.Management.Automation.ParameterBindingException])
     Assert-True ($e2 -is [System.Management.Automation.ParameterBindingException])
@@ -39,7 +37,7 @@ if ($Silent) {
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Zip with lists of length 0' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Zip with lists of length 0' -Verbose:$headerVerbosity
 
     Group-ListItem -Zip @(,@()) | Assert-PipelineEmpty
 
@@ -62,14 +60,14 @@ if ($Silent) {
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Zip with no lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Zip with no lists' -Verbose:$headerVerbosity
 
     Group-ListItem -Zip @() | Assert-PipelineEmpty
     Group-ListItem -Zip (New-Object -TypeName 'System.Collections.Generic.List[System.Byte]' -ArgumentList @(,[System.Byte[]]@())) | Assert-PipelineEmpty
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Zip with 1 list' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Zip with 1 list' -Verbose:$headerVerbosity
 
     $groups1 = Group-ListItem -Zip @(,[System.String[]]@('a', 'b', 'c', 'd', 'e')) | Assert-PipelineCount -Equals 5 | ForEach-Object {
         Assert-True ($_.Items.GetType() -eq [System.String[]])
@@ -109,7 +107,7 @@ if ($Silent) {
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Zip with 2 lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Zip with 2 lists' -Verbose:$headerVerbosity
 
     $list1 = [System.String[]]@('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k')
     $list2 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('do', 're', 'mi', 'fa', 'so', 'la', 'ti', 'do'))
@@ -166,7 +164,7 @@ if ($Silent) {
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Zip with 3 lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Zip with 3 lists' -Verbose:$headerVerbosity
 
     $list1 = [System.String[]]@('a', 'b', 'c', 'd', 'e', 'f')
     $list2 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('do', 're', 'mi', 'fa', 'so', 'la', 'ti', 'do'))
@@ -237,7 +235,7 @@ if ($Silent) {
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Zip with 4 lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Zip with 4 lists' -Verbose:$headerVerbosity
 
     $list1 = [System.String[]]@('hello', 'world', 'how', 'are', 'you')
     $list2 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('1', '2', '3', '4'))
@@ -322,229 +320,229 @@ if ($Silent) {
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Pair with nulls' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Pair with nulls' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Pair with lists of length 0' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 0' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Pair with lists of length 1' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 1' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Pair with lists of length 2' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 2' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Pair with lists of length 3' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 3' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Pair with lists of length 4 or more' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 4 or more' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Window with nulls' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Window with nulls' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Window with lists of length 0' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 0' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Window with lists of length 1' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 1' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Window with lists of length 2' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 2' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Window with lists of length 3' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 3' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Window with lists of length 4 or more' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 4 or more' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Combine with nulls' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Combine with nulls' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Combine with lists of length 0' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Combine with lists of length 0' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Combine with lists of length 1' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Combine with lists of length 1' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Combine with lists of length 2' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Combine with lists of length 2' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Combine with lists of length 3' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Combine with lists of length 3' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Combine with lists of length 4 or more' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Combine with lists of length 4 or more' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Permute with nulls' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Permute with nulls' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Permute with lists of length 0' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Permute with lists of length 0' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Permute with lists of length 1' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Permute with lists of length 1' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Permute with lists of length 2' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Permute with lists of length 2' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Permute with lists of length 3' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Permute with lists of length 3' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -Permute with lists of length 4 or more' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -Permute with lists of length 4 or more' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CartesianProduct with nulls' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CartesianProduct with nulls' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CartesianProduct with lists of length 0' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CartesianProduct with lists of length 0' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CartesianProduct with no lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CartesianProduct with no lists' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CartesianProduct with 1 list' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CartesianProduct with 1 list' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CartesianProduct with 2 lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CartesianProduct with 2 lists' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CartesianProduct with 3 lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CartesianProduct with 3 lists' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CartesianProduct with 4 lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CartesianProduct with 4 lists' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CoveringArray with nulls' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CoveringArray with nulls' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CoveringArray with lists of length 0' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CoveringArray with lists of length 0' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CoveringArray with no lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CoveringArray with no lists' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CoveringArray with 1 list' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CoveringArray with 1 list' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CoveringArray with 2 lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CoveringArray with 2 lists' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CoveringArray with 3 lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CoveringArray with 3 lists' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
-    Write-Verbose -Message 'Testing Group-ListItem -CoveringArray with 4 lists' -Verbose:$headerVerbosity
+    Write-Verbose -Message 'Test Group-ListItem -CoveringArray with 4 lists' -Verbose:$headerVerbosity
 
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
