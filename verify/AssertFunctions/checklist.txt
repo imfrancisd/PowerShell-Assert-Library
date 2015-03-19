@@ -1,1 +1,15 @@
-placeholder
+Verify the help files
+---------------------
+The help files should be complete with a synopsis, description, and
+examples. Be mindful of things that are difficult to test automatically,
+such as clarity, tone, consistency, and choice of words and examples.
+
+You can invoke the following scripts to display the help files:
+    Verify-Assert-False-Help.ps1
+    Verify-Assert-NotNull-Help.ps1
+    Verify-Assert-Null-Help.ps1
+    Verify-Assert-PipelineAny-Help.ps1
+    Verify-Assert-PipelineCount-Help.ps1
+    Verify-Assert-PipelineEmpty-Help.ps1
+    Verify-Assert-PipelineSingle-Help.ps1
+    Verify-Assert-True-Help.ps1
