@@ -152,6 +152,132 @@ if ($Silent) {
 }
 
 & {
+    Write-Verbose -Message 'Test Group-ListItem -Window with nulls' -Verbose:$headerVerbosity
+
+    $noarg = New-Object 'System.Object'
+
+    foreach ($size in @($noarg, -1, 0, 1)) {
+        $gliArgs = @{
+            'Window' = $null
+            'Size' = $size
+        }
+        if ($noarg.Equals($size)) {
+            $gliArgs.Remove('Size')
+        }
+
+        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er1 = try {Group-ListItem @gliArgs -OutVariable out1 | Out-Null} catch {$_}
+
+        Assert-True ($out1.Count -eq 0)
+        Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($er1.Exception.ParameterName.Equals('Window', [System.StringComparison]::OrdinalIgnoreCase))
+    }
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 0' -Verbose:$headerVerbosity
+
+    $noarg = New-Object 'System.Object'
+
+    foreach ($size in @(-2, -1, 1, 2)) {
+        Group-ListItem -Size $size -Window @() | Assert-PipelineEmpty
+        Group-ListItem -Size $size -Window (New-Object -TypeName 'System.Collections.ArrayList') | Assert-PipelineEmpty
+        Group-ListItem -Size $size -Window (New-Object -TypeName 'System.Collections.Generic.List[System.Double]') | Assert-PipelineEmpty
+    }
+
+    foreach ($size in @($noarg, 0)) {
+        $gliArgs = @{
+            'Size' = $size
+        }
+        if ($noarg.Equals($size)) {
+            $gliArgs.Remove('Size')
+        }
+
+        Group-ListItem @gliArgs -Window @() | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_.Items -is [System.Object[]])
+            Assert-True ($_.Items.Length -eq 0)
+        }
+        Group-ListItem @gliArgs -Window (New-Object -TypeName 'System.Collections.ArrayList') | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_.Items -is [System.Object[]])
+            Assert-True ($_.Items.Length -eq 0)
+        }
+        Group-ListItem @gliArgs -Window (New-Object -TypeName 'System.Collections.Generic.List[System.Double]') | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_.Items -is [System.Double[]])
+            Assert-True ($_.Items.Length -eq 0)
+        }
+    }
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 1' -Verbose:$headerVerbosity
+
+    $noarg = New-Object 'System.Object'
+
+    foreach ($size in @(-2, -1, 2)) {
+        Group-ListItem -Size $size -Window @($null) | Assert-PipelineEmpty
+        Group-ListItem -Size $size -Window (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))) | Assert-PipelineEmpty
+        Group-ListItem -Size $size -Window (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14))) | Assert-PipelineEmpty
+    }
+
+    Group-ListItem -Size 0 -Window @($null) | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_.Items -is [System.Object[]])
+        Assert-True ($_.Items.Length -eq 0)
+    }
+    Group-ListItem -Size 0 -Window (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))) | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_.Items -is [System.Object[]])
+        Assert-True ($_.Items.Length -eq 0)
+    }
+    Group-ListItem -Size 0 -Window (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14))) | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_.Items -is [System.Double[]])
+        Assert-True ($_.Items.Length -eq 0)
+    }
+
+    foreach ($size in @($noarg, 1)) {
+        $gliArgs = @{
+            'Size' = $size
+        }
+        if ($noarg.Equals($size)) {
+            $gliArgs.Remove('Size')
+        }
+
+        Group-ListItem @gliArgs -Window @($null) | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_.Items -is [System.Object[]])
+            Assert-True ($_.Items.Length -eq 1)
+            Assert-True ($null -eq $_.Items[0])
+        }
+        Group-ListItem @gliArgs -Window (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))) | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_.Items -is [System.Object[]])
+            Assert-True ($_.Items.Length -eq 1)
+            Assert-True ('hello world' -eq $_.Items[0])
+        }
+        Group-ListItem @gliArgs -Window (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14))) | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_.Items -is [System.Double[]])
+            Assert-True ($_.Items.Length -eq 1)
+            Assert-True (3.14 -eq $_.Items[0])
+        }
+    }
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 2' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 3' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 4 or more' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
+}
+
+& {
     Write-Verbose -Message 'Test Group-ListItem -Zip with nulls' -Verbose:$headerVerbosity
 
     $out1 = New-Object -TypeName 'System.Collections.ArrayList'
@@ -460,42 +586,6 @@ if ($Silent) {
             }
         }
     }
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Window with nulls' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 0' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 1' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 2' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 3' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 4 or more' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
