@@ -13,6 +13,145 @@ if ($Silent) {
 }
 
 & {
+    Write-Verbose -Message 'Test Group-ListItem -Pair with nulls' -Verbose:$headerVerbosity
+
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {Group-ListItem -Pair $null -OutVariable out1 | Out-Null} catch {$_}
+
+    Assert-True ($out1.Count -eq 0)
+    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er1.Exception.ParameterName.Equals('Pair', [System.StringComparison]::OrdinalIgnoreCase))
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 0' -Verbose:$headerVerbosity
+
+    Group-ListItem -Pair @() | Assert-PipelineEmpty
+    Group-ListItem -Pair (New-Object -TypeName 'System.Collections.ArrayList') | Assert-PipelineEmpty
+    Group-ListItem -Pair (New-Object -TypeName 'System.Collections.Generic.List[System.Double]') | Assert-PipelineEmpty
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 1' -Verbose:$headerVerbosity
+
+    Group-ListItem -Pair @() | Assert-PipelineEmpty
+    Group-ListItem -Pair (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))) | Assert-PipelineEmpty
+    Group-ListItem -Pair (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14))) | Assert-PipelineEmpty
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 2' -Verbose:$headerVerbosity
+
+    $list1 = @($null, 5)
+    Group-ListItem -Pair $list1 | Assert-PipelineCount 1 | ForEach-Object {
+        Assert-True ($_.Items -is [System.Object[]])
+        Assert-True ($_.Items.Length -eq 2)
+        Assert-True ($null -eq $_.Items[0])
+        Assert-True (5 -eq $_.Items[1])
+    }
+
+    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', 'world')))
+    Group-ListItem -Pair $list2 | Assert-PipelineCount 1 | ForEach-Object {
+        Assert-True ($_.Items -is [System.Object[]])
+        Assert-True ($_.Items.Length -eq 2)
+        Assert-True ('hello' -eq $_.Items[0])
+        Assert-True ('world' -eq $_.Items[1])
+    }
+
+    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72)))
+    Group-ListItem -Pair $list3 | Assert-PipelineCount 1 | ForEach-Object {
+        Assert-True ($_.Items -is [System.Double[]])
+        Assert-True ($_.Items.Length -eq 2)
+        Assert-True (3.14 -eq $_.Items[0])
+        Assert-True (2.72 -eq $_.Items[1])
+    }
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 3' -Verbose:$headerVerbosity
+
+    $list1 = @(3.14, 2.72, 0.00)
+    $groups1 = Group-ListItem -Pair $list1 | Assert-PipelineCount 2 | ForEach-Object {
+        Assert-True ($_.Items -is [System.Object[]])
+        Assert-True ($_.Items.Length -eq 2)
+        $_
+    }
+    Assert-True (3.14 -eq $groups1[0].Items[0])
+    Assert-True (2.72 -eq $groups1[0].Items[1])
+    Assert-True (2.72 -eq $groups1[1].Items[0])
+    Assert-True (0.00 -eq $groups1[1].Items[1])
+
+    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', $null, 'world')))
+    $groups2 = Group-ListItem -Pair $list2 | Assert-PipelineCount 2 | ForEach-Object {
+        Assert-True ($_.Items -is [System.Object[]])
+        Assert-True ($_.Items.Length -eq 2)
+        $_
+    }
+    Assert-True ('hello' -eq $groups2[0].Items[0])
+    Assert-True ($null   -eq $groups2[0].Items[1])
+    Assert-True ($null   -eq $groups2[1].Items[0])
+    Assert-True ('world' -eq $groups2[1].Items[1])
+
+    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList @(,[System.Object[]]@($null, 'hello', 3.14)))
+    $groups3 = Group-ListItem -Pair $list3 | Assert-PipelineCount 2 | ForEach-Object {
+        Assert-True ($_.Items -is [System.Object[]])
+        Assert-True ($_.Items.Length -eq 2)
+        $_
+    }
+    Assert-True ($null   -eq $groups3[0].Items[0])
+    Assert-True ('hello' -eq $groups3[0].Items[1])
+    Assert-True ('hello' -eq $groups3[1].Items[0])
+    Assert-True (3.14    -eq $groups3[1].Items[1])
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 4 or more' -Verbose:$headerVerbosity
+
+    $count = 0
+    $list1 = @('a', 1, @(), ([System.Int32[]]@(1..5)))
+    Group-ListItem -Pair $list1 | Assert-PipelineCount 3 | ForEach-Object {
+        Assert-True ($_.Items -is [System.Object[]])
+        Assert-True ($_.Items.Length -eq 2)
+        Assert-True ($list1[$count].Equals($_.Items[0]))
+        Assert-True ($list1[$count + 1].Equals($_.Items[1]))
+        $count++
+    }
+
+    $count = 0
+    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', @($null), 'world', 5)))
+    Group-ListItem -Pair $list2 | Assert-PipelineCount 3 | ForEach-Object {
+        Assert-True ($_.Items -is [System.Object[]])
+        Assert-True ($_.Items.Length -eq 2)
+        Assert-True ($list2[$count].Equals($_.Items[0]))
+        Assert-True ($list2[$count + 1].Equals($_.Items[1]))
+        $count++
+    }
+
+    $count = 0
+    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Int32]' -ArgumentList @(,[System.Int32[]]@(100, 200, 300, 400)))
+    Group-ListItem -Pair $list3 | Assert-PipelineCount 3 | ForEach-Object {
+        Assert-True ($_.Items -is [System.Int32[]])
+        Assert-True ($_.Items.Length -eq 2)
+        Assert-True ($list3[$count].Equals($_.Items[0]))
+        Assert-True ($list3[$count + 1].Equals($_.Items[1]))
+        $count++
+    }
+
+    for ($size = 5; $size -lt 10; $size++) {
+        $count = 0
+        $list = [System.Int32[]]@(1..$size)
+        Group-ListItem -Pair $list | Assert-PipelineCount ($size - 1) | ForEach-Object {
+            Assert-True ($_.Items -is [System.Int32[]])
+            Assert-True ($_.Items.Length -eq 2)
+            Assert-True ($list[$count].Equals($_.Items[0]))
+            Assert-True ($list[$count + 1].Equals($_.Items[1]))
+            $count++
+        }
+    }
+}
+
+& {
     Write-Verbose -Message 'Test Group-ListItem -Zip with nulls' -Verbose:$headerVerbosity
 
     $out1 = New-Object -TypeName 'System.Collections.ArrayList'
@@ -321,42 +460,6 @@ if ($Silent) {
             }
         }
     }
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with nulls' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 0' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 1' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 2' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 3' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 4 or more' -Verbose:$headerVerbosity
-
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
