@@ -15,25 +15,29 @@ if ($Silent) {
 & {
     Write-Verbose -Message 'Test Group-ListItem -Zip with nulls' -Verbose:$headerVerbosity
 
-    $e1 = try {$groups1 = Group-ListItem -Zip $null} catch {$_.Exception}
-    $e2 = try {$groups2 = Group-ListItem -Zip @($null)} catch {$_.Exception}
-    $e3 = try {$groups3 = Group-ListItem -Zip @(@(1,2,3), $null, @(4,5,6))} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
 
-    Assert-True ($e1 -is [System.Management.Automation.ParameterBindingException])
-    Assert-True ($e2 -is [System.Management.Automation.ParameterBindingException])
-    Assert-True ($e3 -is [System.Management.Automation.ParameterBindingException])
+    $er1 = try {Group-ListItem -Zip $null -OutVariable out1 | Out-Null} catch {$_}
+    $er2 = try {Group-ListItem -Zip @($null) -OutVariable out2 | Out-Null} catch {$_}
+    $er3 = try {Group-ListItem -Zip @(@(1,2,3), $null, @(4,5,6)) -OutVariable out3 | Out-Null} catch {$_}
 
-    Assert-True $e1.CommandInvocation.InvocationName.Equals('Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e2.CommandInvocation.InvocationName.Equals('Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e3.CommandInvocation.InvocationName.Equals('Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
 
-    Assert-True $e1.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e2.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e3.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er2.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
 
-    Assert-Null $groups1
-    Assert-Null $groups2
-    Assert-Null $groups3
+    Assert-True $er1.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $er2.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $er3.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
+
+    Assert-True ($out1.Count -eq 0)
+    Assert-True ($out2.Count -eq 0)
+    Assert-True ($out3.Count -eq 0)
 }
 
 & {
