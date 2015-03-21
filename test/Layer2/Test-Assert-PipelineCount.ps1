@@ -22,150 +22,170 @@ $nonBooleanTrue = @(
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Equals with Boolean $true' -Verbose:$headerVerbosity
 
-    $e1 = try {$item1 = $true | Assert-PipelineCount 1} catch {$_.Exception}
-    $e2 = try {$item2 = $true | Assert-PipelineCount -Equals 1} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$true | Assert-PipelineCount 1 -OutVariable out1 | Out-Null} catch {$_}
+    $er2 = try {$true | Assert-PipelineCount -Equals 1 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-Null $e2
-    Assert-True $item1
-    Assert-True $item2
+    Assert-True ($out1.Count -eq 1)
+    Assert-True ($out2.Count -eq 1)
+    Assert-True $out1[0]
+    Assert-True $out2[0]
+    Assert-Null $er1
+    Assert-Null $er2
 
-    $e3 = try {$item3 = $true | Assert-PipelineCount 0} catch {$_.Exception}
-    $e4 = try {$item4 = $true | Assert-PipelineCount -Equals 0} catch {$_.Exception}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$true | Assert-PipelineCount 0 -OutVariable out3 | Out-Null} catch {$_}
+    $er4 = try {$true | Assert-PipelineCount -Equals 0 -OutVariable out4 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-NotNull $e4
-    Assert-True $e4.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-Null $item3
-    Assert-Null $item4
+    Assert-True ($out3.Count -eq 0)
+    Assert-True ($out4.Count -eq 0)
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-    $e5 = try {$item5 = $true | Assert-PipelineCount 2} catch {$_.Exception}
-    $e6 = try {$item6 = $true | Assert-PipelineCount -Equals 2} catch {$_.Exception}
+    $out5 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out6 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er5 = try {$true | Assert-PipelineCount 2 -OutVariable out5 | Out-Null} catch {$_}
+    $er6 = try {$true | Assert-PipelineCount -Equals 2 -OutVariable out6 | Out-Null} catch {$_}
 
-    Assert-NotNull $e5
-    Assert-True $e5.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-NotNull $e6
-    Assert-True $e6.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-Null $item5
-    Assert-Null $item6
+    Assert-True ($out5.Count -eq 1)
+    Assert-True ($out6.Count -eq 1)
+    Assert-True $out5[0]
+    Assert-True $out6[0]
+    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Equals with Boolean $false' -Verbose:$headerVerbosity
 
-    $e1 = try {$item1 = $false | Assert-PipelineCount 1} catch {$_.Exception}
-    $e2 = try {$item2 = $false | Assert-PipelineCount -Equals 1} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$false | Assert-PipelineCount 1 -OutVariable out1 | Out-Null} catch {$_}
+    $er2 = try {$false | Assert-PipelineCount -Equals 1 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-Null $e2
-    Assert-False $item1
-    Assert-False $item2
+    Assert-True ($out1.Count -eq 1)
+    Assert-True ($out2.Count -eq 1)
+    Assert-False $out1[0]
+    Assert-False $out2[0]
+    Assert-Null $er1
+    Assert-Null $er2
 
-    $e3 = try {$item3 = $false | Assert-PipelineCount 0} catch {$_.Exception}
-    $e4 = try {$item4 = $false | Assert-PipelineCount -Equals 0} catch {$_.Exception}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$false | Assert-PipelineCount 0 -OutVariable out3 | Out-Null} catch {$_}
+    $er4 = try {$false | Assert-PipelineCount -Equals 0 -OutVariable out4 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-NotNull $e4
-    Assert-True $e4.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-Null $item3
-    Assert-Null $item4
+    Assert-True ($out3.Count -eq 0)
+    Assert-True ($out4.Count -eq 0)
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-    $e5 = try {$item5 = $false | Assert-PipelineCount 2} catch {$_.Exception}
-    $e6 = try {$item6 = $false | Assert-PipelineCount -Equals 2} catch {$_.Exception}
+    $out5 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out6 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er5 = try {$false | Assert-PipelineCount 2 -OutVariable out5 | Out-Null} catch {$_}
+    $er6 = try {$false | Assert-PipelineCount -Equals 2 -OutVariable out6 | Out-Null} catch {$_}
 
-    Assert-NotNull $e5
-    Assert-True $e5.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-NotNull $e6
-    Assert-True $e6.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-Null $item5
-    Assert-Null $item6
+    Assert-True ($out5.Count -eq 1)
+    Assert-True ($out6.Count -eq 1)
+    Assert-False $out5[0]
+    Assert-False $out6[0]
+    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Equals with $null' -Verbose:$headerVerbosity
 
-    $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e1 = try {$null | Assert-PipelineCount 1 | Foreach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
-    $e2 = try {$null | Assert-PipelineCount -Equals 1 | Foreach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$null | Assert-PipelineCount 1 -OutVariable out1 | Out-Null} catch {$_}
+    $er2 = try {$null | Assert-PipelineCount -Equals 1 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-Null $e2
-    Assert-True (1 -eq $items1.Count)
-    Assert-True (1 -eq $items2.Count)
-    Assert-Null $items1[0]
-    Assert-Null $items2[0]
+    Assert-True ($out1.Count -eq 1)
+    Assert-True ($out2.Count -eq 1)
+    Assert-Null $out1[0]
+    Assert-Null $out2[0]
+    Assert-Null $er1
+    Assert-Null $er2
 
-    $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $items4 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e3 = try {$null | Assert-PipelineCount 0 | Foreach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
-    $e4 = try {$null | Assert-PipelineCount -Equals 0 | Foreach-Object {[System.Void]$items4.Add($_)}} catch {$_.Exception}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$null | Assert-PipelineCount 0 -OutVariable out3 | Out-Null} catch {$_}
+    $er4 = try {$null | Assert-PipelineCount -Equals 0 -OutVariable out4 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-NotNull $e4
-    Assert-True $e4.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (0 -eq $items3.Count)
-    Assert-True (0 -eq $items4.Count)
+    Assert-True ($out3.Count -eq 0)
+    Assert-True ($out4.Count -eq 0)
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-    $items5 = New-Object -TypeName 'System.Collections.ArrayList'
-    $items6 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e5 = try {$null | Assert-PipelineCount 2 | Foreach-Object {[System.Void]$items5.Add($_)}} catch {$_.Exception}
-    $e6 = try {$null | Assert-PipelineCount -Equals 2 | Foreach-Object {[System.Void]$items6.Add($_)}} catch {$_.Exception}
+    $out5 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out6 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er5 = try {$null | Assert-PipelineCount 2 -OutVariable out5 | Out-Null} catch {$_}
+    $er6 = try {$null | Assert-PipelineCount -Equals 2 -OutVariable out6 | Out-Null} catch {$_}
 
-    Assert-NotNull $e5
-    Assert-True $e5.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-NotNull $e6
-    Assert-True $e6.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (1 -eq $items5.Count)
-    Assert-True (1 -eq $items6.Count)
-    Assert-Null $items5[0]
-    Assert-Null $items6[0]
+    Assert-True ($out5.Count -eq 1)
+    Assert-True ($out6.Count -eq 1)
+    Assert-Null $out5[0]
+    Assert-Null $out6[0]
+    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Equals with Non-Booleans that are convertible to $true' -Verbose:$headerVerbosity
 
     foreach ($item in $nonBooleanTrue) {
-        $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e1 = try {,$item | Assert-PipelineCount 1 | Foreach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
-        $e2 = try {,$item | Assert-PipelineCount -Equals 1 | Foreach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er1 = try {,$item | Assert-PipelineCount 1 -OutVariable out1 | Out-Null} catch {$_}
+        $er2 = try {,$item | Assert-PipelineCount -Equals 1 -OutVariable out2 | Out-Null} catch {$_}
 
-        Assert-Null $e1
-        Assert-Null $e2
-        Assert-True (1 -eq $items1.Count)
-        Assert-True (1 -eq $items2.Count)
-        Assert-True ($item.Equals($items1[0]))
-        Assert-True ($item.Equals($items2[0]))
+        Assert-True ($out1.Count -eq 1)
+        Assert-True ($out2.Count -eq 1)
+        Assert-True ($out1[0].Equals($item))
+        Assert-True ($out2[0].Equals($item))
+        Assert-Null $er1
+        Assert-Null $er2
 
-        $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $items4 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e3 = try {,$item | Assert-PipelineCount 0 | Foreach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
-        $e4 = try {,$item | Assert-PipelineCount -Equals 0 | Foreach-Object {[System.Void]$items4.Add($_)}} catch {$_.Exception}
+        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+        $out4 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er3 = try {,$item | Assert-PipelineCount 0 -OutVariable out3 | Out-Null} catch {$_}
+        $er4 = try {,$item | Assert-PipelineCount -Equals 0 -OutVariable out4 | Out-Null} catch {$_}
 
-        Assert-NotNull $e3
-        Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-NotNull $e4
-        Assert-True $e4.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-True (0 -eq $items3.Count)
-        Assert-True (0 -eq $items4.Count)
+        Assert-True ($out3.Count -eq 0)
+        Assert-True ($out4.Count -eq 0)
+        Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-        $items5 = New-Object -TypeName 'System.Collections.ArrayList'
-        $items6 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e5 = try {,$item | Assert-PipelineCount 2 | Foreach-Object {[System.Void]$items5.Add($_)}} catch {$_.Exception}
-        $e6 = try {,$item | Assert-PipelineCount -Equals 2 | Foreach-Object {[System.Void]$items6.Add($_)}} catch {$_.Exception}
+        $out5 = New-Object -TypeName 'System.Collections.ArrayList'
+        $out6 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er5 = try {,$item | Assert-PipelineCount 2 -OutVariable out5 | Out-Null} catch {$_}
+        $er6 = try {,$item | Assert-PipelineCount -Equals 2 -OutVariable out6 | Out-Null} catch {$_}
 
-        Assert-NotNull $e5
-        Assert-True $e5.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-NotNull $e6
-        Assert-True $e6.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-True (1 -eq $items5.Count)
-        Assert-True (1 -eq $items6.Count)
-        Assert-True ($item.Equals($items5[0]))
-        Assert-True ($item.Equals($items6[0]))
+        Assert-True ($out5.Count -eq 1)
+        Assert-True ($out6.Count -eq 1)
+        Assert-True ($out5[0].Equals($item))
+        Assert-True ($out6[0].Equals($item))
+        Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
     }
 }
 
@@ -173,227 +193,241 @@ $nonBooleanTrue = @(
     Write-Verbose -Message 'Test Assert-PipelineCount -Equals with Non-Booleans that are convertible to $false' -Verbose:$headerVerbosity
 
     foreach ($item in $nonBooleanFalse) {
-        $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e1 = try {,$item | Assert-PipelineCount 1 | Foreach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
-        $e2 = try {,$item | Assert-PipelineCount -Equals 1 | Foreach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er1 = try {,$item | Assert-PipelineCount 1 -OutVariable out1 | Out-Null} catch {$_}
+        $er2 = try {,$item | Assert-PipelineCount -Equals 1 -OutVariable out2 | Out-Null} catch {$_}
 
-        Assert-Null $e1
-        Assert-Null $e2
-        Assert-True (1 -eq $items1.Count)
-        Assert-True (1 -eq $items2.Count)
-        Assert-True ($item.Equals($items1[0]))
-        Assert-True ($item.Equals($items2[0]))
+        Assert-True ($out1.Count -eq 1)
+        Assert-True ($out2.Count -eq 1)
+        Assert-True ($out1[0].Equals($item))
+        Assert-True ($out2[0].Equals($item))
+        Assert-Null $er1
+        Assert-Null $er2
 
-        $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $items4 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e3 = try {,$item | Assert-PipelineCount 0 | Foreach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
-        $e4 = try {,$item | Assert-PipelineCount -Equals 0 | Foreach-Object {[System.Void]$items4.Add($_)}} catch {$_.Exception}
+        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+        $out4 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er3 = try {,$item | Assert-PipelineCount 0 -OutVariable out3 | Out-Null} catch {$_}
+        $er4 = try {,$item | Assert-PipelineCount -Equals 0 -OutVariable out4 | Out-Null} catch {$_}
 
-        Assert-NotNull $e3
-        Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-NotNull $e4
-        Assert-True $e4.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-True (0 -eq $items3.Count)
-        Assert-True (0 -eq $items4.Count)
+        Assert-True ($out3.Count -eq 0)
+        Assert-True ($out4.Count -eq 0)
+        Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-        $items5 = New-Object -TypeName 'System.Collections.ArrayList'
-        $items6 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e5 = try {,$item | Assert-PipelineCount 2 | Foreach-Object {[System.Void]$items5.Add($_)}} catch {$_.Exception}
-        $e6 = try {,$item | Assert-PipelineCount -Equals 2 | Foreach-Object {[System.Void]$items6.Add($_)}} catch {$_.Exception}
+        $out5 = New-Object -TypeName 'System.Collections.ArrayList'
+        $out6 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er5 = try {,$item | Assert-PipelineCount 2 -OutVariable out5 | Out-Null} catch {$_}
+        $er6 = try {,$item | Assert-PipelineCount -Equals 2 -OutVariable out6 | Out-Null} catch {$_}
 
-        Assert-NotNull $e5
-        Assert-True $e5.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-NotNull $e6
-        Assert-True $e6.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-True (1 -eq $items5.Count)
-        Assert-True (1 -eq $items6.Count)
-        Assert-True ($item.Equals($items5[0]))
-        Assert-True ($item.Equals($items6[0]))
+        Assert-True ($out5.Count -eq 1)
+        Assert-True ($out6.Count -eq 1)
+        Assert-True ($out5[0].Equals($item))
+        Assert-True ($out6[0].Equals($item))
+        Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
     }
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Equals with pipelines that contain zero objects' -Verbose:$headerVerbosity
 
-    $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e1 = try {@() | Assert-PipelineCount 0 | ForEach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
-    $e2 = try {@() | Assert-PipelineCount -Equals 0 | ForEach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {@() | Assert-PipelineCount 0 -OutVariable out1 | Out-Null} catch {$_}
+    $er2 = try {@() | Assert-PipelineCount -Equals 0 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-Null $e2
-    Assert-True (0 -eq $items1.Count)
-    Assert-True (0 -eq $items2.Count)
+    Assert-True ($out1.Count -eq 0)
+    Assert-True ($out2.Count -eq 0)
+    Assert-Null $er1
+    Assert-Null $er2
 
-    $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $items4 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e3 = try {@() | Assert-PipelineCount 1 | ForEach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
-    $e4 = try {@() | Assert-PipelineCount -Equals 1 | ForEach-Object {[System.Void]$items4.Add($_)}} catch {$_.Exception}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {& {@()} | Assert-PipelineCount 1 -OutVariable out3 | Out-Null} catch {$_}
+    $er4 = try {& {@()} | Assert-PipelineCount -Equals 1 -OutVariable out4 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-NotNull $e4
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e4.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (0 -eq $items3.Count)
-    Assert-True (0 -eq $items4.Count)
+    Assert-True ($out3.Count -eq 0)
+    Assert-True ($out4.Count -eq 0)
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-    $items5 = New-Object -TypeName 'System.Collections.ArrayList'
-    $items6 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e5 = try {@() | Assert-PipelineCount (-1) | ForEach-Object {[System.Void]$items5.Add($_)}} catch {$_.Exception}
-    $e6 = try {@() | Assert-PipelineCount -Equals (-1) | ForEach-Object {[System.Void]$items6.Add($_)}} catch {$_.Exception}
+    function f1 {}
+    $out5 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out6 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er5 = try {f1 | Assert-PipelineCount (-1) -OutVariable out5 | Out-Null} catch {$_}
+    $er6 = try {f1 | Assert-PipelineCount -Equals (-1) -OutVariable out6 | Out-Null} catch {$_}
 
-    Assert-NotNull $e5
-    Assert-NotNull $e6
-    Assert-True $e5.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e6.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (0 -eq $items5.Count)
-    Assert-True (0 -eq $items6.Count)
+    Assert-True ($out5.Count -eq 0)
+    Assert-True ($out6.Count -eq 0)
+    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Equals with a pipeline that contains many objects' -Verbose:$headerVerbosity
 
-    $items = 11..20
+    $items = @(101..110)
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$items | Assert-PipelineCount 10 -OutVariable out1 | Out-Null} catch {$_}
+    $er2 = try {$items | Assert-PipelineCount -Equals 10 -OutVariable out2 | Out-Null} catch {$_}
 
-    $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e1 = try {$items | Assert-PipelineCount 10 | ForEach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
-    $e2 = try {$items | Assert-PipelineCount -Equals 10 | ForEach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
-
-    Assert-Null $e1
-    Assert-Null $e2
-    Assert-True (10 -eq $items1.Count)
-    Assert-True (10 -eq $items2.Count)
-    for ($i = 0; $i -lt $items1.Count; $i++) {
-        Assert-True ($items[$i].Equals($items1[$i]))
-        Assert-True ($items[$i].Equals($items2[$i]))
+    Assert-True ($out1.Count -eq $items.Length)
+    Assert-True ($out2.Count -eq $items.Length)
+    for ($i = 0; $i -lt $out1.Count; $i++) {
+        Assert-True ($out1[$i] -eq $items[$i])
+        Assert-True ($out2[$i] -eq $items[$i])
     }
+    Assert-Null $er1
+    Assert-Null $er2
 
-    $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $items4 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e3 = try {$items | Assert-PipelineCount 11 | ForEach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
-    $e4 = try {$items | Assert-PipelineCount -Equals 11 | ForEach-Object {[System.Void]$items4.Add($_)}} catch {$_.Exception}
+    $items = @(101..110)
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$items | Assert-PipelineCount 11 -OutVariable out3 | Out-Null} catch {$_}
+    $er4 = try {$items | Assert-PipelineCount -Equals 11 -OutVariable out4 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-NotNull $e4
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e4.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (10 -eq $items3.Count)
-    Assert-True (10 -eq $items4.Count)
-    for ($i = 0; $i -lt $items1.Count; $i++) {
-        Assert-True ($items[$i].Equals($items3[$i]))
-        Assert-True ($items[$i].Equals($items4[$i]))
+    Assert-True ($out3.Count -eq $items.Length)
+    Assert-True ($out4.Count -eq $items.Length)
+    for ($i = 0; $i -lt $out3.Count; $i++) {
+        Assert-True ($out3[$i] -eq $items[$i])
+        Assert-True ($out4[$i] -eq $items[$i])
     }
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-    $items5 = New-Object -TypeName 'System.Collections.ArrayList'
-    $items6 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e5 = try {$items | Assert-PipelineCount 9 | ForEach-Object {[System.Void]$items5.Add($_)}} catch {$_.Exception}
-    $e6 = try {$items | Assert-PipelineCount -Equals 9 | ForEach-Object {[System.Void]$items6.Add($_)}} catch {$_.Exception}
+    $items = @(101..110)
+    $out5 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out6 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er5 = try {$items | Assert-PipelineCount 9 -OutVariable out5 | Out-Null} catch {$_}
+    $er6 = try {$items | Assert-PipelineCount -Equals 9 -OutVariable out6 | Out-Null} catch {$_}
 
-    Assert-NotNull $e5
-    Assert-NotNull $e6
-    Assert-True $e5.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e6.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (9 -eq $items5.Count)
-    Assert-True (9 -eq $items6.Count)
-    for ($i = 0; $i -lt $items5.Count; $i++) {
-        Assert-True ($items[$i].Equals($items5[$i]))
-        Assert-True ($items[$i].Equals($items6[$i]))
+    Assert-True ($out5.Count -eq 9)
+    Assert-True ($out6.Count -eq 9)
+    for ($i = 0; $i -lt $out5.Count; $i++) {
+        Assert-True ($out5[$i] -eq $items[$i])
+        Assert-True ($out6[$i] -eq $items[$i])
     }
+    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with Boolean $true' -Verbose:$headerVerbosity
 
-    $e1 = try {$item1 = $true | Assert-PipelineCount -Minimum 1} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$true | Assert-PipelineCount -Minimum 1 -OutVariable out1 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-True $item1
+    Assert-True ($out1.Count -eq 1)
+    Assert-True $out1[0]
+    Assert-Null $er1
 
-    $e2 = try {$item2 = $true | Assert-PipelineCount -Minimum 0} catch {$_.Exception}
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er2 = try {$true | Assert-PipelineCount -Minimum 0 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e2
-    Assert-True $item2
+    Assert-True ($out2.Count -eq 1)
+    Assert-True $out2[0]
+    Assert-Null $er2
 
-    $e3 = try {$item3 = $true | Assert-PipelineCount -Minimum 2} catch {$_.Exception}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$true | Assert-PipelineCount -Minimum 2 -OutVariable out3 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-Null $item3
+    Assert-True ($out3.Count -eq 1)
+    Assert-True $out3[0]
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with Boolean $false' -Verbose:$headerVerbosity
 
-    $e1 = try {$item1 = $false | Assert-PipelineCount -Minimum 1} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$false | Assert-PipelineCount -Minimum 1 -OutVariable out1 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-False $item1
+    Assert-True ($out1.Count -eq 1)
+    Assert-False $out1[0]
+    Assert-Null $er1
 
-    $e2 = try {$item2 = $false | Assert-PipelineCount -Minimum 0} catch {$_.Exception}
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er2 = try {$false | Assert-PipelineCount -Minimum 0 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e2
-    Assert-False $item2
+    Assert-True ($out2.Count -eq 1)
+    Assert-False $out2[0]
+    Assert-Null $er2
 
-    $e3 = try {$item3 = $false | Assert-PipelineCount -Minimum 2} catch {$_.Exception}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$false | Assert-PipelineCount -Minimum 2 -OutVariable out3 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-Null $item3
+    Assert-True ($out3.Count -eq 1)
+    Assert-False $out3[0]
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with $null' -Verbose:$headerVerbosity
 
-    $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e1 = try {$null | Assert-PipelineCount -Minimum 1 | Foreach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$null | Assert-PipelineCount -Minimum 1 -OutVariable out1 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-True (1 -eq $items1.Count)
-    Assert-Null $items1[0]
+    Assert-True ($out1.Count -eq 1)
+    Assert-Null $out1[0]
+    Assert-Null $er1
 
-    $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e2 = try {$null | Assert-PipelineCount -Minimum 0 | Foreach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er2 = try {$null | Assert-PipelineCount -Minimum 0 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e2
-    Assert-True (1 -eq $items2.Count)
-    Assert-Null $items2[0]
+    Assert-True ($out2.Count -eq 1)
+    Assert-Null $out2[0]
+    Assert-Null $er2
 
-    $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e3 = try {$null | Assert-PipelineCount -Minimum 2 | Foreach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$null | Assert-PipelineCount -Minimum 2 -OutVariable out3 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (1 -eq $items3.Count)
-    Assert-Null $items3[0]
+    Assert-True ($out3.Count -eq 1)
+    Assert-Null $out3[0]
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with Non-Booleans that are convertible to $true' -Verbose:$headerVerbosity
 
     foreach ($item in $nonBooleanTrue) {
-        $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e1 = try {,$item | Assert-PipelineCount -Minimum 1 | Foreach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
+        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er1 = try {,$item | Assert-PipelineCount -Minimum 1 -OutVariable out1 | Out-Null} catch {$_}
 
-        Assert-Null $e1
-        Assert-True (1 -eq $items1.Count)
-        Assert-True ($item.Equals($items1[0]))
+        Assert-True ($out1.Count -eq 1)
+        Assert-True ($out1[0].Equals($item))
+        Assert-Null $er1
 
-        $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e2 = try {,$item | Assert-PipelineCount -Minimum 0 | Foreach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er2 = try {,$item | Assert-PipelineCount -Minimum 0 -OutVariable out2 | Out-Null} catch {$_}
 
-        Assert-Null $e2
-        Assert-True (1 -eq $items2.Count)
-        Assert-True ($item.Equals($items2[0]))
+        Assert-True ($out2.Count -eq 1)
+        Assert-True ($out2[0].Equals($item))
+        Assert-Null $er2
 
-        $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e3 = try {,$item | Assert-PipelineCount -Minimum 2 | Foreach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
+        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er3 = try {,$item | Assert-PipelineCount -Minimum 2 -OutVariable out3 | Out-Null} catch {$_}
 
-        Assert-NotNull $e3
-        Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-True (1 -eq $items3.Count)
-        Assert-True ($item.Equals($items3[0]))
+        Assert-True ($out3.Count -eq 1)
+        Assert-True ($out3[0].Equals($item))
+        Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
     }
 }
 
@@ -401,176 +435,188 @@ $nonBooleanTrue = @(
     Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with Non-Booleans that are convertible to $false' -Verbose:$headerVerbosity
 
     foreach ($item in $nonBooleanFalse) {
-        $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e1 = try {,$item | Assert-PipelineCount -Minimum 1 | Foreach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
+        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er1 = try {,$item | Assert-PipelineCount -Minimum 1 -OutVariable out1 | Out-Null} catch {$_}
 
-        Assert-Null $e1
-        Assert-True (1 -eq $items1.Count)
-        Assert-True ($item.Equals($items1[0]))
+        Assert-True ($out1.Count -eq 1)
+        Assert-True ($out1[0].Equals($item))
+        Assert-Null $er1
 
-        $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e2 = try {,$item | Assert-PipelineCount -Minimum 0 | Foreach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er2 = try {,$item | Assert-PipelineCount -Minimum 0 -OutVariable out2 | Out-Null} catch {$_}
 
-        Assert-Null $e2
-        Assert-True (1 -eq $items2.Count)
-        Assert-True ($item.Equals($items2[0]))
+        Assert-True ($out2.Count -eq 1)
+        Assert-True ($out2[0].Equals($item))
+        Assert-Null $er2
 
-        $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e3 = try {,$item | Assert-PipelineCount -Minimum 2 | Foreach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
+        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er3 = try {,$item | Assert-PipelineCount -Minimum 2 -OutVariable out3 | Out-Null} catch {$_}
 
-        Assert-NotNull $e3
-        Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-True (1 -eq $items3.Count)
-        Assert-True ($item.Equals($items3[0]))
+        Assert-True ($out3.Count -eq 1)
+        Assert-True ($out3[0].Equals($item))
+        Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
     }
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with pipelines that contain zero objects' -Verbose:$headerVerbosity
 
-    $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e1 = try {@() | Assert-PipelineCount -Minimum 0 | ForEach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {@() | Assert-PipelineCount -Minimum 0 -OutVariable out1 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-True (0 -eq $items1.Count)
+    Assert-True ($out1.Count -eq 0)
+    Assert-Null $er1
 
-    $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e2 = try {@() | Assert-PipelineCount -Minimum (-1) | ForEach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er2 = try {& {@()} | Assert-PipelineCount -Minimum 1 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e2
-    Assert-True (0 -eq $items2.Count)
+    Assert-True ($out2.Count -eq 0)
+    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-    $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e3 = try {@() | Assert-PipelineCount -Minimum 1 | ForEach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
+    function f1 {}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {f1 | Assert-PipelineCount -Minimum (-1) -OutVariable out3 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (0 -eq $items3.Count)
+    Assert-True ($out3.Count -eq 0)
+    Assert-Null $er3
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with a pipeline that contains many objects' -Verbose:$headerVerbosity
 
-    $items = 11..20
+    $items = @(101..110)
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$items | Assert-PipelineCount -Minimum 10 -OutVariable out1 | Out-Null} catch {$_}
 
-    $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e1 = try {$items | Assert-PipelineCount -Minimum 10 | ForEach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
-
-    Assert-Null $e1
-    Assert-True (10 -eq $items1.Count)
-    for ($i = 0; $i -lt $items1.Count; $i++) {
-        Assert-True ($items[$i].Equals($items1[$i]))
+    Assert-True ($out1.Count -eq $items.Length)
+    for ($i = 0; $i -lt $out1.Count; $i++) {
+        Assert-True ($out1[$i] -eq $items[$i])
     }
+    Assert-Null $er1
 
-    $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e2 = try {$items | Assert-PipelineCount -Minimum 11 | ForEach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+    $items = @(101..110)
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er2 = try {$items | Assert-PipelineCount -Minimum 11 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-NotNull $e2
-    Assert-True $e2.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (10 -eq $items2.Count)
-    for ($i = 0; $i -lt $items2.Count; $i++) {
-        Assert-True ($items[$i].Equals($items2[$i]))
+    Assert-True ($out2.Count -eq $items.Length)
+    for ($i = 0; $i -lt $out2.Count; $i++) {
+        Assert-True ($out2[$i] -eq $items[$i])
     }
+    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-    $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e3 = try {$items | Assert-PipelineCount -Minimum 9 | ForEach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
+    $items = @(101..110)
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$items | Assert-PipelineCount -Minimum 9 -OutVariable out3 | Out-Null} catch {$_}
 
-    Assert-Null $e3
-    Assert-True (10 -eq $items3.Count)
-    for ($i = 0; $i -lt $items3.Count; $i++) {
-        Assert-True ($items[$i].Equals($items3[$i]))
+    Assert-True ($out3.Count -eq $items.Length)
+    for ($i = 0; $i -lt $out3.Count; $i++) {
+        Assert-True ($out3[$i] -eq $items[$i])
     }
+    Assert-Null $er3
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with Boolean $true' -Verbose:$headerVerbosity
 
-    $e1 = try {$item1 = $true | Assert-PipelineCount -Maximum 1} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$true | Assert-PipelineCount -Maximum 1 -OutVariable out1 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-True $item1
+    Assert-True ($out1.Count -eq 1)
+    Assert-True $out1[0]
+    Assert-Null $er1
 
-    $e2 = try {$item2 = $true | Assert-PipelineCount -Maximum 2} catch {$_.Exception}
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er2 = try {$true | Assert-PipelineCount -Maximum 0 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e2
-    Assert-True $item2
+    Assert-True ($out2.Count -eq 0)
+    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-    $e3 = try {$item3 = $true | Assert-PipelineCount -Maximum 0} catch {$_.Exception}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$true | Assert-PipelineCount -Maximum 2 -OutVariable out3 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-Null $item3
+    Assert-True ($out3.Count -eq 1)
+    Assert-True $out3[0]
+    Assert-Null $er3
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with Boolean $false' -Verbose:$headerVerbosity
 
-    $e1 = try {$item1 = $false | Assert-PipelineCount -Maximum 1} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$false | Assert-PipelineCount -Maximum 1 -OutVariable out1 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-False $item1
+    Assert-True ($out1.Count -eq 1)
+    Assert-False $out1[0]
+    Assert-Null $er1
 
-    $e2 = try {$item2 = $false | Assert-PipelineCount -Maximum 2} catch {$_.Exception}
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er2 = try {$false | Assert-PipelineCount -Maximum 0 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e2
-    Assert-False $item2
+    Assert-True ($out2.Count -eq 0)
+    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-    $e3 = try {$item3 = $false | Assert-PipelineCount -Maximum 0} catch {$_.Exception}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$false | Assert-PipelineCount -Maximum 2 -OutVariable out3 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-Null $item3
+    Assert-True ($out3.Count -eq 1)
+    Assert-False $out3[0]
+    Assert-Null $er3
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with $null' -Verbose:$headerVerbosity
 
-    $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e1 = try {$null | Assert-PipelineCount -Maximum 1 | Foreach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$null | Assert-PipelineCount -Maximum 1 -OutVariable out1 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-True (1 -eq $items1.Count)
-    Assert-Null $items1[0]
+    Assert-True ($out1.Count -eq 1)
+    Assert-Null $out1[0]
+    Assert-Null $er1
 
-    $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e2 = try {$null | Assert-PipelineCount -Maximum 2 | Foreach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er2 = try {$null | Assert-PipelineCount -Maximum 0 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e2
-    Assert-True (1 -eq $items2.Count)
-    Assert-Null $items2[0]
+    Assert-True ($out2.Count -eq 0)
+    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-    $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e3 = try {$null | Assert-PipelineCount -Maximum 0 | Foreach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$null | Assert-PipelineCount -Maximum 2 -OutVariable out3 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (0 -eq $items3.Count)
+    Assert-True ($out3.Count -eq 1)
+    Assert-Null $out3[0]
+    Assert-Null $er3
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with Non-Booleans that are convertible to $true' -Verbose:$headerVerbosity
 
     foreach ($item in $nonBooleanTrue) {
-        $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e1 = try {,$item | Assert-PipelineCount -Maximum 1 | Foreach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
+        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er1 = try {,$item | Assert-PipelineCount -Maximum 1 -OutVariable out1 | Out-Null} catch {$_}
 
-        Assert-Null $e1
-        Assert-True (1 -eq $items1.Count)
-        Assert-True ($item.Equals($items1[0]))
+        Assert-True ($out1.Count -eq 1)
+        Assert-True ($out1[0].Equals($item))
+        Assert-Null $er1
 
-        $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e2 = try {,$item | Assert-PipelineCount -Maximum 2 | Foreach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er2 = try {,$item | Assert-PipelineCount -Maximum 0 -OutVariable out2 | Out-Null} catch {$_}
 
-        Assert-Null $e2
-        Assert-True (1 -eq $items2.Count)
-        Assert-True ($item.Equals($items2[0]))
+        Assert-True ($out2.Count -eq 0)
+        Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-        $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e3 = try {,$item | Assert-PipelineCount -Maximum 0 | Foreach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
+        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er3 = try {,$item | Assert-PipelineCount -Maximum 2 -OutVariable out3 | Out-Null} catch {$_}
 
-        Assert-NotNull $e3
-        Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-True (0 -eq $items3.Count)
+        Assert-True ($out3.Count -eq 1)
+        Assert-True ($out3[0].Equals($item))
+        Assert-Null $er3
     }
 }
 
@@ -578,106 +624,108 @@ $nonBooleanTrue = @(
     Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with Non-Booleans that are convertible to $false' -Verbose:$headerVerbosity
 
     foreach ($item in $nonBooleanFalse) {
-        $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e1 = try {,$item | Assert-PipelineCount -Maximum 1 | Foreach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
+        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er1 = try {,$item | Assert-PipelineCount -Maximum 1 -OutVariable out1 | Out-Null} catch {$_}
 
-        Assert-Null $e1
-        Assert-True (1 -eq $items1.Count)
-        Assert-True ($item.Equals($items1[0]))
+        Assert-True ($out1.Count -eq 1)
+        Assert-True ($out1[0].Equals($item))
+        Assert-Null $er1
 
-        $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e2 = try {,$item | Assert-PipelineCount -Maximum 2 | Foreach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er2 = try {,$item | Assert-PipelineCount -Maximum 0 -OutVariable out2 | Out-Null} catch {$_}
 
-        Assert-Null $e2
-        Assert-True (1 -eq $items2.Count)
-        Assert-True ($item.Equals($items2[0]))
+        Assert-True ($out2.Count -eq 0)
+        Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 
-        $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $e3 = try {,$item | Assert-PipelineCount -Maximum 0 | Foreach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
+        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er3 = try {,$item | Assert-PipelineCount -Maximum 2 -OutVariable out3 | Out-Null} catch {$_}
 
-        Assert-NotNull $e3
-        Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-True (0 -eq $items3.Count)
+        Assert-True ($out3.Count -eq 1)
+        Assert-True ($out3[0].Equals($item))
+        Assert-Null $er3
     }
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with pipelines that contain zero objects' -Verbose:$headerVerbosity
 
-    $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e1 = try {@() | Assert-PipelineCount -Maximum 0 | ForEach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {@() | Assert-PipelineCount -Maximum 0 -OutVariable out1 | Out-Null} catch {$_}
 
-    Assert-Null $e1
-    Assert-True (0 -eq $items1.Count)
+    Assert-True ($out1.Count -eq 0)
+    Assert-Null $er1
 
-    $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e2 = try {@() | Assert-PipelineCount -Maximum 1 | ForEach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er2 = try {& {@()} | Assert-PipelineCount -Maximum 1 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e2
-    Assert-True (0 -eq $items2.Count)
+    Assert-True ($out2.Count -eq 0)
+    Assert-Null $er2
 
-    $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e3 = try {@() | Assert-PipelineCount -Maximum (-1) | ForEach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
+    function f1 {}
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {f1 | Assert-PipelineCount -Maximum (-1) -OutVariable out3 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (0 -eq $items3.Count)
+    Assert-True ($out3.Count -eq 0)
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with a pipeline that contains many objects' -Verbose:$headerVerbosity
 
-    $items = 11..20
+    $items = @(101..110)
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er1 = try {$items | Assert-PipelineCount -Maximum 10 -OutVariable out1 | Out-Null} catch {$_}
 
-    $items1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e1 = try {$items | Assert-PipelineCount -Maximum 10 | ForEach-Object {[System.Void]$items1.Add($_)}} catch {$_.Exception}
-
-    Assert-Null $e1
-    Assert-True (10 -eq $items1.Count)
-    for ($i = 0; $i -lt $items1.Count; $i++) {
-        Assert-True ($items[$i].Equals($items1[$i]))
+    Assert-True ($out1.Count -eq $items.Length)
+    for ($i = 0; $i -lt $out1.Count; $i++) {
+        Assert-True ($out1[$i] -eq $items[$i])
     }
+    Assert-Null $er1
 
-    $items2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e2 = try {$items | Assert-PipelineCount -Maximum 11 | ForEach-Object {[System.Void]$items2.Add($_)}} catch {$_.Exception}
+    $items = @(101..110)
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er2 = try {$items | Assert-PipelineCount -Maximum 11 -OutVariable out2 | Out-Null} catch {$_}
 
-    Assert-Null $e2
-    Assert-True (10 -eq $items2.Count)
-    for ($i = 0; $i -lt $items2.Count; $i++) {
-        Assert-True ($items[$i].Equals($items2[$i]))
+    Assert-True ($out2.Count -eq $items.Length)
+    for ($i = 0; $i -lt $out2.Count; $i++) {
+        Assert-True ($out2[$i] -eq $items[$i])
     }
+    Assert-Null $er2
 
-    $items3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $e3 = try {$items | Assert-PipelineCount -Maximum 9 | ForEach-Object {[System.Void]$items3.Add($_)}} catch {$_.Exception}
+    $items = @(101..110)
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $er3 = try {$items | Assert-PipelineCount -Maximum 9 -OutVariable out3 | Out-Null} catch {$_}
 
-    Assert-NotNull $e3
-    Assert-True $e3.Message.StartsWith('Assertion failed:', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True (9 -eq $items3.Count)
-    for ($i = 0; $i -lt $items3.Count; $i++) {
-        Assert-True ($items[$i].Equals($items3[$i]))
+    Assert-True ($out3.Count -eq 9)
+    for ($i = 0; $i -lt $out3.Count; $i++) {
+        Assert-True ($out3[$i] -eq $items[$i])
     }
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {
     Write-Verbose -Message 'Test Assert-PipelineCount with a non-pipeline input' -Verbose:$headerVerbosity
 
-    $e1 = try {Assert-PipelineCount -InputObject $true -Equals 1 | Out-Null} catch {$_.Exception}
-    $e2 = try {Assert-PipelineCount -InputObject $false -Minimum 1 | Out-Null} catch {$_.Exception}
-    $e3 = try {Assert-PipelineCount -InputObject $null -Maximum 1| Out-Null} catch {$_.Exception}
-    $e4 = try {Assert-PipelineCount -InputObject @() -Minimum 1| Out-Null} catch {$_.Exception}
-    $e5 = try {Assert-PipelineCount -InputObject @(0) -Maximum 0 | Out-Null} catch {$_.Exception}
+    $er1 = try {Assert-PipelineCount -InputObject $true -Equals 1 | Out-Null} catch {$_}
+    $er2 = try {Assert-PipelineCount -InputObject $false -Minimum 1 | Out-Null} catch {$_}
+    $er3 = try {Assert-PipelineCount -InputObject $null -Maximum 1| Out-Null} catch {$_}
+    $er4 = try {Assert-PipelineCount -InputObject @() -Minimum 1| Out-Null} catch {$_}
+    $er5 = try {Assert-PipelineCount -InputObject @(0) -Maximum 0 | Out-Null} catch {$_}
 
     $errorMessage = 'Assert-PipelineCount must take its input from the pipeline.'
 
-    Assert-True ($e1 -is [System.ArgumentException])
-    Assert-True ($e2 -is [System.ArgumentException])
-    Assert-True ($e3 -is [System.ArgumentException])
-    Assert-True ($e4 -is [System.ArgumentException])
-    Assert-True ($e5 -is [System.ArgumentException])
+    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
 
-    Assert-True $e1.Message.StartsWith($errorMessage, [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e2.Message.StartsWith($errorMessage, [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e3.Message.StartsWith($errorMessage, [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e4.Message.StartsWith($errorMessage, [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $e5.Message.StartsWith($errorMessage, [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True ($er1.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er2.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er4.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er5.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
