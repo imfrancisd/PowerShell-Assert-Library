@@ -35,7 +35,7 @@ if ($Silent) {
 & {
     Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 1' -Verbose:$headerVerbosity
 
-    Group-ListItem -Pair @() | Assert-PipelineEmpty
+    Group-ListItem -Pair @($null) | Assert-PipelineEmpty
     Group-ListItem -Pair (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))) | Assert-PipelineEmpty
     Group-ListItem -Pair (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14))) | Assert-PipelineEmpty
 }
