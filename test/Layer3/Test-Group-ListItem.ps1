@@ -45,6 +45,7 @@ if ($Silent) {
 
     $list1 = @($null, 5)
     Group-ListItem -Pair $list1 | Assert-PipelineCount 1 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 2)
         Assert-True ($null -eq $_.Items[0])
@@ -53,6 +54,7 @@ if ($Silent) {
 
     $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', 'world')))
     Group-ListItem -Pair $list2 | Assert-PipelineCount 1 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 2)
         Assert-True ('hello' -eq $_.Items[0])
@@ -61,6 +63,7 @@ if ($Silent) {
 
     $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72)))
     Group-ListItem -Pair $list3 | Assert-PipelineCount 1 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Double[]])
         Assert-True ($_.Items.Length -eq 2)
         Assert-True (3.14 -eq $_.Items[0])
@@ -73,6 +76,7 @@ if ($Silent) {
 
     $list1 = @(3.14, 2.72, 0.00)
     $groups1 = Group-ListItem -Pair $list1 | Assert-PipelineCount 2 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 2)
         $_
@@ -84,6 +88,7 @@ if ($Silent) {
 
     $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', $null, 'world')))
     $groups2 = Group-ListItem -Pair $list2 | Assert-PipelineCount 2 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 2)
         $_
@@ -95,6 +100,7 @@ if ($Silent) {
 
     $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList @(,[System.Object[]]@($null, 'hello', 3.14)))
     $groups3 = Group-ListItem -Pair $list3 | Assert-PipelineCount 2 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 2)
         $_
@@ -111,6 +117,7 @@ if ($Silent) {
     $count = 0
     $list1 = @('a', 1, @(), ([System.Int32[]]@(1..5)))
     Group-ListItem -Pair $list1 | Assert-PipelineCount 3 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 2)
         Assert-True ($list1[$count].Equals($_.Items[0]))
@@ -121,6 +128,7 @@ if ($Silent) {
     $count = 0
     $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', @($null), 'world', 5)))
     Group-ListItem -Pair $list2 | Assert-PipelineCount 3 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 2)
         Assert-True ($list2[$count].Equals($_.Items[0]))
@@ -131,6 +139,7 @@ if ($Silent) {
     $count = 0
     $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Int32]' -ArgumentList @(,[System.Int32[]]@(100, 200, 300, 400)))
     Group-ListItem -Pair $list3 | Assert-PipelineCount 3 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Int32[]])
         Assert-True ($_.Items.Length -eq 2)
         Assert-True ($list3[$count].Equals($_.Items[0]))
@@ -142,6 +151,7 @@ if ($Silent) {
         $count = 0
         $list = [System.Int32[]]@(1..$size)
         Group-ListItem -Pair $list | Assert-PipelineCount ($size - 1) | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Int32[]])
             Assert-True ($_.Items.Length -eq 2)
             Assert-True ($list[$count].Equals($_.Items[0]))
@@ -195,14 +205,17 @@ if ($Silent) {
         }
 
         Group-ListItem @gliArgs -Window @() | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq 0)
         }
         Group-ListItem @gliArgs -Window (New-Object -TypeName 'System.Collections.ArrayList') | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq 0)
         }
         Group-ListItem @gliArgs -Window (New-Object -TypeName 'System.Collections.Generic.List[System.Double]') | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Double[]])
             Assert-True ($_.Items.Length -eq 0)
         }
@@ -221,14 +234,17 @@ if ($Silent) {
     }
 
     Group-ListItem -Size 0 -Window @($null) | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 0)
     }
     Group-ListItem -Size 0 -Window (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))) | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 0)
     }
     Group-ListItem -Size 0 -Window (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14))) | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Double[]])
         Assert-True ($_.Items.Length -eq 0)
     }
@@ -242,16 +258,19 @@ if ($Silent) {
         }
 
         Group-ListItem @gliArgs -Window @($null) | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq 1)
             Assert-True ($null -eq $_.Items[0])
         }
         Group-ListItem @gliArgs -Window (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))) | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq 1)
             Assert-True ('hello world' -eq $_.Items[0])
         }
         Group-ListItem @gliArgs -Window (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14))) | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Double[]])
             Assert-True ($_.Items.Length -eq 1)
             Assert-True (3.14 -eq $_.Items[0])
@@ -275,20 +294,24 @@ if ($Silent) {
     }
 
     Group-ListItem -Size 0 -Window $list1 | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 0)
     }
     Group-ListItem -Size 0 -Window $list2 | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 0)
     }
     Group-ListItem -Size 0 -Window $list3 | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Double[]])
         Assert-True ($_.Items.Length -eq 0)
     }
 
     $count = 0
     Group-ListItem -Size 1 -Window $list1 | Assert-PipelineCount 2 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 1)
         Assert-True ($list1[$count] -eq $_.Items[0])
@@ -296,6 +319,7 @@ if ($Silent) {
     }
     $count = 0
     Group-ListItem -Size 1 -Window $list2 | Assert-PipelineCount 2 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 1)
         Assert-True ($list2[$count] -eq $_.Items[0])
@@ -303,6 +327,7 @@ if ($Silent) {
     }
     $count = 0
     Group-ListItem -Size 1 -Window $list3 | Assert-PipelineCount 2 | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Double[]])
         Assert-True ($_.Items.Length -eq 1)
         Assert-True ($list3[$count] -eq $_.Items[0])
@@ -318,6 +343,7 @@ if ($Silent) {
         }
 
         Group-ListItem @gliArgs -Window $list1 | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq 2)
             Assert-True ($null -eq $_.Items[0])
@@ -325,6 +351,7 @@ if ($Silent) {
         }
 
         Group-ListItem @gliArgs -Window $list2 | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq 2)
             Assert-True ('hello' -eq $_.Items[0])
@@ -332,6 +359,7 @@ if ($Silent) {
         }
 
         Group-ListItem @gliArgs -Window $list3 | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Double[]])
             Assert-True ($_.Items.Length -eq 2)
             Assert-True (3.14 -eq $_.Items[0])
@@ -356,14 +384,17 @@ if ($Silent) {
     }
 
     Group-ListItem -Size 0 -Window $list1 | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 0)
     }
     Group-ListItem -Size 0 -Window $list2 | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 0)
     }
     Group-ListItem -Size 0 -Window $list3 | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 0)
     }
@@ -371,6 +402,7 @@ if ($Silent) {
     foreach ($size in @(1..2)) {
         $count = 0
         Group-ListItem -Size $size -Window $list1 | Assert-PipelineCount (3 - $size + 1) | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq $size)
             for ($i = 0; $i -lt $size; $i++) {
@@ -380,6 +412,7 @@ if ($Silent) {
         }
         $count = 0
         Group-ListItem -Size $size -Window $list2 | Assert-PipelineCount (3 - $size + 1) | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq $size)
             for ($i = 0; $i -lt $size; $i++) {
@@ -389,6 +422,7 @@ if ($Silent) {
         }
         $count = 0
         Group-ListItem -Size $size -Window $list3 | Assert-PipelineCount (3 - $size + 1) | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq $size)
             for ($i = 0; $i -lt $size; $i++) {
@@ -407,6 +441,7 @@ if ($Silent) {
         }
 
         Group-ListItem @gliArgs -Window $list1 | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq 3)
             Assert-True (3.14 -eq $_.Items[0])
@@ -415,6 +450,7 @@ if ($Silent) {
         }
 
         Group-ListItem @gliArgs -Window $list2 | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq 3)
             Assert-True ('hello' -eq $_.Items[0])
@@ -423,6 +459,7 @@ if ($Silent) {
         }
 
         Group-ListItem @gliArgs -Window $list3 | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq 3)
             Assert-True ($null   -eq $_.Items[0])
@@ -448,14 +485,17 @@ if ($Silent) {
     }
 
     Group-ListItem -Size 0 -Window $list1 | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 0)
     }
     Group-ListItem -Size 0 -Window $list2 | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 0)
     }
     Group-ListItem -Size 0 -Window $list3 | Assert-PipelineSingle | ForEach-Object {
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
         Assert-True ($_.Items -is [System.Int32[]])
         Assert-True ($_.Items.Length -eq 0)
     }
@@ -463,6 +503,7 @@ if ($Silent) {
     foreach ($size in @(1..3)) {
         $count = 0
         Group-ListItem -Size $size -Window $list1 | Assert-PipelineCount (4 - $size + 1) | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq $size)
             for ($i = 0; $i -lt $size; $i++) {
@@ -472,6 +513,7 @@ if ($Silent) {
         }
         $count = 0
         Group-ListItem -Size $size -Window $list2 | Assert-PipelineCount (4 - $size + 1) | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq $size)
             for ($i = 0; $i -lt $size; $i++) {
@@ -481,6 +523,7 @@ if ($Silent) {
         }
         $count = 0
         Group-ListItem -Size $size -Window $list3 | Assert-PipelineCount (4 - $size + 1) | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Int32[]])
             Assert-True ($_.Items.Length -eq $size)
             for ($i = 0; $i -lt $size; $i++) {
@@ -499,6 +542,7 @@ if ($Silent) {
         }
 
         Group-ListItem @gliArgs -Window $list1 | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq 4)
             Assert-True ($list1[0].Equals($_.Items[0]))
@@ -508,6 +552,7 @@ if ($Silent) {
         }
 
         Group-ListItem @gliArgs -Window $list2 | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Object[]])
             Assert-True ($_.Items.Length -eq 4)
             Assert-True ($list2[0].Equals($_.Items[0]))
@@ -517,6 +562,7 @@ if ($Silent) {
         }
 
         Group-ListItem @gliArgs -Window $list3 | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Int32[]])
             Assert-True ($_.Items.Length -eq 4)
             Assert-True ($list3[0].Equals($_.Items[0]))
@@ -532,6 +578,7 @@ if ($Silent) {
         Group-ListItem -Window $list -Size -1 | Assert-PipelineEmpty
         Group-ListItem -Window $list -Size ($len + 1) | Assert-PipelineEmpty
         Group-ListItem -Window $list -Size 0 | Assert-PipelineSingle | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is [System.Int32[]])
             Assert-True ($_.Items.Length -eq 0)
         }
@@ -539,6 +586,7 @@ if ($Silent) {
         for ($size = 1; $size -le $len; $size++) {
             $count = 0
             Group-ListItem -Window $list -Size $size | Assert-PipelineCount ($len - $size + 1) | ForEach-Object {
+                Assert-True ($_ -isnot [System.Collections.IEnumerable])
                 Assert-True ($_.Items -is [System.Int32[]])
                 Assert-True ($_.Items.Length -eq $size)
                 for ($i = 0; $i -lt $size; $i++) {
@@ -612,7 +660,8 @@ if ($Silent) {
     Write-Verbose -Message 'Test Group-ListItem -Zip with 1 list' -Verbose:$headerVerbosity
 
     $groups1 = Group-ListItem -Zip @(,[System.String[]]@('a', 'b', 'c', 'd', 'e')) | Assert-PipelineCount -Equals 5 | ForEach-Object {
-        Assert-True ($_.Items.GetType() -eq [System.String[]])
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
+        Assert-True ($_.Items -is [System.String[]])
         Assert-True ($_.Items.Length -eq 1)
         $_
     }
@@ -624,7 +673,8 @@ if ($Silent) {
 
     $objects = New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList @(,@('a', $null, @(),@(1,2,3,$null), 'e'))
     $groups2 = Group-ListItem -Zip @(,$objects) | Assert-PipelineCount -Equals 5 | ForEach-Object {
-        Assert-True ($_.Items.GetType() -eq [System.Object[]])
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
+        Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 1)
         $_
     }
@@ -640,7 +690,8 @@ if ($Silent) {
 
         $count = 0
         Group-ListItem -Zip @(, $list) | Assert-PipelineCount -Equals ($i) | ForEach-Object {
-            Assert-True ($_.Items.GetType() -eq [System.Int32[]])
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
+            Assert-True ($_.Items -is [System.Int32[]])
             Assert-True ($_.Items.Length -eq 1)
             Assert-True ($_.Items[0] -eq $list[$count % $i])
             $count++
@@ -654,7 +705,8 @@ if ($Silent) {
     $list1 = [System.String[]]@('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k')
     $list2 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('do', 're', 'mi', 'fa', 'so', 'la', 'ti', 'do'))
     $groups1 = Group-ListItem -Zip @($list1, $list2) | Assert-PipelineCount -Equals 8 | ForEach-Object {
-        Assert-True ($_.Items.GetType() -eq [System.String[]])
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
+        Assert-True ($_.Items -is [System.String[]])
         Assert-True ($_.Items.Length -eq 2)
         $_
     }
@@ -667,7 +719,8 @@ if ($Silent) {
     $list1 = New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList @(,[System.Object[]]@('do', @(), 'mi', 'fa', $null, 'la', @(), 'do'))
     $list2 = [System.Object[]]@('hello', @(3.14, 5, $null), $null, 'world', '!', 10, 0, $null, 3, 1, 4, 1, 5, 9)
     $groups2 = Group-ListItem -Zip @($list1, $list2) | Assert-PipelineCount -Equals 8 | ForEach-Object {
-        Assert-True ($_.Items.GetType() -eq [System.Object[]])
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
+        Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 2)
         $_
     }
@@ -695,7 +748,8 @@ if ($Silent) {
 
             $count = 0
             Group-ListItem -Zip @($list1, $list2) | Assert-PipelineCount -Equals @($iSize, $jSize | Sort-Object)[0] | ForEach-Object {
-                Assert-True ($_.Items.GetType() -eq [System.Int32[]])
+                Assert-True ($_ -isnot [System.Collections.IEnumerable])
+                Assert-True ($_.Items -is [System.Int32[]])
                 Assert-True ($_.Items.Length -eq 2)
                 Assert-True ($_.Items[0] -eq $list1[$count])
                 Assert-True ($_.Items[1] -eq $list2[$count])
@@ -712,7 +766,8 @@ if ($Silent) {
     $list2 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('do', 're', 'mi', 'fa', 'so', 'la', 'ti', 'do'))
     $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('1', '2', '3', '4', '5', '6', '7'))
     $groups1 = Group-ListItem -Zip @($list1, $list2, $list3) | Assert-PipelineCount -Equals 6 | ForEach-Object {
-        Assert-True ($_.Items.GetType() -eq [System.String[]])
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
+        Assert-True ($_.Items -is [System.String[]])
         Assert-True ($_.Items.Length -eq 3)
         $_
     }
@@ -727,7 +782,8 @@ if ($Silent) {
     $list2 = New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList @(,[System.Object[]]@('do', @(), 'mi', 'fa', $null, 'la', @(), 'do'))
     $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('1', '2', '3', '4', '5', '6', '7'))
     $groups2 = Group-ListItem -Zip @($list1, $list2, $list3) | Assert-PipelineCount -Equals 6 | ForEach-Object {
-        Assert-True ($_.Items.GetType() -eq [System.Object[]])
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
+        Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 3)
         $_
     }
@@ -764,7 +820,8 @@ if ($Silent) {
 
                 $count = 0
                 Group-ListItem -Zip @($list1, $list2, $list3) | Assert-PipelineCount -Equals @($iSize, $jSize, $kSize | Sort-Object)[0] | ForEach-Object {
-                    Assert-True ($_.Items.GetType() -eq [System.Int32[]])
+                    Assert-True ($_ -isnot [System.Collections.IEnumerable])
+                    Assert-True ($_.Items -is [System.Int32[]])
                     Assert-True ($_.Items.Length -eq 3)
                     Assert-True ($_.Items[0] -eq $list1[$count])
                     Assert-True ($_.Items[1] -eq $list2[$count])
@@ -784,7 +841,8 @@ if ($Silent) {
     $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('do', 're', 'mi', 'fa', 'so', 'la', 'ti', 'do'))
     $list4 = [System.String[]]@('a', 'b', 'c', 'd', 'e', 'f')
     $groups1 = Group-ListItem -Zip @($list1, $list2, $list3, $list4) | Assert-PipelineCount -Equals 4 | ForEach-Object {
-        Assert-True ($_.Items.GetType() -eq [System.String[]])
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
+        Assert-True ($_.Items -is [System.String[]])
         Assert-True ($_.Items.Length -eq 4)
         $_
     }
@@ -801,7 +859,8 @@ if ($Silent) {
     $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('do', 're', 'mi', 'fa', 'so', 'la', 'ti', 'do'))
     $list4 = [System.String[]]@('a', 'b', 'c', 'd', 'e', 'f')
     $groups2 = Group-ListItem -Zip @($list1, $list2, $list3, $list4) | Assert-PipelineCount -Equals 4 | ForEach-Object {
-        Assert-True ($_.Items.GetType() -eq [System.Object[]])
+        Assert-True ($_ -isnot [System.Collections.IEnumerable])
+        Assert-True ($_.Items -is [System.Object[]])
         Assert-True ($_.Items.Length -eq 4)
         $_
     }
@@ -847,7 +906,8 @@ if ($Silent) {
 
                     $count = 0
                     Group-ListItem -Zip @($list1, $list2, $list3, $list4) | Assert-PipelineCount -Equals @($iSize, $jSize, $kSize, $lSize | Sort-Object)[0] | ForEach-Object {
-                        Assert-True ($_.Items.GetType() -eq [System.Int32[]])
+                        Assert-True ($_ -isnot [System.Collections.IEnumerable])
+                        Assert-True ($_.Items -is [System.Int32[]])
                         Assert-True ($_.Items.Length -eq 4)
                         Assert-True ($_.Items[0] -eq $list1[$count])
                         Assert-True ($_.Items[1] -eq $list2[$count])
