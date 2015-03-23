@@ -777,7 +777,6 @@ if ($Silent) {
             }
         }
     }
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
