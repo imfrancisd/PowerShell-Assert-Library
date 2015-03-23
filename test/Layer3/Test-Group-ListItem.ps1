@@ -1039,7 +1039,79 @@ if ($Silent) {
 & {
     Write-Verbose -Message 'Test Group-ListItem -Permute with lists of length 3' -Verbose:$headerVerbosity
 
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
+    $noarg = New-Object 'System.Object'
+
+    $list1 = @(3.14, 2.72, 0.00)
+    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', $null, 'world')))
+    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList @(,[System.Object[]]@($null, 'hello', 3.14)))
+
+    function oracle($list, $size = 3)
+    {
+        switch ($size) {
+            0       {return @{'Items' = @()}}
+            1       {return @{'Items' = @(,$list[0])},
+                            @{'Items' = @(,$list[1])},
+                            @{'Items' = @(,$list[2])}}
+            2       {return @{'Items' = @($list[0], $list[1])},
+                            @{'Items' = @($list[0], $list[2])},
+                            @{'Items' = @($list[1], $list[0])},
+                            @{'Items' = @($list[1], $list[2])},
+                            @{'Items' = @($list[2], $list[0])},
+                            @{'Items' = @($list[2], $list[1])}}
+            3       {return @{'Items' = @($list[0], $list[1], $list[2])},
+                            @{'Items' = @($list[0], $list[2], $list[1])},
+                            @{'Items' = @($list[1], $list[0], $list[2])},
+                            @{'Items' = @($list[1], $list[2], $list[0])},
+                            @{'Items' = @($list[2], $list[0], $list[1])},
+                            @{'Items' = @($list[2], $list[1], $list[0])}}
+            default {return}
+        }
+    }
+
+    foreach ($size in @(-1, 0, 1, 2, 3, 4, $noarg)) {
+        if ($noarg.Equals($size)) {
+            $gliArgs = @{}
+            $expectedSize = 3
+        } else {
+            $gliArgs = @{'Size' = $size}
+            $expectedSize = $size
+        }
+
+        $expected1 = @(oracle @gliArgs -list $list1)
+        $expected2 = @(oracle @gliArgs -list $list2)
+        $expected3 = @(oracle @gliArgs -list $list3)
+
+        $outputCount = $expected1.Length
+        Assert-True ($outputCount -eq $expected2.Length)
+        Assert-True ($outputCount -eq $expected3.Length)
+
+        $out1 = @(Group-ListItem @gliArgs -Permute $list1 | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
+            Assert-True ($_.Items -is [System.Object[]])
+            Assert-True ($_.Items.Length -eq $expectedSize)
+            $_
+        })
+        $out2 = @(Group-ListItem @gliArgs -Permute $list2 | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
+            Assert-True ($_.Items -is [System.Object[]])
+            Assert-True ($_.Items.Length -eq $expectedSize)
+            $_
+        })
+        $out3 = @(Group-ListItem @gliArgs -Permute $list3 | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
+            Assert-True ($_.Items -is [System.Object[]])
+            Assert-True ($_.Items.Length -eq $expectedSize)
+            $_
+        })
+
+        for ($i = 0; $i -lt $outputCount; $i++) {
+            for ($j = 0; $j -lt $expectedSize; $j++) {
+                Assert-True ($expected1[$i].Items[$j] -eq $out1[$i].Items[$j])
+                Assert-True ($expected2[$i].Items[$j] -eq $out2[$i].Items[$j])
+                Assert-True ($expected3[$i].Items[$j] -eq $out3[$i].Items[$j])
+            }
+        }
+    }
 }
 
 & {
