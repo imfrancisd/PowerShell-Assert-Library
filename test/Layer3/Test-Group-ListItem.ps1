@@ -852,7 +852,111 @@ if ($Silent) {
 & {
     Write-Verbose -Message 'Test Group-ListItem -Combine with lists of length 4 or more' -Verbose:$headerVerbosity
 
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
+    $noarg = New-Object 'System.Object'
+
+    $list1 = @('a', 1, @(), ([System.Int32[]]@(1..5)))
+    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', @($null), 'world', 5)))
+    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Int32]' -ArgumentList @(,[System.Int32[]]@(100, 200, 300, 400)))
+
+    function oracle($list, $size = 4)
+    {
+        switch ($size) {
+            0       {return @{'Items' = @()}}
+            1       {return @{'Items' = @(,$list[0])},
+                            @{'Items' = @(,$list[1])},
+                            @{'Items' = @(,$list[2])},
+                            @{'Items' = @(,$list[3])}}
+            2       {return @{'Items' = @($list[0], $list[1])},
+                            @{'Items' = @($list[0], $list[2])},
+                            @{'Items' = @($list[0], $list[3])},
+                            @{'Items' = @($list[1], $list[2])},
+                            @{'Items' = @($list[1], $list[3])},
+                            @{'Items' = @($list[2], $list[3])}}
+            3       {return @{'Items' = @($list[0], $list[1], $list[2])},
+                            @{'Items' = @($list[0], $list[1], $list[3])},
+                            @{'Items' = @($list[0], $list[2], $list[3])},
+                            @{'Items' = @($list[1], $list[2], $list[3])}}
+            4       {return @{'Items' = @($list[0], $list[1], $list[2], $list[3])}}
+            default {return}
+        }
+    }
+
+    foreach ($size in @(-1, 0, 1, 2, 3, 4, 5, $noarg)) {
+        if ($noarg.Equals($size)) {
+            $gliArgs = @{}
+            $expectedSize = 4
+        } else {
+            $gliArgs = @{'Size' = $size}
+            $expectedSize = $size
+        }
+
+        $expected1 = @(oracle @gliArgs -list $list1)
+        $expected2 = @(oracle @gliArgs -list $list2)
+        $expected3 = @(oracle @gliArgs -list $list3)
+
+        $outputCount = $expected1.Length
+        Assert-True ($outputCount -eq $expected2.Length)
+        Assert-True ($outputCount -eq $expected3.Length)
+
+        $out1 = @(Group-ListItem @gliArgs -Combine $list1 | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
+            Assert-True ($_.Items -is [System.Object[]])
+            Assert-True ($_.Items.Length -eq $expectedSize)
+            $_
+        })
+        $out2 = @(Group-ListItem @gliArgs -Combine $list2 | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
+            Assert-True ($_.Items -is [System.Object[]])
+            Assert-True ($_.Items.Length -eq $expectedSize)
+            $_
+        })
+        $out3 = @(Group-ListItem @gliArgs -Combine $list3 | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
+            Assert-True ($_.Items -is [System.Int32[]])
+            Assert-True ($_.Items.Length -eq $expectedSize)
+            $_
+        })
+
+        for ($i = 0; $i -lt $outputCount; $i++) {
+            for ($j = 0; $j -lt $expectedSize; $j++) {
+                Assert-True ($expected1[$i].Items[$j].Equals($out1[$i].Items[$j]))
+                Assert-True ($expected2[$i].Items[$j].Equals($out2[$i].Items[$j]))
+                Assert-True ($expected3[$i].Items[$j].Equals($out3[$i].Items[$j]))
+            }
+        }
+    }
+
+    function numCombin($list, $k)
+    {
+        $n = $list.Length
+        if ($n -lt $k) {
+            return 0
+        } elseif ($k -lt 0) {
+            return 0
+        } elseif ($k -eq 0) {
+            return 1
+        } elseif ($n -eq $k) {
+            return 1
+        } else {
+            $num = 1
+            $den = 1
+            $($n - $k + 1)..$n | ForEach-Object {$num *= $_}
+            1..$k | ForEach-Object {$den *= $_}
+            return $num / $den
+        }
+    }
+
+    for ($n = 5; $n -lt 10; $n++) {
+        $list = [System.Int32[]]@(1..$n)
+
+        for ($k = -1; $k -le $n + 1; $k++) {
+            Group-ListItem -Combine $list -Size $k | Assert-PipelineCount (numCombin $list $k) | ForEach-Object {
+                Assert-True ($_ -isnot [System.Collections.IEnumerable])
+                Assert-True ($_.Items -is [System.Int32[]])
+                Assert-True ($_.Items.Length -eq $k)
+            }
+        }
+    }
 }
 
 & {
