@@ -22,8 +22,8 @@ $nonBooleanTrue = @(
 & {
     Write-Verbose -Message 'Test Assert-False with Boolean $false' -Verbose:$headerVerbosity
 
-    $out1 = $null
-    $out2 = $null
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
     $er1 = try {Assert-False $false -OutVariable out1 | Out-Null} catch {$_}
     $er2 = try {Assert-False -Value $false -OutVariable out2 | Out-Null} catch {$_}
 
@@ -42,8 +42,8 @@ $nonBooleanTrue = @(
 & {
     Write-Verbose -Message 'Test Assert-False with Boolean $true' -Verbose:$headerVerbosity
 
-    $out1 = $null
-    $out2 = $null
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
     $er1 = try {Assert-False $true -OutVariable out1 | Out-Null} catch {$_}
     $er2 = try {Assert-False -Value $true -OutVariable out2 | Out-Null} catch {$_}
 
@@ -64,8 +64,8 @@ $nonBooleanTrue = @(
 & {
     Write-Verbose -Message 'Test Assert-False with $null' -Verbose:$headerVerbosity
 
-    $out1 = $null
-    $out2 = $null
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
     $er1 = try {Assert-False $null -OutVariable out1 | Out-Null} catch {$_}
     $er2 = try {Assert-False -Value $null -OutVariable out2 | Out-Null} catch {$_}
 
@@ -87,8 +87,8 @@ $nonBooleanTrue = @(
     Write-Verbose -Message 'Test Assert-False with Non-Booleans that are convertible to $true' -Verbose:$headerVerbosity
 
     foreach ($item in $nonBooleanTrue) {
-        $out1 = $null
-        $out2 = $null
+        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
         $er1 = try {Assert-False $item -OutVariable out1 | Out-Null} catch {$_}
         $er2 = try {Assert-False -Value $item -OutVariable out2 | Out-Null} catch {$_}
 
@@ -111,8 +111,8 @@ $nonBooleanTrue = @(
     Write-Verbose -Message 'Test Assert-False with Non-Booleans that are convertible to $false' -Verbose:$headerVerbosity
 
     foreach ($item in $nonBooleanFalse) {
-        $out1 = $null
-        $out2 = $null
+        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
         $er1 = try {Assert-False $item -OutVariable out1 | Out-Null} catch {$_}
         $er2 = try {Assert-False -Value $item -OutVariable out2 | Out-Null} catch {$_}
 
