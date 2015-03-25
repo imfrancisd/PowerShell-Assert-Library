@@ -1383,26 +1383,32 @@ if ($Silent) {
     $out1 = New-Object -TypeName 'System.Collections.ArrayList'
     $out2 = New-Object -TypeName 'System.Collections.ArrayList'
     $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
 
     $er1 = try {Group-ListItem -Zip $null -OutVariable out1 | Out-Null} catch {$_}
     $er2 = try {Group-ListItem -Zip @($null) -OutVariable out2 | Out-Null} catch {$_}
-    $er3 = try {Group-ListItem -Zip @(@(1,2,3), $null, @(4,5,6)) -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-
-    Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er2.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-
-    Assert-True $er1.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $er2.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $er3.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
+    $er3 = try {Group-ListItem -Zip (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList (,@(@(1,2,3), $null))) -OutVariable out3 | Out-Null} catch {$_}
+    $er4 = try {Group-ListItem -Zip (New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList (,@($null, @(4,5,6)))) -OutVariable out4 | Out-Null} catch {$_}
 
     Assert-True ($out1.Count -eq 0)
     Assert-True ($out2.Count -eq 0)
     Assert-True ($out3.Count -eq 0)
+    Assert-True ($out4.Count -eq 0)
+
+    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
+
+    Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er2.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er4.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+
+    Assert-True $er1.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $er2.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $er3.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $er4.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
 }
 
 & {
@@ -1413,7 +1419,7 @@ if ($Silent) {
     Group-ListItem -Zip @(@(), (New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@()))) | Assert-PipelineEmpty
     Group-ListItem -Zip @(@(), @($null)) | Assert-PipelineEmpty
     Group-ListItem -Zip @(@($null), @()) | Assert-PipelineEmpty
-    Group-ListItem -Zip @(@(1,2), (New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@()))) | Assert-PipelineEmpty
+    Group-ListItem -Zip @(@(1,2), (New-Object -TypeName 'System.Collections.ArrayList')) | Assert-PipelineEmpty
     Group-ListItem -Zip @(@(), (New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@(1,2)))) | Assert-PipelineEmpty
 
     Group-ListItem -Zip @(@(), @(), @()) | Assert-PipelineEmpty
@@ -1432,48 +1438,77 @@ if ($Silent) {
     Write-Verbose -Message 'Test Group-ListItem -Zip with no lists' -Verbose:$headerVerbosity
 
     Group-ListItem -Zip @() | Assert-PipelineEmpty
-    Group-ListItem -Zip (New-Object -TypeName 'System.Collections.Generic.List[System.Byte]' -ArgumentList @(,[System.Byte[]]@())) | Assert-PipelineEmpty
+    Group-ListItem -Zip (New-Object -TypeName 'System.Collections.ArrayList') | Assert-PipelineEmpty
+    Group-ListItem -Zip (New-Object -TypeName 'System.Collections.Generic.List[System.Byte[]]') | Assert-PipelineEmpty
 }
 
 & {
     Write-Verbose -Message 'Test Group-ListItem -Zip with 1 list' -Verbose:$headerVerbosity
 
-    $groups1 = Group-ListItem -Zip @(,[System.String[]]@('a', 'b', 'c', 'd', 'e')) | Assert-PipelineCount -Equals 5 | ForEach-Object {
-        Assert-True ($_ -isnot [System.Collections.IEnumerable])
-        Assert-True ($_.Items -is [System.String[]])
-        Assert-True ($_.Items.Length -eq 1)
-        $_
+    $list1 = @(,[System.String[]]@('a'))
+    $list2 = @(,(New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@($null, @()))))
+    $list3 = @(,(New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(0.00, 2.72, 3.14))))
+    $list4 = @(,[System.Int32[]]@(100, 200, 300, 400))
+    $list5 = @(,(New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@(@($null), @(), 'hi', $null, 5))))
+    $list6 = @(,(New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('hello', 'world', 'how', 'are', 'you', 'today'))))
+
+    $oracle = @{
+        $list1 = @(
+            @{'Items' = [System.String[]]@(,$list1[0][0])}
+        )
+        $list2 = @(
+            @{'Items' = [System.Object[]]@(,$list2[0][0])},
+            @{'Items' = [System.Object[]]@(,$list2[0][1])}
+        )
+        $list3 = @(
+            @{'Items' = [System.Double[]]@(,$list3[0][0])},
+            @{'Items' = [System.Double[]]@(,$list3[0][1])},
+            @{'Items' = [System.Double[]]@(,$list3[0][2])}
+        )
+        $list4 = @(
+            @{'Items' = [System.Int32[]]@(,$list4[0][0])},
+            @{'Items' = [System.Int32[]]@(,$list4[0][1])},
+            @{'Items' = [System.Int32[]]@(,$list4[0][2])},
+            @{'Items' = [System.Int32[]]@(,$list4[0][3])}
+        )
+        $list5 = @(
+            @{'Items' = [System.Object[]]@(,$list5[0][0])},
+            @{'Items' = [System.Object[]]@(,$list5[0][1])},
+            @{'Items' = [System.Object[]]@(,$list5[0][2])},
+            @{'Items' = [System.Object[]]@(,$list5[0][3])},
+            @{'Items' = [System.Object[]]@(,$list5[0][4])}
+        )
+        $list6 = @(
+            @{'Items' = [System.String[]]@(,$list6[0][0])},
+            @{'Items' = [System.String[]]@(,$list6[0][1])},
+            @{'Items' = [System.String[]]@(,$list6[0][2])},
+            @{'Items' = [System.String[]]@(,$list6[0][3])},
+            @{'Items' = [System.String[]]@(,$list6[0][4])},
+            @{'Items' = [System.String[]]@(,$list6[0][5])}
+        )
     }
-    Assert-True ('a' -eq $groups1[0].Items[0])
-    Assert-True ('b' -eq $groups1[1].Items[0])
-    Assert-True ('c' -eq $groups1[2].Items[0])
-    Assert-True ('d' -eq $groups1[3].Items[0])
-    Assert-True ('e' -eq $groups1[4].Items[0])
+    
+    foreach ($list in @($list1, $list2, $list3, $list4, $list5, $list6)) {
+        $expected = $oracle.Item($list)
+        $outputCount = $expected.Length
 
-    $objects = New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList @(,@('a', $null, @(),@(1,2,3,$null), 'e'))
-    $groups2 = Group-ListItem -Zip @(,$objects) | Assert-PipelineCount -Equals 5 | ForEach-Object {
-        Assert-True ($_ -isnot [System.Collections.IEnumerable])
-        Assert-True ($_.Items -is [System.Object[]])
-        Assert-True ($_.Items.Length -eq 1)
-        $_
-    }
-    Assert-True ('a' -eq $groups2[0].Items[0])
-    Assert-True ($null -eq $groups2[1].Items[0])
-    Assert-True ([System.Object]::ReferenceEquals($objects[2], $groups2[2].Items[0]))
-    Assert-True ([System.Object]::ReferenceEquals($objects[3], $groups2[3].Items[0]))
-    Assert-True ('e' -eq $groups2[4].Items[0])
+        $i = 0
+        Group-ListItem -Zip $list | Assert-PipelineCount $outputCount | ForEach-Object {
+            $itemType = $expected[$i].Items.GetType()
+            $itemCount = $expected[$i].Items.Length
 
-    for ($i = 1; $i -lt 10; $i++) {
-        $list = [System.Int32[]]@($($i)..$($i + $i - 1))
-        Assert-True ($list.Count -eq $i)
+            Assert-True ($_.Items -is $itemType)
+            Assert-True ($_.Items.Length -eq $itemCount)
 
-        $count = 0
-        Group-ListItem -Zip @(, $list) | Assert-PipelineCount -Equals ($i) | ForEach-Object {
-            Assert-True ($_ -isnot [System.Collections.IEnumerable])
-            Assert-True ($_.Items -is [System.Int32[]])
-            Assert-True ($_.Items.Length -eq 1)
-            Assert-True ($_.Items[0] -eq $list[$count % $i])
-            $count++
+            for ($j = 0; $j -lt $itemCount; $j++) {
+                if ($null -eq $_.Items[$j]) {
+                    Assert-True ($_.Items[$j] -eq $expected[$i].Items[$j])
+                } else {
+                    Assert-True ($_.Items[$j].Equals($expected[$i].Items[$j]))
+                }
+            }
+
+            $i++
         }
     }
 }
