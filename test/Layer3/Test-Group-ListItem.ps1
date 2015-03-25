@@ -1448,63 +1448,44 @@ if ($Silent) {
     $list1 = @(,[System.String[]]@('a'))
     $list2 = @(,(New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@($null, @()))))
     $list3 = @(,(New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(0.00, 2.72, 3.14))))
-    $list4 = @(,[System.Int32[]]@(100, 200, 300, 400))
+    $list4 = @(,[System.Double[]]@(100, 200, 300, 400))
     $list5 = @(,(New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@(@($null), @(), 'hi', $null, 5))))
     $list6 = @(,(New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('hello', 'world', 'how', 'are', 'you', 'today'))))
 
-    $oracle = @{
-        $list1 = @(
-            @{'Items' = [System.String[]]@(,$list1[0][0])}
-        )
-        $list2 = @(
-            @{'Items' = [System.Object[]]@(,$list2[0][0])},
-            @{'Items' = [System.Object[]]@(,$list2[0][1])}
-        )
-        $list3 = @(
-            @{'Items' = [System.Double[]]@(,$list3[0][0])},
-            @{'Items' = [System.Double[]]@(,$list3[0][1])},
-            @{'Items' = [System.Double[]]@(,$list3[0][2])}
-        )
-        $list4 = @(
-            @{'Items' = [System.Int32[]]@(,$list4[0][0])},
-            @{'Items' = [System.Int32[]]@(,$list4[0][1])},
-            @{'Items' = [System.Int32[]]@(,$list4[0][2])},
-            @{'Items' = [System.Int32[]]@(,$list4[0][3])}
-        )
-        $list5 = @(
-            @{'Items' = [System.Object[]]@(,$list5[0][0])},
-            @{'Items' = [System.Object[]]@(,$list5[0][1])},
-            @{'Items' = [System.Object[]]@(,$list5[0][2])},
-            @{'Items' = [System.Object[]]@(,$list5[0][3])},
-            @{'Items' = [System.Object[]]@(,$list5[0][4])}
-        )
-        $list6 = @(
-            @{'Items' = [System.String[]]@(,$list6[0][0])},
-            @{'Items' = [System.String[]]@(,$list6[0][1])},
-            @{'Items' = [System.String[]]@(,$list6[0][2])},
-            @{'Items' = [System.String[]]@(,$list6[0][3])},
-            @{'Items' = [System.String[]]@(,$list6[0][4])},
-            @{'Items' = [System.String[]]@(,$list6[0][5])}
-        )
+    function oracleType($list)
+    {
+        if ($list.Equals($list1) -or $list.Equals($list6)) {
+            return [System.String[]]
+        } elseif ($list.Equals($list3) -or $list.Equals($list4)) {
+            return [System.Double[]]
+        } else {
+            return [System.Object[]]
+        }
+    }
+
+    function oracleOutput($list)
+    {
+        foreach ($i in $list[0]) {
+            @{'Items' = @(,$i)}
+        }
     }
     
     foreach ($list in @($list1, $list2, $list3, $list4, $list5, $list6)) {
-        $expected = $oracle.Item($list)
-        $outputCount = $expected.Length
+        $expectedType = oracleType $list
+        $expectedOutput = @(oracleOutput $list)
+        $outputCount = $expectedOutput.Length
 
         $i = 0
         Group-ListItem -Zip $list | Assert-PipelineCount $outputCount | ForEach-Object {
-            $itemType = $expected[$i].Items.GetType()
-            $itemCount = $expected[$i].Items.Length
+            Assert-True ($_.Items -is $expectedType)
+            Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
 
-            Assert-True ($_.Items -is $itemType)
-            Assert-True ($_.Items.Length -eq $itemCount)
-
+            $itemCount = $_.Items.Length
             for ($j = 0; $j -lt $itemCount; $j++) {
                 if ($null -eq $_.Items[$j]) {
-                    Assert-True ($_.Items[$j] -eq $expected[$i].Items[$j])
+                    Assert-True ($_.Items[$j] -eq $expectedOutput[$i].Items[$j])
                 } else {
-                    Assert-True ($_.Items[$j].Equals($expected[$i].Items[$j]))
+                    Assert-True ($_.Items[$j].Equals($expectedOutput[$i].Items[$j]))
                 }
             }
 
@@ -1806,63 +1787,44 @@ if ($Silent) {
     $list1 = @(,[System.String[]]@('a'))
     $list2 = @(,(New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@($null, @()))))
     $list3 = @(,(New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(0.00, 2.72, 3.14))))
-    $list4 = @(,[System.Int32[]]@(100, 200, 300, 400))
+    $list4 = @(,[System.Double[]]@(100, 200, 300, 400))
     $list5 = @(,(New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@(@($null), @(), 'hi', $null, 5))))
     $list6 = @(,(New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('hello', 'world', 'how', 'are', 'you', 'today'))))
 
-    $oracle = @{
-        $list1 = @(
-            @{'Items' = [System.String[]]@(,$list1[0][0])}
-        )
-        $list2 = @(
-            @{'Items' = [System.Object[]]@(,$list2[0][0])},
-            @{'Items' = [System.Object[]]@(,$list2[0][1])}
-        )
-        $list3 = @(
-            @{'Items' = [System.Double[]]@(,$list3[0][0])},
-            @{'Items' = [System.Double[]]@(,$list3[0][1])},
-            @{'Items' = [System.Double[]]@(,$list3[0][2])}
-        )
-        $list4 = @(
-            @{'Items' = [System.Int32[]]@(,$list4[0][0])},
-            @{'Items' = [System.Int32[]]@(,$list4[0][1])},
-            @{'Items' = [System.Int32[]]@(,$list4[0][2])},
-            @{'Items' = [System.Int32[]]@(,$list4[0][3])}
-        )
-        $list5 = @(
-            @{'Items' = [System.Object[]]@(,$list5[0][0])},
-            @{'Items' = [System.Object[]]@(,$list5[0][1])},
-            @{'Items' = [System.Object[]]@(,$list5[0][2])},
-            @{'Items' = [System.Object[]]@(,$list5[0][3])},
-            @{'Items' = [System.Object[]]@(,$list5[0][4])}
-        )
-        $list6 = @(
-            @{'Items' = [System.String[]]@(,$list6[0][0])},
-            @{'Items' = [System.String[]]@(,$list6[0][1])},
-            @{'Items' = [System.String[]]@(,$list6[0][2])},
-            @{'Items' = [System.String[]]@(,$list6[0][3])},
-            @{'Items' = [System.String[]]@(,$list6[0][4])},
-            @{'Items' = [System.String[]]@(,$list6[0][5])}
-        )
+    function oracleType($list)
+    {
+        if ($list.Equals($list1) -or $list.Equals($list6)) {
+            return [System.String[]]
+        } elseif ($list.Equals($list3) -or $list.Equals($list4)) {
+            return [System.Double[]]
+        } else {
+            return [System.Object[]]
+        }
+    }
+
+    function oracleOutput($list)
+    {
+        foreach ($i in $list[0]) {
+            @{'Items' = @(,$i)}
+        }
     }
     
     foreach ($list in @($list1, $list2, $list3, $list4, $list5, $list6)) {
-        $expected = $oracle.Item($list)
-        $outputCount = $expected.Length
+        $expectedType = oracleType $list
+        $expectedOutput = @(oracleOutput $list)
+        $outputCount = $expectedOutput.Length
 
         $i = 0
         Group-ListItem -CartesianProduct $list | Assert-PipelineCount $outputCount | ForEach-Object {
-            $itemType = $expected[$i].Items.GetType()
-            $itemCount = $expected[$i].Items.Length
+            Assert-True ($_.Items -is $expectedType)
+            Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
 
-            Assert-True ($_.Items -is $itemType)
-            Assert-True ($_.Items.Length -eq $itemCount)
-
+            $itemCount = $_.Items.Length
             for ($j = 0; $j -lt $itemCount; $j++) {
                 if ($null -eq $_.Items[$j]) {
-                    Assert-True ($_.Items[$j] -eq $expected[$i].Items[$j])
+                    Assert-True ($_.Items[$j] -eq $expectedOutput[$i].Items[$j])
                 } else {
-                    Assert-True ($_.Items[$j].Equals($expected[$i].Items[$j]))
+                    Assert-True ($_.Items[$j].Equals($expectedOutput[$i].Items[$j]))
                 }
             }
 
