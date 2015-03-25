@@ -1703,25 +1703,137 @@ if ($Silent) {
 & {
     Write-Verbose -Message 'Test Group-ListItem -CartesianProduct with nulls' -Verbose:$headerVerbosity
 
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
+
+    $er1 = try {Group-ListItem -CartesianProduct $null -OutVariable out1 | Out-Null} catch {$_}
+    $er2 = try {Group-ListItem -CartesianProduct @($null) -OutVariable out2 | Out-Null} catch {$_}
+    $er3 = try {Group-ListItem -CartesianProduct (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList (,@(@(1,2,3), $null))) -OutVariable out3 | Out-Null} catch {$_}
+    $er4 = try {Group-ListItem -CartesianProduct (New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList (,@($null, @(4,5,6)))) -OutVariable out4 | Out-Null} catch {$_}
+
+    Assert-True ($out1.Count -eq 0)
+    Assert-True ($out2.Count -eq 0)
+    Assert-True ($out3.Count -eq 0)
+    Assert-True ($out4.Count -eq 0)
+
+    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
+
+    Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er2.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er4.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+
+    Assert-True $er1.Exception.ParameterName.Equals('CartesianProduct', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $er2.Exception.ParameterName.Equals('CartesianProduct', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $er3.Exception.ParameterName.Equals('CartesianProduct', [System.StringComparison]::OrdinalIgnoreCase)
+    Assert-True $er4.Exception.ParameterName.Equals('CartesianProduct', [System.StringComparison]::OrdinalIgnoreCase)
 }
 
 & {
     Write-Verbose -Message 'Test Group-ListItem -CartesianProduct with lists of length 0' -Verbose:$headerVerbosity
 
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
+    Group-ListItem -CartesianProduct @(,@()) | Assert-PipelineEmpty
+
+    Group-ListItem -CartesianProduct @(@(), (New-Object -TypeName 'System.Collections.Generic.List[System.String]')) | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct @(@(), @($null)) | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct @(@($null), @()) | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct @(@(1,2), (New-Object -TypeName 'System.Collections.ArrayList')) | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct @(@(), (New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@(1,2)))) | Assert-PipelineEmpty
+
+    Group-ListItem -CartesianProduct @(@(), @(), @()) | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct @(@(), @($null), @(1,2)) | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct @(@(1,2), @(), @($null)) | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct @(@($null), @(1,2), @()) | Assert-PipelineEmpty
+
+    Group-ListItem -CartesianProduct @(@(), @(), @(), @()) | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct @(@(), @($null), @(1,2), @('a','b','c')) | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct @(@($null), @(), @(1,2), @('a','b','c')) | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct @(@($null), @(1,2), @(), @('a','b','c')) | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct @(@($null), @(1,2), @('a','b','c'), @()) | Assert-PipelineEmpty
 }
 
 & {
     Write-Verbose -Message 'Test Group-ListItem -CartesianProduct with no lists' -Verbose:$headerVerbosity
 
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
+    Group-ListItem -CartesianProduct @() | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct (New-Object -TypeName 'System.Collections.ArrayList') | Assert-PipelineEmpty
+    Group-ListItem -CartesianProduct (New-Object -TypeName 'System.Collections.Generic.List[System.Byte[]]') | Assert-PipelineEmpty
 }
 
 & {
     Write-Verbose -Message 'Test Group-ListItem -CartesianProduct with 1 list' -Verbose:$headerVerbosity
 
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
+    $list1 = @(,[System.String[]]@('a'))
+    $list2 = @(,(New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@($null, @()))))
+    $list3 = @(,(New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(0.00, 2.72, 3.14))))
+    $list4 = @(,[System.Int32[]]@(100, 200, 300, 400))
+    $list5 = @(,(New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@(@($null), @(), 'hi', $null, 5))))
+    $list6 = @(,(New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('hello', 'world', 'how', 'are', 'you', 'today'))))
+
+    $oracle = @{
+        $list1 = @(
+            @{'Items' = [System.String[]]@(,$list1[0][0])}
+        )
+        $list2 = @(
+            @{'Items' = [System.Object[]]@(,$list2[0][0])},
+            @{'Items' = [System.Object[]]@(,$list2[0][1])}
+        )
+        $list3 = @(
+            @{'Items' = [System.Double[]]@(,$list3[0][0])},
+            @{'Items' = [System.Double[]]@(,$list3[0][1])},
+            @{'Items' = [System.Double[]]@(,$list3[0][2])}
+        )
+        $list4 = @(
+            @{'Items' = [System.Int32[]]@(,$list4[0][0])},
+            @{'Items' = [System.Int32[]]@(,$list4[0][1])},
+            @{'Items' = [System.Int32[]]@(,$list4[0][2])},
+            @{'Items' = [System.Int32[]]@(,$list4[0][3])}
+        )
+        $list5 = @(
+            @{'Items' = [System.Object[]]@(,$list5[0][0])},
+            @{'Items' = [System.Object[]]@(,$list5[0][1])},
+            @{'Items' = [System.Object[]]@(,$list5[0][2])},
+            @{'Items' = [System.Object[]]@(,$list5[0][3])},
+            @{'Items' = [System.Object[]]@(,$list5[0][4])}
+        )
+        $list6 = @(
+            @{'Items' = [System.String[]]@(,$list6[0][0])},
+            @{'Items' = [System.String[]]@(,$list6[0][1])},
+            @{'Items' = [System.String[]]@(,$list6[0][2])},
+            @{'Items' = [System.String[]]@(,$list6[0][3])},
+            @{'Items' = [System.String[]]@(,$list6[0][4])},
+            @{'Items' = [System.String[]]@(,$list6[0][5])}
+        )
+    }
+    
+    foreach ($list in @($list1, $list2, $list3, $list4, $list5, $list6)) {
+        $expected = $oracle.Item($list)
+        $outputCount = $expected.Length
+
+        $i = 0
+        Group-ListItem -CartesianProduct $list | Assert-PipelineCount $outputCount | ForEach-Object {
+            $itemType = $expected[$i].Items.GetType()
+            $itemCount = $expected[$i].Items.Length
+
+            Assert-True ($_.Items -is $itemType)
+            Assert-True ($_.Items.Length -eq $itemCount)
+
+            for ($j = 0; $j -lt $itemCount; $j++) {
+                if ($null -eq $_.Items[$j]) {
+                    Assert-True ($_.Items[$j] -eq $expected[$i].Items[$j])
+                } else {
+                    Assert-True ($_.Items[$j].Equals($expected[$i].Items[$j]))
+                }
+            }
+
+            $i++
+        }
+    }
 }
 
 & {
