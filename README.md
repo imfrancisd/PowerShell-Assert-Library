@@ -6,14 +6,25 @@ Well, at least that's the goal.
 # Getting Started
 
 #### Where do I begin?
-Explore the "src" folder, find the functions that you need, and include them in your scripts or use them directly in the shell.
+You can dot source the script
+```
+    . .\Release\Script\AssertLibrary.ps1
+```
+or you can import the module
+```
+    Import-Module .\Release\Module\AssertLibrary
+```
 
 The functions are fully documented with specifications and examples.
 
 Use PowerShell's Get-Help cmdlet to see the documentation for each function.
 
 #### What do I need?
-You need PowerShell version 2 or above.
+You need PowerShell version 2 or higher.
+
+Include 1 of the following in your scripts or module if you want to use these functions in your automated tests:
+    * "Release\Script\AssertLibrary.ps1" script file
+    * "Release\Module\AssertLibrary\" module directory.
 
 The functions were tested on PowerShell versions 2 and 4.
 
@@ -21,7 +32,7 @@ The functions were tested on PowerShell versions 2 and 4.
 There are three kinds of functions in this library:
 * Assert Functions
 * Collection Functions
-* Comparison Functions
+* Comparison Functions.
 
 The Assert Functions will throw an error if some condition is not met. For example, you can:
 * assert that the result of a comparison is true
@@ -47,3 +58,4 @@ In fact, the functions were designed so that they can be used in different Power
 Yes.
 
 You can even use these functions directly in the shell.
+
