@@ -23,8 +23,8 @@ Use PowerShell's Get-Help cmdlet to see the documentation for each function.
 You need PowerShell version 2 or higher.
 
 Include 1 of the following in your scripts or module if you want to use these functions in your automated tests:
-    * "Release\Script\AssertLibrary.ps1" script file
-    * "Release\Module\AssertLibrary\" module directory.
+* "Release\Script\AssertLibrary.ps1" script file
+* "Release\Module\AssertLibrary\" module directory.
 
 The functions were tested on PowerShell versions 2 and 4.
 
