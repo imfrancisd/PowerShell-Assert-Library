@@ -2399,29 +2399,82 @@ if ($Silent) {
 & {
     Write-Verbose -Message 'Test Group-ListItem -CoveringArray with no lists' -Verbose:$headerVerbosity
 
-    Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
+    $noarg = New-Object 'System.Object'
+
+    foreach ($strength in @($noarg, -1, 0, 1)) {
+        $gliArgs = @{
+            'Strength' = $strength
+        }
+        if ($noarg.Equals($strength)) {
+            $gliArgs.Remove('Strength')
+        }
+
+        Group-ListItem @gliArgs -CoveringArray @() | Assert-PipelineEmpty
+        Group-ListItem @gliArgs -CoveringArray (New-Object -TypeName 'System.Collections.ArrayList') | Assert-PipelineEmpty
+        Group-ListItem @gliArgs -CoveringArray (New-Object -TypeName 'System.Collections.Generic.List[System.Byte[]]') | Assert-PipelineEmpty
+    }
 }
 
 & {
     Write-Verbose -Message 'Test Group-ListItem -CoveringArray with 1 list' -Verbose:$headerVerbosity
 
+    #foreach list in ...
+        #foreach strength in ...
+            #covering array algorithm is deterministic
+            #if strength < 1
+                #no output
+            #else
+                #all values in list are found in at least one row in covering array
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
     Write-Verbose -Message 'Test Group-ListItem -CoveringArray with 2 lists' -Verbose:$headerVerbosity
 
+    #foreach list in ...
+        #foreach strength in ...
+            #covering array algorithm is deterministic
+            #if strength < 1
+                #no output
+            #else if strength = 1
+                #all values in both lists are found in at least one row in covering array
+            #else
+                #all combinations of values from both lists are found in at least one row in covering array
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
     Write-Verbose -Message 'Test Group-ListItem -CoveringArray with 3 lists' -Verbose:$headerVerbosity
 
+    #foreach list in ...
+        #foreach strength in ...
+            #covering array algorithm is deterministic
+            #if strength < 1
+                #no output
+            #else if strength = 1
+                #all values in three lists are found in at least one row in covering array
+            #else if strength = 2
+                #all combinations of values from any 2 lists are found in at least one row in covering array
+            #else
+                #all combinations of values from any 3 lists are found in at least one row in covering array
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
 
 & {
     Write-Verbose -Message 'Test Group-ListItem -CoveringArray with 4 lists' -Verbose:$headerVerbosity
 
+    #foreach list in ...
+        #foreach strength in ...
+            #covering array algorithm is deterministic
+            #if strength < 1
+                #no output
+            #else if strength = 1
+                #all values in three lists are found in at least one row in covering array
+            #else if strength = 2
+                #all combinations of values from any 2 lists are found in at least one row in covering array
+            #else if strength = 3
+                #all combinations of values from any 3 lists are found in at least one row in covering array
+            #else
+                #all combinations of values from any 4 lists are found in at least one row in covering array
     Write-Warning -Message 'Not implemented here.' -WarningAction 'Continue'
 }
