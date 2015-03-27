@@ -1478,6 +1478,7 @@ if ($Silent) {
 
         $i = 0
         Group-ListItem -Zip $list | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is $expectedType)
             Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
 
@@ -1552,6 +1553,7 @@ if ($Silent) {
 
         $i = 0
         Group-ListItem -Zip $list | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is $expectedType)
             Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
 
@@ -1642,6 +1644,7 @@ if ($Silent) {
 
         $i = 0
         Group-ListItem -Zip $list | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is $expectedType)
             Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
 
@@ -1822,6 +1825,7 @@ if ($Silent) {
 
         $i = 0
         Group-ListItem -Zip $list | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is $expectedType)
             Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
 
@@ -1939,6 +1943,7 @@ if ($Silent) {
 
         $i = 0
         Group-ListItem -CartesianProduct $list | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is $expectedType)
             Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
 
@@ -2014,6 +2019,7 @@ if ($Silent) {
 
         $i = 0
         Group-ListItem -CartesianProduct $list | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is $expectedType)
             Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
 
@@ -2107,6 +2113,7 @@ if ($Silent) {
 
         $i = 0
         Group-ListItem -CartesianProduct $list | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is $expectedType)
             Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
 
@@ -2292,6 +2299,7 @@ if ($Silent) {
 
         $i = 0
         Group-ListItem -CartesianProduct $list | Assert-PipelineCount $outputCount | ForEach-Object {
+            Assert-True ($_ -isnot [System.Collections.IEnumerable])
             Assert-True ($_.Items -is $expectedType)
             Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
 
@@ -2314,11 +2322,11 @@ if ($Silent) {
 
     $noarg = New-Object 'System.Object'
 
-    foreach ($size in @($noarg, -1, 0, 1, 2, 3)) {
+    foreach ($strength in @($noarg, -1, 0, 1, 2, 3)) {
         $gliArgs = @{
-            'Strength' = $size
+            'Strength' = $strength
         }
-        if ($noarg.Equals($size)) {
+        if ($noarg.Equals($strength)) {
             $gliArgs.Remove('Strength')
         }
 
@@ -2359,11 +2367,11 @@ if ($Silent) {
 
     $noarg = New-Object 'System.Object'
 
-    foreach ($size in @($noarg, -1, 0, 1, 2, 3, 4, 5)) {
+    foreach ($strength in @($noarg, -1, 0, 1, 2, 3, 4, 5)) {
         $gliArgs = @{
-            'Strength' = $size
+            'Strength' = $strength
         }
-        if ($noarg.Equals($size)) {
+        if ($noarg.Equals($strength)) {
             $gliArgs.Remove('Strength')
         }
 
