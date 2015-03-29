@@ -578,6 +578,8 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
                     'Items' = $items
                 }
             }
+
+            return
         }
         'Window' {
             $listLength = getListLength $Window
@@ -611,6 +613,8 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
                     'Items' = $items
                 }
             }
+
+            return
         }
         'Combine' {
             $listLength = getListLength $Combine
@@ -667,6 +671,8 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
                     }
                 }
             }
+
+            return
         }
         'Permute' {
             $listLength = getListLength $Permute
@@ -738,6 +744,8 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
                     }
                 }
             }
+
+            return
         }
         'CartesianProduct' {
             $listCount = getListLength $CartesianProduct
@@ -798,6 +806,8 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
                     $counter[$i - 1]++
                 }
             }
+
+            return
         }
         'Zip' {
             $listCount = getListLength $Zip
@@ -840,6 +850,8 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
                     'Items' = $items
                 }
             }
+
+            return
         }
         'CoveringArray' {
             $listCount = getListLength $CoveringArray
@@ -857,7 +869,7 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
 
             #A Covering array with the highest strength possible is the Cartesian product
             if ($Strength -ge $listCount) {
-                Group-ListItem -CartesianProduct $CoveringArray
+                & $PSCmdlet.MyInvocation.MyCommand.ScriptBlock -CartesianProduct $CoveringArray
                 return
             }
 
@@ -946,7 +958,7 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
                 for (; $counter[$i] -lt $listLengths[$i]; $counter[$i]++) {
                     $hasNewCombination = $false
 
-                    $combinations = @(Group-ListItem -Combine $counter -Size $Strength)
+                    $combinations = @(& $PSCmdlet.MyInvocation.MyCommand.ScriptBlock -Combine $counter -Size $Strength)
                     for ($j = $combinations.Length - 1; $j -ge 0; $j--) {
                         $s.Length = 0
                         [System.Void]$s.AppendFormat($f, $j)
@@ -986,6 +998,8 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
                     $counter[$i - 1]++
                 }
             }
+
+            return
         }
         default {
             $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
