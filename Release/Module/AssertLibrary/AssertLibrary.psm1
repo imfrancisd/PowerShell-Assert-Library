@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.0.0.3
+#Assert Library version 1.0.0.4
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -2086,7 +2086,7 @@ assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, d
         #*See the -Kind and -MatchKind parameters for more details.
         [Parameter(Mandatory=$false, ParameterSetName='IsDateTime')]
         [System.Management.Automation.SwitchParameter]
-        $IsDateTime,
+        $IsDateTime = $true,
 
         #Tests if the first value is equal to the second.
         #
@@ -2361,7 +2361,7 @@ assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, d
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsDateTime' {
-            return (isDateTime $Value)
+            return (isDateTime $Value) -xor (-not $IsDateTime)
         }
         'OpEquals' {
             $result = compareDateTime $Value $Equals
