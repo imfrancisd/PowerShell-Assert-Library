@@ -74,7 +74,7 @@ assert-true (guid? $a -ne $b -variant standard -version 1,3,4,5 -matchvariant -m
         #*See the -Variant and -Version parameters for more details.
         [Parameter(Mandatory=$false, ParameterSetName='IsGuid')]
         [System.Management.Automation.SwitchParameter]
-        $IsGuid,
+        $IsGuid = $true,
 
         #Tests if the first value is equal to the second.
         #
@@ -355,7 +355,7 @@ assert-true (guid? $a -ne $b -variant standard -version 1,3,4,5 -matchvariant -m
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsGuid' {
-            return (isGuid $Value)
+            return (isGuid $Value) -xor (-not $IsGuid)
         }
         'OpEquals' {
             $result = compareGuid $Value $Equals
