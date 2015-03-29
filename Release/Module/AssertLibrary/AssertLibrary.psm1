@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.0.0.5
+#Assert Library version 1.0.0.6
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -2912,7 +2912,7 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         #* See -Type parameter for more details.
         [Parameter(Mandatory=$false, ParameterSetName='OpIsNumber')]
         [System.Management.Automation.SwitchParameter]
-        $IsNumber,
+        $IsNumber = $true,
 
         #Tests if the first value is equal to the second.
         #
@@ -3121,7 +3121,7 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
 
     switch ($PSCmdlet.ParameterSetName) {
         'OpIsNumber' {
-            return (isNumber $Value)
+            return (isNumber $Value) -xor (-not $IsNumber)
         }
         'OpEquals' {
             if ((canCompareNumbers $Value $Equals)) {
