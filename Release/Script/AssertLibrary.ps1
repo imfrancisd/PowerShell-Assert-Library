@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.0.0.7
+#Assert Library version 1.0.0.8
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -3757,7 +3757,7 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
         #$true          value is of type System.String
         [Parameter(Mandatory=$false, ParameterSetName='IsText')]
         [System.Management.Automation.SwitchParameter]
-        $IsText,
+        $IsText = $true,
 
         #Tests if the first value matches the regular expression pattern in the second.
         #
@@ -4058,7 +4058,7 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsText' {
-            return ($Value -is [System.String])
+            return ($Value -is [System.String]) -xor (-not $IsText)
         }
         'OpMatch' {
             if (($Value -is [System.String]) -and ($Match -is [System.String])) {
