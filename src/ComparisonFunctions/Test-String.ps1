@@ -112,7 +112,7 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$false, ParameterSetName='IsString')]
         [System.Management.Automation.SwitchParameter]
-        $IsString,
+        $IsString = $true,
 
         #Tests if the first string contains the second.
         #
@@ -431,7 +431,7 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsString' {
-            return (isString $Value)
+            return (isString $Value) -xor (-not $IsString)
         }
         'OpContains' {
             if ((canCompareStrings $Value $Contains)) {

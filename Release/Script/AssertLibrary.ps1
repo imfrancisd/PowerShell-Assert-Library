@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.0.0.6
+#Assert Library version 1.0.0.7
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -3281,7 +3281,7 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$false, ParameterSetName='IsString')]
         [System.Management.Automation.SwitchParameter]
-        $IsString,
+        $IsString = $true,
 
         #Tests if the first string contains the second.
         #
@@ -3600,7 +3600,7 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsString' {
-            return (isString $Value)
+            return (isString $Value) -xor (-not $IsString)
         }
         'OpContains' {
             if ((canCompareStrings $Value $Contains)) {
