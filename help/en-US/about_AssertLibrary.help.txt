@@ -1,0 +1,70 @@
+TOPIC
+    about_AssertLibrary
+
+SHORT DESCRIPTION
+    A library of PowerShell functions that gives testers complete control over
+    the meaning of their assertions.
+
+LONG DESCRIPTION
+    A library of PowerShell functions that gives testers complete control over
+    the meaning of their assertions.
+
+    Kinds of functions
+    ------------------
+    There are three kinds of functions in this library:
+    * Assert Functions
+    * Collection Functions
+    * Comparison Functions.
+
+    Assert Functions
+    ----------------
+    The Assert Functions throw an error if some condition is not met.
+
+    For example, you can:
+    * assert that the result of a comparison is true
+    * assert that a function returns nothing
+    * assert that a function returns the correct number of objects.
+
+    Collection Functions
+    --------------------
+    The Collection Functions process collections.
+
+    For example, you can:
+    * pair up adjacent items in a list to assert that a list is sorted
+    * zip multiple lists together to test them for equality
+    * create the Cartesian product of multiple lists to generate test cases.
+
+    Comparison Functions
+    --------------------
+    The Comparison Functions compares objects at a high level.
+
+    For example, you can:
+    * compare strings as programmatic strings or linguistic texts
+    * compare the month, day, and year of two dates only if they are both UTC
+    * compare two numbers only if their types are Int32, Int64 or Double, but
+      their types don't have to match.
+
+    Using the functions
+    -------------------
+    You can use these functions for different types of tests:
+    * fully automated tests
+    * semi-automated tests
+    * exploratory tests.
+
+SEE ALSO
+    Assert-True
+    Assert-False
+    Assert-Null
+    Assert-NotNull
+    Assert-PipelineAny
+    Assert-PipelineCount
+    Assert-PipelineEmpty
+    Assert-PipelineSingle
+    Group-ListItem
+    Test-DateTime
+    Test-Guid
+    Test-Number
+    Test-String
+    Test-Text
+    Test-TimeSpan
+    Test-Version

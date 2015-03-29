@@ -42,7 +42,7 @@ Param(
     #The version number to attach to the built script and module.
     [Parameter(Mandatory=$false)]
     [System.Version]
-    $LibraryVersion = '1.0.0.8',
+    $LibraryVersion = '1.0.0.9',
 
     #The minimum PowerShell version required by this library.
     [Parameter(Mandatory=$false)]
@@ -147,4 +147,8 @@ PowerShellVersion = '$($PowerShellVersion.ToString(2))'
 
 }
 "@ | Out-File -FilePath (Join-Path -Path $outModuleDir -ChildPath 'AssertLibrary.psd1') -Encoding ascii -Verbose:$VerbosePreference
+
+    Get-ChildItem -LiteralPath (Join-Path -Path $basePath -ChildPath 'help') |
+        Where-Object {$_.PSIsContainer} |
+        Copy-Item -Destination $outModuleDir -Recurse -Verbose:$VerbosePreference
 }
