@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.0.0.1
+#Assert Library version 1.0.0.2
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -4510,7 +4510,7 @@ assert-true (version? $a -eq $b -property major, minor, build)
         #$true          value is a Version object
         [Parameter(Mandatory=$false, ParameterSetName='IsVersion')]
         [System.Management.Automation.SwitchParameter]
-        $IsVersion,
+        $IsVersion = $true,
 
         #Tests if the first value is equal to the second.
         #
@@ -4697,7 +4697,7 @@ assert-true (version? $a -eq $b -property major, minor, build)
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsVersion' {
-            return ($Value -is [System.Version])
+            return ($Value -is [System.Version]) -xor (-not $IsVersion)
         }
         'OpEquals' {
             $result = compareVersion $Value $Equals
