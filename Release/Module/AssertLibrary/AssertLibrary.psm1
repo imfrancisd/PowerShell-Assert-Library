@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.0.0.2
+#Assert Library version 1.0.0.3
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -4211,7 +4211,7 @@ assert-true (timespan? $a -eq $b -property days, hours, minutes)
         #$true          value is a TimeSpan
         [Parameter(Mandatory=$false, ParameterSetName='IsTimeSpan')]
         [System.Management.Automation.SwitchParameter]
-        $IsTimeSpan,
+        $IsTimeSpan = $true,
 
         #Tests if the first value is equal to the second.
         #
@@ -4399,7 +4399,7 @@ assert-true (timespan? $a -eq $b -property days, hours, minutes)
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsTimeSpan' {
-            return ($Value -is [System.TimeSpan])
+            return ($Value -is [System.TimeSpan]) -xor (-not $IsTimeSpan)
         }
         'OpEquals' {
             $result = compareTimeSpan $Value $Equals
