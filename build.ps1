@@ -22,7 +22,7 @@ Param(
     #Clean "Release\" and build "Release\Script\" and build "Release\Module\".
     [Parameter(Mandatory=$false, ParameterSetName='All')]
     [System.Management.Automation.SwitchParameter]
-    $All,
+    $All = $true,
 
     #Build "Release\Script\".
     [Parameter(Mandatory=$true, ParameterSetName='Script')]
@@ -58,97 +58,177 @@ $outDir = Join-Path -Path $basePath -ChildPath 'Release'
 $outScriptDir = Join-Path -Path $outDir -ChildPath 'Script'
 $outModuleDir = Join-Path -Path $outDir -ChildPath 'Module\AssertLibrary'
 
-$All =
-    $All -or
-    (($PSCmdlet.ParameterSetName -eq 'All') -and (-not $PSBoundParameters.ContainsKey('All')))
+$localizedHelpDir = Join-Path -Path $basePath -ChildPath 'help'
 
-if ($Clean) {
+$licenseFile = Join-Path -Path $basePath -ChildPath 'LICENSE.txt'
+
+$inputFiles = @(
+    'src\AssertFunctions\Assert-False.ps1',
+    'src\AssertFunctions\Assert-NotNull.ps1',
+    'src\AssertFunctions\Assert-Null.ps1',
+    'src\AssertFunctions\Assert-PipelineAny.ps1',
+    'src\AssertFunctions\Assert-PipelineCount.ps1',
+    'src\AssertFunctions\Assert-PipelineEmpty.ps1',
+    'src\AssertFunctions\Assert-PipelineSingle.ps1',
+    'src\AssertFunctions\Assert-True.ps1',
+    'src\CollectionFunctions\Group-ListItem.ps1',
+    'src\ComparisonFunctions\Test-DateTime.ps1',
+    'src\ComparisonFunctions\Test-Guid.ps1',
+    'src\ComparisonFunctions\Test-Number.ps1',
+    'src\ComparisonFunctions\Test-String.ps1',
+    'src\ComparisonFunctions\Test-Text.ps1',
+    'src\ComparisonFunctions\Test-TimeSpan.ps1',
+    'src\ComparisonFunctions\Test-Version.ps1'
+) | ForEach-Object -Process {Join-Path -Path $basePath -ChildPath $_}
+
+function main($target)
+{
+    switch ($target) {
+        'All' {
+            if ($All) {
+                cleanAll
+                buildScript
+                buildModule
+            }
+            return
+        }
+        'Clean' {
+            if ($Clean) {
+                cleanAll
+            }
+            return
+        }
+        'Script' {
+            if ($Script) {
+                cleanScript
+                buildScript
+            }
+            return
+        }
+        'Module' {
+            if ($Module) {
+                cleanModule
+                buildModule
+            }
+            return
+        }
+        default {
+            throw "Cannot build target unknown target: $target."
+        }
+    }
+}
+
+function cleanAll
+{
     if (Test-Path -LiteralPath $outDir) {
         Remove-Item -LiteralPath $outDir -Recurse -Verbose:$VerbosePreference
     }
 }
 
-if ($All -or $Script -or $Module) {
-    $inputFiles = @(
-        'LICENSE.txt',
-        'src\AssertFunctions\Assert-False.ps1',
-        'src\AssertFunctions\Assert-NotNull.ps1',
-        'src\AssertFunctions\Assert-Null.ps1',
-        'src\AssertFunctions\Assert-PipelineAny.ps1',
-        'src\AssertFunctions\Assert-PipelineCount.ps1',
-        'src\AssertFunctions\Assert-PipelineEmpty.ps1',
-        'src\AssertFunctions\Assert-PipelineSingle.ps1',
-        'src\AssertFunctions\Assert-True.ps1',
-        'src\CollectionFunctions\Group-ListItem.ps1',
-        'src\ComparisonFunctions\Test-DateTime.ps1',
-        'src\ComparisonFunctions\Test-Guid.ps1',
-        'src\ComparisonFunctions\Test-Number.ps1',
-        'src\ComparisonFunctions\Test-String.ps1',
-        'src\ComparisonFunctions\Test-Text.ps1',
-        'src\ComparisonFunctions\Test-TimeSpan.ps1',
-        'src\ComparisonFunctions\Test-Version.ps1'
-    ) | ForEach-Object -Process {Join-Path -Path $basePath -ChildPath $_}
-
-    $compiledLines = $inputFiles | ForEach-Object -Process {
-        $isLicense = $_.EndsWith('LICENSE.txt', [System.StringComparison]::OrdinalIgnoreCase)
-        if ($isLicense) {'<#'}
-        Get-Content -LiteralPath $_
-        if ($isLicense) {
-            '#>'
-            ''
-            "#Assert Library version $($LibraryVersion.ToString())"
-            '#'
-            '#PowerShell requirements'
-            "#requires -version $($PowerShellVersion.ToString(2))"
-        }
-        ''
-    }
-}
-
-if ($All -or $Script) {
+function cleanScript
+{
     if (Test-Path -LiteralPath $outScriptDir) {
         Remove-Item -LiteralPath $outScriptDir -Recurse -Verbose:$VerbosePreference
     }
-    New-Item -Path $outScriptDir -ItemType Directory -Force -Verbose:$VerbosePreference | Out-Null
-
-    $compiledLines | Out-File -FilePath (Join-Path -Path $outScriptDir -ChildPath 'AssertLibrary.ps1') -Encoding ascii -Verbose:$VerbosePreference
 }
 
-if ($All -or $Module) {
+function cleanModule
+{
     if (Test-Path -LiteralPath $outModuleDir) {
         Remove-Item -LiteralPath $outModuleDir -Recurse -Verbose:$VerbosePreference
     }
-    New-Item -Path $outModuleDir -ItemType Directory -Force -Verbose:$VerbosePreference | Out-Null
-
-    $compiledLines | Out-File -FilePath (Join-Path -Path $outModuleDir -ChildPath 'AssertLibrary.psm1') -Encoding ascii -Verbose:$VerbosePreference
-@"
-@{
-
-# Script module or binary module file associated with this manifest.
-ModuleToProcess = 'AssertLibrary.psm1'
-
-# Version number of this module.
-ModuleVersion = '$($LibraryVersion.ToString())'
-
-# ID used to uniquely identify this module
-GUID = '7ddd1746-0d17-43b2-b6e6-83ef649e01b7'
-
-# Author of this module
-Author = 'Francis de la Cerna'
-
-# Copyright statement for this module
-Copyright = 'Copyright (c) 2015 Francis de la Cerna, licensed under the MIT License (MIT).'
-
-# Description of the functionality provided by this module
-Description = 'A library of PowerShell functions that gives testers complete control over the meaning of their assertions.'
-
-# Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '$($PowerShellVersion.ToString(2))'
-
 }
-"@ | Out-File -FilePath (Join-Path -Path $outModuleDir -ChildPath 'AssertLibrary.psd1') -Encoding ascii -Verbose:$VerbosePreference
 
-    Get-ChildItem -LiteralPath (Join-Path -Path $basePath -ChildPath 'help') |
-        Where-Object {$_.PSIsContainer} |
-        Copy-Item -Destination $outModuleDir -Recurse -Verbose:$VerbosePreference
+function buildHeader
+{
+    '<#'
+    Get-Content -LiteralPath $licenseFile
+    '#>'
+    ''
+    "#Assert Library version $($LibraryVersion.ToString())"
+    '#'
+    '#PowerShell requirements'
+    "#requires -version $($PowerShellVersion.ToString(2))"
+    ''
 }
+
+function buildScript
+{
+    $ps1 = Join-Path -Path $outScriptDir -ChildPath 'AssertLibrary.ps1'
+    $null = New-Item -Path $outScriptDir -ItemType Directory -Force -Verbose:$VerbosePreference
+
+    $(& {
+        buildHeader
+        foreach ($item in $inputFiles) {
+            Get-Content -LiteralPath $item
+            ''
+        }
+    }) | Out-File -FilePath $ps1 -Encoding ascii -Verbose:$VerbosePreference
+}
+
+function buildModule
+{
+    $psm1 = Join-Path -Path $outModuleDir -ChildPath 'AssertLibrary.psm1'
+    $psd1 = Join-Path -Path $outModuleDir -ChildPath 'AssertLibrary.psd1'
+    $null = New-Item -Path $outModuleDir -ItemType Directory -Force -Verbose:$VerbosePreference
+
+    Copy-Item -LiteralPath $licenseFile -Destination $outModuleDir -Verbose:$VerbosePreference
+
+    $(& {
+        buildHeader
+        foreach ($item in $inputFiles) {
+            $e = @(Get-Content -LiteralPath $item).GetEnumerator()
+
+            #------- Uncomment lines below when external help files are ready -------
+
+            #while ($e.MoveNext()) {
+            #    if ($e.Current.Trim().EndsWith('#>', [System.StringComparison]::OrdinalIgnoreCase)) {
+            #        break
+            #    }
+            #}
+            #'#.ExternalHelp AssertLibrary.psm1-help.xml'
+
+            #------- Uncomment lines above when external help files are ready -------
+
+            while ($e.MoveNext()) {
+                $e.Current
+            }
+            ''
+        }
+    }) | Out-File -FilePath $psm1 -Encoding ascii -Verbose:$VerbosePreference
+
+    @(
+        "@{"
+        ""
+        "# Script module or binary module file associated with this manifest."
+        "ModuleToProcess = 'AssertLibrary.psm1'"
+        ""
+        "# Version number of this module."
+        "ModuleVersion = '$($LibraryVersion.ToString())'"
+        ""
+        "# ID used to uniquely identify this module"
+        "GUID = '7ddd1746-0d17-43b2-b6e6-83ef649e01b7'"
+        ""
+        "# Author of this module"
+        "Author = 'Francis de la Cerna'"
+        ""
+        "# Copyright statement for this module"
+        "Copyright = 'Copyright (c) 2015 Francis de la Cerna, licensed under the MIT License (MIT).'"
+        ""
+        "# Description of the functionality provided by this module"
+        "Description = 'A library of PowerShell functions that gives testers complete control over the meaning of their assertions.'"
+        ""
+        "# Minimum version of the Windows PowerShell engine required by this module"
+        "PowerShellVersion = '$($PowerShellVersion.ToString(2))'"
+        ""
+        "}"
+    ) | Out-File -FilePath $psd1 -Encoding ascii -Verbose:$VerbosePreference
+
+    foreach ($item in (Get-ChildItem -LiteralPath $localizedHelpDir)) {
+        if ($item.PSIsContainer) {
+            $item | Copy-Item -Destination $outModuleDir -Recurse -Verbose:$VerbosePreference
+        }
+    }
+}
+
+main $PSCmdlet.ParameterSetName
