@@ -1,5 +1,3 @@
-function Assert-PipelineCount
-{
 <#
 .Synopsis
 Assert the number of objects in the pipeline.
@@ -10,6 +8,26 @@ See the -Equals, -Minimum, and -Maximum parameters for more details.
 
 Note:
 This function will output all pipeline objects it receives until an error is thrown, or until there are no more objects left in the pipeline.
+.Parameter InputObject
+The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.
+.Parameter Equals
+This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to fail.
+.Parameter Minimum
+This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to pass.
+.Parameter Maximum
+This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to fail.
 .Example
 $nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount 10
 Throws an error if Get-Random -Count 10 does not return exactly ten objects.
@@ -56,37 +74,23 @@ Assert-PipelineEmpty
 Assert-PipelineAny
 Assert-PipelineSingle
 #>
+function Assert-PipelineCount
+{
     [CmdletBinding(DefaultParameterSetName='Equals')]
     Param(
-        #The object from the pipeline.
-        #
-        #Note:
-        #The argument for this parameter must come from the pipeline.
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [AllowNull()]
         [System.Object]
         $InputObject,
 
-        #This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
-        #
-        #Note:
-        #A negative number will always cause this assertion to fail.
         [Parameter(Mandatory=$true, ParameterSetName='Equals', Position=0)]
         [System.Int64]
         $Equals,
 
-        #This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
-        #
-        #Note:
-        #A negative number will always cause this assertion to pass.
         [Parameter(Mandatory=$true, ParameterSetName='Minimum')]
         [System.Int64]
         $Minimum,
 
-        #This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
-        #
-        #Note:
-        #A negative number will always cause this assertion to fail.
         [Parameter(Mandatory=$true, ParameterSetName='Maximum')]
         [System.Int64]
         $Maximum

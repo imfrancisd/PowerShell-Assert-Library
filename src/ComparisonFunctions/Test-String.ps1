@@ -1,5 +1,3 @@
-function Test-String
-{
 <#
 .Synopsis
 An alternative to PowerShell's comparison functions when testing strings in unit test scenarios.
@@ -42,6 +40,182 @@ For case-sensitive string comparisons, this function may give a different result
 
     #Int values of characters; returns $false
     [int][char]'A' -gt [int][char]'a'
+.Parameter Value
+The value to test.
+.Parameter IsString
+Tests if the value is a string.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         the value is not a string*
+$true          the value is a string*
+
+*See the -Normalization parameter for more details
+.Parameter Contains
+Tests if the first string contains the second.
+
+Note: The empty string is inside all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method IndexOf(String, StringComparison) < 0
+$true          String method IndexOf(String, StringComparison) >= 0
+
+*See the -Normalization parameter for more details
+.Parameter NotContains
+Tests if the string does not contain the second.
+
+Note: The empty string is inside all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method IndexOf(String, StringComparison) >= 0
+$true          String method IndexOf(String, StringComparison) < 0
+
+*See the -Normalization parameter for more details
+.Parameter StartsWith
+Tests if the first string starts with the second string.
+
+Note: The empty string starts all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method StartsWith(String, StringComparison) returns $false
+$true          String method StartsWith(String, StringComparison) returns $true
+
+*See the -Normalization parameter for more details
+.Parameter NotStartsWith
+Tests if the first string does not start with the second string.
+
+Note: The empty string starts all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method StartsWith(String, StringComparison) returns $true
+$true          String method StartsWith(String, StringComparison) returns $false
+
+*See the -Normalization parameter for more details
+.Parameter EndsWith
+Tests if the first string ends with the second string.
+
+Note: The empty string ends all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method EndsWith(String, StringComparison) returns $false
+$true          String method EndsWith(String, StringComparison) returns $true
+
+*See the -Normalization parameter for more details
+.Parameter NotEndsWith
+Tests if the first string does not end with the second string
+
+Note: The empty string ends all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method EndsWith(String, StringComparison) returns $true
+$true          String method EndsWith(String, StringComparison) returns $false
+
+*See the -Normalization parameter for more details
+.Parameter Equals
+Tests if the first value is equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Equals(String, String, StringComparison) returns $false
+$true          String.Equals(String, String, StringComparison) returns $true
+
+*See the -Normalization parameter for more details
+.Parameter NotEquals
+Tests if the first value is not equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Equals(String, String, StringComparison) returns $true
+$true          String.Equals(String, String, StringComparison) returns $false
+
+*See the -Normalization parameter for more details
+.Parameter LessThan
+Tests if the first value is less than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) >= 0
+$true          String.Compare(String, String, StringComparison) < 0
+
+*See the -Normalization parameter for more details
+.Parameter LessThanOrEqualTo
+Tests if the first value is less than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) > 0
+$true          String.Compare(String, String, StringComparison) <= 0
+
+*See the -Normalization parameter for more details
+.Parameter GreaterThan
+Tests if the first value is greater than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) <= 0
+$true          String.Compare(String, String, StringComparison) > 0
+
+*See the -Normalization parameter for more details
+.Parameter GreaterThanOrEqualTo
+Tests if the first value is greater than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) < 0
+$true          String.Compare(String, String, StringComparison) >= 0
+
+*See the -Normalization parameter for more details
+.Parameter CaseSensitive
+Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.
+.Parameter FormCompatible
+Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.
+.Parameter Normalization
+One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().
 .Example
 Test-String $a
 Tests if $a is a string.
@@ -92,139 +266,56 @@ assert (string? $a)
 assert (string? $a -contains $b)
 assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
 #>
+function Test-String
+{
     [CmdletBinding(DefaultParameterSetName='IsString')]
     Param(
-        #The value to test.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
-        #Tests if the value is a string.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          never
-        #$false         the value is not a string*
-        #$true          the value is a string*
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$false, ParameterSetName='IsString')]
         [System.Management.Automation.SwitchParameter]
         $IsString = $true,
 
-        #Tests if the first string contains the second.
-        #
-        #Note: The empty string is inside all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method IndexOf(String, StringComparison) < 0
-        #$true          String method IndexOf(String, StringComparison) >= 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpContains')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $Contains,
 
-        #Tests if the string does not contain the second.
-        #
-        #Note: The empty string is inside all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method IndexOf(String, StringComparison) >= 0
-        #$true          String method IndexOf(String, StringComparison) < 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpNotContains')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $NotContains,
 
-        #Tests if the first string starts with the second string.
-        #
-        #Note: The empty string starts all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method StartsWith(String, StringComparison) returns $false
-        #$true          String method StartsWith(String, StringComparison) returns $true
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpStartsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $StartsWith,
 
-        #Tests if the first string does not start with the second string.
-        #
-        #Note: The empty string starts all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method StartsWith(String, StringComparison) returns $true
-        #$true          String method StartsWith(String, StringComparison) returns $false
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpNotStartsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $NotStartsWith,
 
-        #Tests if the first string ends with the second string.
-        #
-        #Note: The empty string ends all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method EndsWith(String, StringComparison) returns $false
-        #$true          String method EndsWith(String, StringComparison) returns $true
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpEndsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $EndsWith,
 
-        #Tests if the first string does not end with the second string
-        #
-        #Note: The empty string ends all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method EndsWith(String, StringComparison) returns $true
-        #$true          String method EndsWith(String, StringComparison) returns $false
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEndsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $NotEndsWith,
 
-        #Tests if the first value is equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Equals(String, String, StringComparison) returns $false
-        #$true          String.Equals(String, String, StringComparison) returns $true
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -232,15 +323,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $Equals,
 
-        #Tests if the first value is not equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Equals(String, String, StringComparison) returns $true
-        #$true          String.Equals(String, String, StringComparison) returns $false
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -248,15 +330,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $NotEquals,
 
-        #Tests if the first value is less than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Compare(String, String, StringComparison) >= 0
-        #$true          String.Compare(String, String, StringComparison) < 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -264,15 +337,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $LessThan,
 
-        #Tests if the first value is less than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Compare(String, String, StringComparison) > 0
-        #$true          String.Compare(String, String, StringComparison) <= 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -280,15 +344,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $LessThanOrEqualTo,
 
-        #Tests if the first value is greater than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Compare(String, String, StringComparison) <= 0
-        #$true          String.Compare(String, String, StringComparison) > 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -296,15 +351,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $GreaterThan,
 
-        #Tests if the first value is greater than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Compare(String, String, StringComparison) < 0
-        #$true          String.Compare(String, String, StringComparison) >= 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -312,17 +358,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        #Makes the comparisons case sensitive.
-        #
-        #If this switch is set, the comparisons use
-        #
-        #    [System.StringComparison]::Ordinal
-        #
-        #otherwise, the comparisons use
-        #
-        #    [System.StringComparison]::OrdinalIgnoreCase
-        #
-        #as the default.
         [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotContains')]
         [Parameter(Mandatory=$false, ParameterSetName='OpEndsWith')]
@@ -338,9 +373,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Management.Automation.SwitchParameter]
         $CaseSensitive,
 
-        #Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
-        #
-        #See the -Normalization parameter for more details.
         [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotContains')]
         [Parameter(Mandatory=$false, ParameterSetName='OpStartsWith')]
@@ -356,21 +388,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Management.Automation.SwitchParameter]
         $FormCompatible,
 
-        #One or more Enums that can be used to define which form of strings are to be considered strings.
-        #
-        #Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
-        #
-        #The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
-        #
-        #You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
-        #
-        #Note:
-        #* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
-        #
-        #* This function does not normalize strings to a common form before performing the comparison.
-        #
-        #Reference:
-        #For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().
         [Parameter(Mandatory=$false)]
         [AllowNull()]
         [AllowEmptyCollection()]

@@ -1,5 +1,3 @@
-function Assert-PipelineAny
-{
 <#
 .Synopsis
 Assert that the pipeline contains one or more objects.
@@ -8,6 +6,11 @@ This function is useful for asserting that a function returns one or more object
 
 This function throws an error if any of the following conditions are met:
     *the pipeline contains less than one object
+.Parameter InputObject
+The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.
 .Example
 $letter = 'a', 'b', 'c' | Get-Random | Assert-PipelineAny
 Throws an error if Get-Random does not return any objects.
@@ -44,12 +47,10 @@ Assert-PipelineEmpty
 Assert-PipelineSingle
 Assert-PipelineCount
 #>
+function Assert-PipelineAny
+{
     [CmdletBinding()]
     Param(
-        #The object from the pipeline.
-        #
-        #Note:
-        #The argument for this parameter must come from the pipeline.
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [AllowNull()]
         [System.Object]

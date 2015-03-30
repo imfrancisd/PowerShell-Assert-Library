@@ -1,5 +1,3 @@
-function Assert-False
-{
 <#
 .Synopsis
 Assert that a value is the Boolean value $false.
@@ -8,6 +6,8 @@ This function throws an error if any of the following conditions are met:
     *the value being asserted is $null
     *the value being asserted is not of type System.Boolean
     *the value being asserted is not $false
+.Parameter Value
+The value to assert.
 .Example
 Assert-False ($a -eq $b)
 Throws an error if the expression ($a -eq $b) does not evaluate to $false.
@@ -45,9 +45,10 @@ Assert-PipelineAny
 Assert-PipelineSingle
 Assert-PipelineCount
 #>
+function Assert-False
+{
     [CmdletBinding()]
     Param(
-        #The value to assert.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [System.Object]

@@ -1,11 +1,11 @@
-function Assert-NotNull
-{
 <#
 .Synopsis
 Assert that a value is not $null.
 .Description
 This function throws an error if any of the following conditions are met:
     *the value being asserted is $null
+.Parameter Value
+The value to assert.
 .Example
 Assert-NotNull $a
 Throws an error if $a evaluates to $null.
@@ -42,9 +42,10 @@ Assert-PipelineAny
 Assert-PipelineSingle
 Assert-PipelineCount
 #>
+function Assert-NotNull
+{
     [CmdletBinding()]
     Param(
-        #The value to assert.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [System.Object]

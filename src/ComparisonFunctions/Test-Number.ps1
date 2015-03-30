@@ -1,5 +1,3 @@
-function Test-Number
-{
 <#
 .Synopsis
 An alternative to PowerShell's comparison operators when testing numbers in unit test scenarios.
@@ -17,6 +15,127 @@ A return value of $null indicates an invalid test. See each parameter for specif
 
 Note:
 NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by this function.
+.Parameter Value
+The value to test.
+.Parameter IsNumber
+Tests if the value is a number.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         value is not a number*
+$true          value is a number*
+
+* See -Type parameter for more details.
+.Parameter Equals
+Tests if the first value is equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -eq operator returns $false
+$true          PowerShell's -eq operator returns $true
+
+* See -Type parameter for more details.
+.Parameter NotEquals
+Tests if the first value is not equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -ne operator returns $false
+$true          PowerShell's -ne operator returns $true
+
+* See -Type parameter for more details.
+.Parameter LessThan
+Tests if the first value is less than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -lt operator returns $false
+$true          PowerShell's -lt operator returns $true
+
+* See -Type parameter for more details.
+.Parameter LessThanOrEqualTo
+Tests if the first value is less than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -le operator returns $false
+$true          PowerShell's -le operator returns $true
+
+* See -Type parameter for more details.
+.Parameter GreaterThan
+Tests if the first value is greater than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -gt operator returns $false
+$true          PowerShell's -gt operator returns $true
+
+* See -Type parameter for more details.
+.Parameter GreaterThanOrEqualTo
+Tests if the first value is greater than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -ge operator returns $false
+$true          PowerShell's -ge operator returns $true
+
+* See -Type parameter for more details.
+.Parameter MatchType
+Causes the comparison of two numbers to return $null if they do not have the same type.
+.Parameter Type
+One or more strings that can be used to define which numeric types are to be considered numeric types.
+
+These types are considered to be numeric types:
+   System.Byte, System.SByte,
+   System.Int16, System.Int32, System.Int64,
+   System.UInt16, System.UInt32, System.UInt64,
+   System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
+
+You can use this parameter to specify which of the types above are to be considered numeric types.
+
+Each type can be specified by its type name or by its full type name.
+
+Note:
+NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-numbers.
+
+For example:
+    $a = [uint32]0
+    $b = [double]10.0
+
+    #$a (uint32) is not considered a number
+    #
+    Test-Number $a -lt $b -Type Double
+    Test-Number $a -lt $b -Type Double, Decimal
+    Test-Number $a -lt $b -Type Double, Decimal, Int32
+    Test-Number $a -lt $b -Type Double, Decimal, System.Int32
+
+    #$b (double) is not considered a number
+    #
+    Test-Number $a -lt $b -Type UInt32
+    Test-Number $a -lt $b -Type UInt32, Byte
+    Test-Number $a -lt $b -Type UInt32, Byte, Int64
+    Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
+
+    #$a and $b are considered numbers
+    #
+    Test-Number $a -lt $b
+    Test-Number $a -lt $b -Type UInt32, Double
+    Test-Number $a -lt $b -Type Double, UInt32
+    Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32
 .Example
 Test-Number $n
 Tests if $n is a number.
@@ -68,38 +187,20 @@ assert (number? $x -lt $y -MatchType)
 assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double)
 assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
 #>
+function Test-Number
+{
     [CmdletBinding(DefaultParameterSetName='OpIsNumber')]
     Param(
-        #The value to test.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
-        #Tests if the value is a number.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          never
-        #$false         value is not a number*
-        #$true          value is a number*
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$false, ParameterSetName='OpIsNumber')]
         [System.Management.Automation.SwitchParameter]
         $IsNumber = $true,
 
-        #Tests if the first value is equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -eq operator returns $false
-        #$true          PowerShell's -eq operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -107,16 +208,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $Equals,
 
-        #Tests if the first value is not equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -ne operator returns $false
-        #$true          PowerShell's -ne operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -124,16 +215,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $NotEquals,
 
-        #Tests if the first value is less than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -lt operator returns $false
-        #$true          PowerShell's -lt operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -141,16 +222,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $LessThan,
         
-        #Tests if the first value is less than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -le operator returns $false
-        #$true          PowerShell's -le operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -158,16 +229,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $LessThanOrEqualTo,
 
-        #Tests if the first value is greater than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -gt operator returns $false
-        #$true          PowerShell's -gt operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -175,16 +236,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $GreaterThan,
 
-        #Tests if the first value is greater than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -ge operator returns $false
-        #$true          PowerShell's -ge operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -192,7 +243,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        #Causes the comparison of two numbers to return $null if they do not have the same type.
         [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
@@ -202,46 +252,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Management.Automation.SwitchParameter]
         $MatchType,
 
-        #One or more strings that can be used to define which numeric types are to be considered numeric types.
-        #
-        #These types are considered to be numeric types:
-        #   System.Byte, System.SByte,
-        #   System.Int16, System.Int32, System.Int64,
-        #   System.UInt16, System.UInt32, System.UInt64,
-        #   System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
-        #
-        #You can use this parameter to specify which of the types above are to be considered numeric types.
-        #
-        #Each type can be specified by its type name or by its full type name.
-        #
-        #Note:
-        #NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
-        #Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-numbers.
-        #
-        #For example:
-        #    $a = [uint32]0
-        #    $b = [double]10.0
-        #
-        #    #$a (uint32) is not considered a number
-        #    #
-        #    Test-Number $a -lt $b -Type Double
-        #    Test-Number $a -lt $b -Type Double, Decimal
-        #    Test-Number $a -lt $b -Type Double, Decimal, Int32
-        #    Test-Number $a -lt $b -Type Double, Decimal, System.Int32
-        #
-        #    #$b (double) is not considered a number
-        #    #
-        #    Test-Number $a -lt $b -Type UInt32
-        #    Test-Number $a -lt $b -Type UInt32, Byte
-        #    Test-Number $a -lt $b -Type UInt32, Byte, Int64
-        #    Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
-        #
-        #    #$a and $b are considered numbers
-        #    #
-        #    Test-Number $a -lt $b
-        #    Test-Number $a -lt $b -Type UInt32, Double
-        #    Test-Number $a -lt $b -Type Double, UInt32
-        #    Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32
         [Parameter(Mandatory=$false)]
         [AllowNull()]
         [AllowEmptyCollection()]

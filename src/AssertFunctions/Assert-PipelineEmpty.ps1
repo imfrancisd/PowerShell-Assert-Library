@@ -1,5 +1,3 @@
-function Assert-PipelineEmpty
-{
 <#
 .Synopsis
 Assert that the pipeline does not contain any objects.
@@ -8,6 +6,11 @@ This function is useful for asserting that a function does not output any object
 
 This function throws an error if any of the following conditions are met:
     *the pipeline contains an object
+.Parameter InputObject
+The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.
 .Example
 Get-ChildItem 'aFileThatDoesNotExist*' | Assert-PipelineEmpty
 Throws an error if Get-ChildItem 'aFileThatDoesNotExist*' returns an object.
@@ -44,12 +47,10 @@ Assert-PipelineAny
 Assert-PipelineSingle
 Assert-PipelineCount
 #>
+function Assert-PipelineEmpty
+{
     [CmdletBinding()]
     Param(
-        #The object from the pipeline.
-        #
-        #Note:
-        #The argument for this parameter must come from the pipeline.
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [AllowNull()]
         [System.Object]

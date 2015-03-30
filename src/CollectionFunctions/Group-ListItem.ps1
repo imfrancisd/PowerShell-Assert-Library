@@ -1,5 +1,3 @@
-function Group-ListItem
-{
 <#
 .Synopsis
 Generates groups of items (such as combinations, permutations, and Cartesian products) from lists that make common testing tasks easy and simple.
@@ -31,6 +29,166 @@ Here is an example of testing multiple scripts using different PowerShell config
 
     powershell -version $ver $aps -noprofile -noninteractive -executionpolicy $exp -file $file
   }
+.Parameter Pair
+Groups adjacent items inside a list.
+Each group has two items.
+
+Note:
+This function does not return any groups if:
+    *the length of the list is less than 2
+.Parameter Window
+Groups adjacent items inside a list.
+The number of items in each group is specified with the -Size parameter.
+If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
+
+Note:
+This function does not return any groups if:
+    *the value of the -Size parameter is less than 0
+    *the value of the -Size parameter is greater than the length of the list
+
+This function will return 1 group with 0 items if:
+    *the value of the -Size parameter is 0
+.Parameter Combine
+Groups items inside a list into combinations.
+The number of items in each group is specified with the -Size parameter.
+If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
+
+Note:
+This function does not return any groups if:
+    *the value of the -Size parameter is less than 0
+    *the value of the -Size parameter is greater than the length of the list
+
+This function will return 1 group with 0 items if:
+    *the value of the -Size parameter is 0
+.Parameter Permute
+Groups items inside a list into permutations.
+The number of items in each group is specified with the -Size parameter.
+If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
+
+Note:
+This function does not return any groups if:
+    *the value of the -Size parameter is less than 0
+    *the value of the -Size parameter is greater than the length of the list
+
+This function will return 1 group with 0 items if:
+    *the value of the -Size parameter is 0
+.Parameter Size
+The number of items per group for combinations, permutations, and windows.
+.Parameter CoveringArray
+Groups items from 0 or more lists into a filtered output of cartesian product for t-way testing.
+Each group has the same number of items as the number of lists specified.
+
+See the -Strength parameter for more details.
+
+Note:
+This function does not return any groups if:
+    *no lists are specified
+    *any of the specified lists are empty
+    *the value of the -Strength parameter is negative
+    *the value of the -Strength parameter is 0 (this may change)
+
+This function will return the cartesian product if:
+    *the -Strength parameter is not specified
+    *the value of the -Strength parameter is greater than or equal to the number of lists
+
+The lists do not need to have the same number of items.
+
+
+Implementation Notes:
+    *does not always create the smallest covering array possible
+    *repeatable covering array output (no randomization)
+    *streaming covering array output (no unnecessary waiting)
+
+
+=======================================================================
+See nist.gov for more details about covering arrays:
+    Practical Combinatorial Testing
+    by D. Richard Kuhn, Raghu N. Kacker, and Yu Lei
+    http://csrc.nist.gov/groups/SNS/acts/documents/SP800-142-101006.pdf
+
+    NIST Covering Array Tables - What is a covering array?
+    http://math.nist.gov/coveringarrays/coveringarray.html
+=======================================================================
+.Parameter Strength
+The strength of the covering array.
+
+A covering array of strength n is a filtered form of Cartesian product where all n-tuple of values from any n lists appears in at least 1 row of the output.
+
+Example:
+
+    $aList = @('a1','a2')
+    $bList = @('b1','b2')
+    $cList = @('c1','c2')
+    $dList = @('d1','d2','d3')
+
+    group-listItem -coveringArray $aList, $bList, $cList, $dList -strength 2
+
+Outputs the covering array:
+
+    Items
+    -----
+    {a1, b1, c1, d1}
+    {a1, b1, c1, d2}
+    {a1, b1, c1, d3}
+    {a1, b1, c2, d1}
+    {a1, b1, c2, d2}
+    {a1, b1, c2, d3}
+    {a1, b2, c1, d1}
+    {a1, b2, c1, d2}
+    {a1, b2, c1, d3}
+    {a1, b2, c2, d1}
+    {a2, b1, c1, d1}
+    {a2, b1, c1, d2}
+    {a2, b1, c1, d3}
+    {a2, b1, c2, d1}
+    {a2, b2, c1, d1}
+
+The covering array above has a strength of 2 because if you take any 2 lists from the input, all the ways that the values from those 2 lists can be grouped appears in one or more rows in the output.
+    $aList, $bList: (a1, b1) (a1, b2) (a2, b1) (a2, b2)
+    $aList, $cList: (a1, c1) (a1, c2) (a2, c1) (a2, c2)
+    $aList, $dList: (a1, d1) (a1, d2) (a1, d3) (a2, d1) (a2, d2) (a2, d3)
+    $bList, $cList: (b1, c1) (b1, c2) (b2, c1) (b2, c2)
+    $bList, $dList: (b1, d1) (b1, d2) (b1, d3) (b2, d1) (b2, d2) (b2, d3)
+    $cList, $dList: (c1, d1) (c1, d2) (c1, d3) (c2, d1) (c2, d2) (c2, d3)
+
+The covering array above DOES NOT have a strength of 3 because if you take any 3 lists from the input, the output DOES NOT contain all the ways that the values from those 3 lists can be grouped.
+    $aList, $bList, $cList: (a2, b2, c2) missing
+    $aList, $bList, $dList: (a2, b2, d2) (a2, b2, d3) missing
+    $aList, $cList, $dList: (a2, c2, d2) (a2, c2, d3) missing
+    $bList, $cList, $dList: (b2, c2, d2) (b2, c2, d3) missing
+
+In general, covering arrays with a high strength have more rows than covering arrays with a low strength, and the Cartesian product is a covering array with the highest strength possible.
+
+
+=======================================================================
+See nist.gov for more details about covering arrays:
+    Practical Combinatorial Testing
+    by D. Richard Kuhn, Raghu N. Kacker, and Yu Lei
+    http://csrc.nist.gov/groups/SNS/acts/documents/SP800-142-101006.pdf
+
+    NIST Covering Array Tables - What is a covering array?
+    http://math.nist.gov/coveringarrays/coveringarray.html
+=======================================================================
+.Parameter CartesianProduct
+Groups items from 0 or more lists into cartesian products.
+Each group has the same number of items as the number of lists specified.
+
+Note:
+This function does not return any groups if:
+    *no lists are specified
+    *any of the specified lists are empty
+
+The lists do not need to have the same number of items.
+.Parameter Zip
+Groups items from 0 or more lists that have the same index.
+Each group has the same number of items as the number of lists specified.
+
+Note:
+This function does not return any groups if:
+    *no lists are specified
+    *any of the specified lists are empty
+
+If the lists do not have the same number of items, the number of groups in the output is equal to the number of items in the list with the fewest items.
 .Example
 group-listItem -pair @(10, 20, 30, 40, 50)
 
@@ -299,202 +457,52 @@ If you want the output to be a list of lists, then I suggest you create wrapper 
 
 Note that using nested lists in the PowerShell pipeline will cause subtle bugs, so these wrapper functions should never be used in a pipeline and their implementations should never use the pipeline.
 #>
+function Group-ListItem
+{
     [CmdletBinding()]
     Param(
-        #Groups adjacent items inside a list.
-        #Each group has two items.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *the length of the list is less than 2
-
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Pair')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Pair,
 
-        #Groups adjacent items inside a list.
-        #The number of items in each group is specified with the -Size parameter.
-        #If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *the value of the -Size parameter is less than 0
-        #    *the value of the -Size parameter is greater than the length of the list
-        #
-        #This function will return 1 group with 0 items if:
-        #    *the value of the -Size parameter is 0
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Window')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Window,
 
-        #Groups items inside a list into combinations.
-        #The number of items in each group is specified with the -Size parameter.
-        #If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *the value of the -Size parameter is less than 0
-        #    *the value of the -Size parameter is greater than the length of the list
-        #
-        #This function will return 1 group with 0 items if:
-        #    *the value of the -Size parameter is 0
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Combine')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Combine,
 
-        #Groups items inside a list into permutations.
-        #The number of items in each group is specified with the -Size parameter.
-        #If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *the value of the -Size parameter is less than 0
-        #    *the value of the -Size parameter is greater than the length of the list
-        #
-        #This function will return 1 group with 0 items if:
-        #    *the value of the -Size parameter is 0
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Permute')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Permute,
 
-        #The number of items per group for combinations, permutations, and windows.
         [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='Combine')]
         [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='Permute')]
         [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='Window')]
         [System.Int32]
         $Size,
 
-        #Groups items from 0 or more lists into a filtered output of cartesian product for t-way testing.
-        #Each group has the same number of items as the number of lists specified.
-        #
-        #See the -Strength parameter for more details.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *no lists are specified
-        #    *any of the specified lists are empty
-        #    *the value of the -Strength parameter is negative
-        #    *the value of the -Strength parameter is 0 (this may change)
-        #
-        #This function will return the cartesian product if:
-        #    *the -Strength parameter is not specified
-        #    *the value of the -Strength parameter is greater than or equal to the number of lists
-        #
-        #The lists do not need to have the same number of items.
-        #
-        #
-        #Implementation Notes:
-        #    *does not always create the smallest covering array possible
-        #    *repeatable covering array output (no randomization)
-        #    *streaming covering array output (no unnecessary waiting)
-        #
-        #
-        #=======================================================================
-        #See nist.gov for more details about covering arrays:
-        #    Practical Combinatorial Testing
-        #    by D. Richard Kuhn, Raghu N. Kacker, and Yu Lei
-        #    http://csrc.nist.gov/groups/SNS/acts/documents/SP800-142-101006.pdf
-        #
-        #    NIST Covering Array Tables - What is a covering array?
-        #    http://math.nist.gov/coveringarrays/coveringarray.html
-        #=======================================================================
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='CoveringArray')]
         [AllowEmptyCollection()]
         [ValidateNotNull()]
         [System.Collections.IList[]]
         $CoveringArray,
 
-        #The strength of the covering array.
-        #
-        #A covering array of strength n is a filtered form of Cartesian product where all n-tuple of values from any n lists appears in at least 1 row of the output.
-        #
-        #Example:
-        #
-        #    $aList = @('a1','a2')
-        #    $bList = @('b1','b2')
-        #    $cList = @('c1','c2')
-        #    $dList = @('d1','d2','d3')
-        #
-        #    group-listItem -coveringArray $aList, $bList, $cList, $dList -strength 2
-        #
-        #Outputs the covering array:
-        #
-        #    Items
-        #    -----
-        #    {a1, b1, c1, d1}
-        #    {a1, b1, c1, d2}
-        #    {a1, b1, c1, d3}
-        #    {a1, b1, c2, d1}
-        #    {a1, b1, c2, d2}
-        #    {a1, b1, c2, d3}
-        #    {a1, b2, c1, d1}
-        #    {a1, b2, c1, d2}
-        #    {a1, b2, c1, d3}
-        #    {a1, b2, c2, d1}
-        #    {a2, b1, c1, d1}
-        #    {a2, b1, c1, d2}
-        #    {a2, b1, c1, d3}
-        #    {a2, b1, c2, d1}
-        #    {a2, b2, c1, d1}
-        #
-        #The covering array above has a strength of 2 because if you take any 2 lists from the input, all the ways that the values from those 2 lists can be grouped appears in one or more rows in the output.
-        #    $aList, $bList: (a1, b1) (a1, b2) (a2, b1) (a2, b2)
-        #    $aList, $cList: (a1, c1) (a1, c2) (a2, c1) (a2, c2)
-        #    $aList, $dList: (a1, d1) (a1, d2) (a1, d3) (a2, d1) (a2, d2) (a2, d3)
-        #    $bList, $cList: (b1, c1) (b1, c2) (b2, c1) (b2, c2)
-        #    $bList, $dList: (b1, d1) (b1, d2) (b1, d3) (b2, d1) (b2, d2) (b2, d3)
-        #    $cList, $dList: (c1, d1) (c1, d2) (c1, d3) (c2, d1) (c2, d2) (c2, d3)
-        #
-        #The covering array above DOES NOT have a strength of 3 because if you take any 3 lists from the input, the output DOES NOT contain all the ways that the values from those 3 lists can be grouped.
-        #    $aList, $bList, $cList: (a2, b2, c2) missing
-        #    $aList, $bList, $dList: (a2, b2, d2) (a2, b2, d3) missing
-        #    $aList, $cList, $dList: (a2, c2, d2) (a2, c2, d3) missing
-        #    $bList, $cList, $dList: (b2, c2, d2) (b2, c2, d3) missing
-        #
-        #In general, covering arrays with a high strength have more rows than covering arrays with a low strength, and the Cartesian product is a covering array with the highest strength possible.
-        #
-        #
-        #=======================================================================
-        #See nist.gov for more details about covering arrays:
-        #    Practical Combinatorial Testing
-        #    by D. Richard Kuhn, Raghu N. Kacker, and Yu Lei
-        #    http://csrc.nist.gov/groups/SNS/acts/documents/SP800-142-101006.pdf
-        #
-        #    NIST Covering Array Tables - What is a covering array?
-        #    http://math.nist.gov/coveringarrays/coveringarray.html
-        #=======================================================================
         [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='CoveringArray')]
         [System.Int32]
         $Strength,
 
-        #Groups items from 0 or more lists into cartesian products.
-        #Each group has the same number of items as the number of lists specified.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *no lists are specified
-        #    *any of the specified lists are empty
-        #
-        #The lists do not need to have the same number of items.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='CartesianProduct')]
         [AllowEmptyCollection()]
         [ValidateNotNull()]
         [System.Collections.IList[]]
         $CartesianProduct,
 
-        #Groups items from 0 or more lists that have the same index.
-        #Each group has the same number of items as the number of lists specified.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *no lists are specified
-        #    *any of the specified lists are empty
-        #
-        #If the lists do not have the same number of items, the number of groups in the output is equal to the number of items in the list with the fewest items.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Zip')]
         [AllowEmptyCollection()]
         [ValidateNotNull()]

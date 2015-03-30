@@ -23,13 +23,11 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.0.0.10
+#Assert Library version 1.0.0.11
 #
 #PowerShell requirements
 #requires -version 2.0
 
-function Assert-False
-{
 <#
 .Synopsis
 Assert that a value is the Boolean value $false.
@@ -38,6 +36,8 @@ This function throws an error if any of the following conditions are met:
     *the value being asserted is $null
     *the value being asserted is not of type System.Boolean
     *the value being asserted is not $false
+.Parameter Value
+The value to assert.
 .Example
 Assert-False ($a -eq $b)
 Throws an error if the expression ($a -eq $b) does not evaluate to $false.
@@ -75,9 +75,10 @@ Assert-PipelineAny
 Assert-PipelineSingle
 Assert-PipelineCount
 #>
+function Assert-False
+{
     [CmdletBinding()]
     Param(
-        #The value to assert.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [System.Object]
@@ -124,14 +125,14 @@ Assert-PipelineCount
     }
 }
 
-function Assert-NotNull
-{
 <#
 .Synopsis
 Assert that a value is not $null.
 .Description
 This function throws an error if any of the following conditions are met:
     *the value being asserted is $null
+.Parameter Value
+The value to assert.
 .Example
 Assert-NotNull $a
 Throws an error if $a evaluates to $null.
@@ -168,9 +169,10 @@ Assert-PipelineAny
 Assert-PipelineSingle
 Assert-PipelineCount
 #>
+function Assert-NotNull
+{
     [CmdletBinding()]
     Param(
-        #The value to assert.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [System.Object]
@@ -217,14 +219,14 @@ Assert-PipelineCount
     }
 }
 
-function Assert-Null
-{
 <#
 .Synopsis
 Assert that a value is $null.
 .Description
 This function throws an error if any of the following conditions are met:
     *the value being asserted is not $null
+.Parameter Value
+The value to assert.
 .Example
 Assert-Null $a
 Throws an error if $a does not evaluate to $null.
@@ -261,9 +263,10 @@ Assert-PipelineAny
 Assert-PipelineSingle
 Assert-PipelineCount
 #>
+function Assert-Null
+{
     [CmdletBinding()]
     Param(
-        #The value to assert.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [System.Object]
@@ -310,8 +313,6 @@ Assert-PipelineCount
     }
 }
 
-function Assert-PipelineAny
-{
 <#
 .Synopsis
 Assert that the pipeline contains one or more objects.
@@ -320,6 +321,11 @@ This function is useful for asserting that a function returns one or more object
 
 This function throws an error if any of the following conditions are met:
     *the pipeline contains less than one object
+.Parameter InputObject
+The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.
 .Example
 $letter = 'a', 'b', 'c' | Get-Random | Assert-PipelineAny
 Throws an error if Get-Random does not return any objects.
@@ -356,12 +362,10 @@ Assert-PipelineEmpty
 Assert-PipelineSingle
 Assert-PipelineCount
 #>
+function Assert-PipelineAny
+{
     [CmdletBinding()]
     Param(
-        #The object from the pipeline.
-        #
-        #Note:
-        #The argument for this parameter must come from the pipeline.
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [AllowNull()]
         [System.Object]
@@ -433,8 +437,6 @@ Assert-PipelineCount
     }
 }
 
-function Assert-PipelineCount
-{
 <#
 .Synopsis
 Assert the number of objects in the pipeline.
@@ -445,6 +447,26 @@ See the -Equals, -Minimum, and -Maximum parameters for more details.
 
 Note:
 This function will output all pipeline objects it receives until an error is thrown, or until there are no more objects left in the pipeline.
+.Parameter InputObject
+The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.
+.Parameter Equals
+This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to fail.
+.Parameter Minimum
+This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to pass.
+.Parameter Maximum
+This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to fail.
 .Example
 $nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount 10
 Throws an error if Get-Random -Count 10 does not return exactly ten objects.
@@ -491,37 +513,23 @@ Assert-PipelineEmpty
 Assert-PipelineAny
 Assert-PipelineSingle
 #>
+function Assert-PipelineCount
+{
     [CmdletBinding(DefaultParameterSetName='Equals')]
     Param(
-        #The object from the pipeline.
-        #
-        #Note:
-        #The argument for this parameter must come from the pipeline.
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [AllowNull()]
         [System.Object]
         $InputObject,
 
-        #This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
-        #
-        #Note:
-        #A negative number will always cause this assertion to fail.
         [Parameter(Mandatory=$true, ParameterSetName='Equals', Position=0)]
         [System.Int64]
         $Equals,
 
-        #This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
-        #
-        #Note:
-        #A negative number will always cause this assertion to pass.
         [Parameter(Mandatory=$true, ParameterSetName='Minimum')]
         [System.Int64]
         $Minimum,
 
-        #This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
-        #
-        #Note:
-        #A negative number will always cause this assertion to fail.
         [Parameter(Mandatory=$true, ParameterSetName='Maximum')]
         [System.Int64]
         $Maximum
@@ -629,8 +637,6 @@ Assert-PipelineSingle
     }
 }
 
-function Assert-PipelineEmpty
-{
 <#
 .Synopsis
 Assert that the pipeline does not contain any objects.
@@ -639,6 +645,11 @@ This function is useful for asserting that a function does not output any object
 
 This function throws an error if any of the following conditions are met:
     *the pipeline contains an object
+.Parameter InputObject
+The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.
 .Example
 Get-ChildItem 'aFileThatDoesNotExist*' | Assert-PipelineEmpty
 Throws an error if Get-ChildItem 'aFileThatDoesNotExist*' returns an object.
@@ -675,12 +686,10 @@ Assert-PipelineAny
 Assert-PipelineSingle
 Assert-PipelineCount
 #>
+function Assert-PipelineEmpty
+{
     [CmdletBinding()]
     Param(
-        #The object from the pipeline.
-        #
-        #Note:
-        #The argument for this parameter must come from the pipeline.
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [AllowNull()]
         [System.Object]
@@ -753,8 +762,6 @@ Assert-PipelineCount
     }
 }
 
-function Assert-PipelineSingle
-{
 <#
 .Synopsis
 Assert that the pipeline only contains one object.
@@ -764,6 +771,11 @@ This function is useful for asserting that a function only returns a single obje
 This function throws an error if any of the following conditions are met:
     *the pipeline contains less than one object
     *the pipeline contains more than one object
+.Parameter InputObject
+The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.
 .Example
 $letter = 'a', 'b', 'c' | Get-Random | Assert-PipelineSingle
 Throws an error if Get-Random does not return a single object.
@@ -800,12 +812,10 @@ Assert-PipelineEmpty
 Assert-PipelineAny
 Assert-PipelineCount
 #>
+function Assert-PipelineSingle
+{
     [CmdletBinding()]
     Param(
-        #The object from the pipeline.
-        #
-        #Note:
-        #The argument for this parameter must come from the pipeline.
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [AllowNull()]
         [System.Object]
@@ -901,8 +911,6 @@ Assert-PipelineCount
     }
 }
 
-function Assert-True
-{
 <#
 .Synopsis
 Assert that a value is the Boolean value $true.
@@ -911,6 +919,8 @@ This function throws an error if any of the following conditions are met:
     *the value being asserted is $null
     *the value being asserted is not of type System.Boolean
     *the value being asserted is not $true
+.Parameter Value
+The value to assert.
 .Example
 Assert-True ($a -eq $b)
 Throws an error if the expression ($a -eq $b) does not evaluate to $true.
@@ -948,9 +958,10 @@ Assert-PipelineAny
 Assert-PipelineSingle
 Assert-PipelineCount
 #>
+function Assert-True
+{
     [CmdletBinding()]
     Param(
-        #The value to assert.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [System.Object]
@@ -997,8 +1008,6 @@ Assert-PipelineCount
     }
 }
 
-function Group-ListItem
-{
 <#
 .Synopsis
 Generates groups of items (such as combinations, permutations, and Cartesian products) from lists that make common testing tasks easy and simple.
@@ -1030,6 +1039,166 @@ Here is an example of testing multiple scripts using different PowerShell config
 
     powershell -version $ver $aps -noprofile -noninteractive -executionpolicy $exp -file $file
   }
+.Parameter Pair
+Groups adjacent items inside a list.
+Each group has two items.
+
+Note:
+This function does not return any groups if:
+    *the length of the list is less than 2
+.Parameter Window
+Groups adjacent items inside a list.
+The number of items in each group is specified with the -Size parameter.
+If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
+
+Note:
+This function does not return any groups if:
+    *the value of the -Size parameter is less than 0
+    *the value of the -Size parameter is greater than the length of the list
+
+This function will return 1 group with 0 items if:
+    *the value of the -Size parameter is 0
+.Parameter Combine
+Groups items inside a list into combinations.
+The number of items in each group is specified with the -Size parameter.
+If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
+
+Note:
+This function does not return any groups if:
+    *the value of the -Size parameter is less than 0
+    *the value of the -Size parameter is greater than the length of the list
+
+This function will return 1 group with 0 items if:
+    *the value of the -Size parameter is 0
+.Parameter Permute
+Groups items inside a list into permutations.
+The number of items in each group is specified with the -Size parameter.
+If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
+
+Note:
+This function does not return any groups if:
+    *the value of the -Size parameter is less than 0
+    *the value of the -Size parameter is greater than the length of the list
+
+This function will return 1 group with 0 items if:
+    *the value of the -Size parameter is 0
+.Parameter Size
+The number of items per group for combinations, permutations, and windows.
+.Parameter CoveringArray
+Groups items from 0 or more lists into a filtered output of cartesian product for t-way testing.
+Each group has the same number of items as the number of lists specified.
+
+See the -Strength parameter for more details.
+
+Note:
+This function does not return any groups if:
+    *no lists are specified
+    *any of the specified lists are empty
+    *the value of the -Strength parameter is negative
+    *the value of the -Strength parameter is 0 (this may change)
+
+This function will return the cartesian product if:
+    *the -Strength parameter is not specified
+    *the value of the -Strength parameter is greater than or equal to the number of lists
+
+The lists do not need to have the same number of items.
+
+
+Implementation Notes:
+    *does not always create the smallest covering array possible
+    *repeatable covering array output (no randomization)
+    *streaming covering array output (no unnecessary waiting)
+
+
+=======================================================================
+See nist.gov for more details about covering arrays:
+    Practical Combinatorial Testing
+    by D. Richard Kuhn, Raghu N. Kacker, and Yu Lei
+    http://csrc.nist.gov/groups/SNS/acts/documents/SP800-142-101006.pdf
+
+    NIST Covering Array Tables - What is a covering array?
+    http://math.nist.gov/coveringarrays/coveringarray.html
+=======================================================================
+.Parameter Strength
+The strength of the covering array.
+
+A covering array of strength n is a filtered form of Cartesian product where all n-tuple of values from any n lists appears in at least 1 row of the output.
+
+Example:
+
+    $aList = @('a1','a2')
+    $bList = @('b1','b2')
+    $cList = @('c1','c2')
+    $dList = @('d1','d2','d3')
+
+    group-listItem -coveringArray $aList, $bList, $cList, $dList -strength 2
+
+Outputs the covering array:
+
+    Items
+    -----
+    {a1, b1, c1, d1}
+    {a1, b1, c1, d2}
+    {a1, b1, c1, d3}
+    {a1, b1, c2, d1}
+    {a1, b1, c2, d2}
+    {a1, b1, c2, d3}
+    {a1, b2, c1, d1}
+    {a1, b2, c1, d2}
+    {a1, b2, c1, d3}
+    {a1, b2, c2, d1}
+    {a2, b1, c1, d1}
+    {a2, b1, c1, d2}
+    {a2, b1, c1, d3}
+    {a2, b1, c2, d1}
+    {a2, b2, c1, d1}
+
+The covering array above has a strength of 2 because if you take any 2 lists from the input, all the ways that the values from those 2 lists can be grouped appears in one or more rows in the output.
+    $aList, $bList: (a1, b1) (a1, b2) (a2, b1) (a2, b2)
+    $aList, $cList: (a1, c1) (a1, c2) (a2, c1) (a2, c2)
+    $aList, $dList: (a1, d1) (a1, d2) (a1, d3) (a2, d1) (a2, d2) (a2, d3)
+    $bList, $cList: (b1, c1) (b1, c2) (b2, c1) (b2, c2)
+    $bList, $dList: (b1, d1) (b1, d2) (b1, d3) (b2, d1) (b2, d2) (b2, d3)
+    $cList, $dList: (c1, d1) (c1, d2) (c1, d3) (c2, d1) (c2, d2) (c2, d3)
+
+The covering array above DOES NOT have a strength of 3 because if you take any 3 lists from the input, the output DOES NOT contain all the ways that the values from those 3 lists can be grouped.
+    $aList, $bList, $cList: (a2, b2, c2) missing
+    $aList, $bList, $dList: (a2, b2, d2) (a2, b2, d3) missing
+    $aList, $cList, $dList: (a2, c2, d2) (a2, c2, d3) missing
+    $bList, $cList, $dList: (b2, c2, d2) (b2, c2, d3) missing
+
+In general, covering arrays with a high strength have more rows than covering arrays with a low strength, and the Cartesian product is a covering array with the highest strength possible.
+
+
+=======================================================================
+See nist.gov for more details about covering arrays:
+    Practical Combinatorial Testing
+    by D. Richard Kuhn, Raghu N. Kacker, and Yu Lei
+    http://csrc.nist.gov/groups/SNS/acts/documents/SP800-142-101006.pdf
+
+    NIST Covering Array Tables - What is a covering array?
+    http://math.nist.gov/coveringarrays/coveringarray.html
+=======================================================================
+.Parameter CartesianProduct
+Groups items from 0 or more lists into cartesian products.
+Each group has the same number of items as the number of lists specified.
+
+Note:
+This function does not return any groups if:
+    *no lists are specified
+    *any of the specified lists are empty
+
+The lists do not need to have the same number of items.
+.Parameter Zip
+Groups items from 0 or more lists that have the same index.
+Each group has the same number of items as the number of lists specified.
+
+Note:
+This function does not return any groups if:
+    *no lists are specified
+    *any of the specified lists are empty
+
+If the lists do not have the same number of items, the number of groups in the output is equal to the number of items in the list with the fewest items.
 .Example
 group-listItem -pair @(10, 20, 30, 40, 50)
 
@@ -1298,202 +1467,52 @@ If you want the output to be a list of lists, then I suggest you create wrapper 
 
 Note that using nested lists in the PowerShell pipeline will cause subtle bugs, so these wrapper functions should never be used in a pipeline and their implementations should never use the pipeline.
 #>
+function Group-ListItem
+{
     [CmdletBinding()]
     Param(
-        #Groups adjacent items inside a list.
-        #Each group has two items.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *the length of the list is less than 2
-
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Pair')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Pair,
 
-        #Groups adjacent items inside a list.
-        #The number of items in each group is specified with the -Size parameter.
-        #If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *the value of the -Size parameter is less than 0
-        #    *the value of the -Size parameter is greater than the length of the list
-        #
-        #This function will return 1 group with 0 items if:
-        #    *the value of the -Size parameter is 0
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Window')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Window,
 
-        #Groups items inside a list into combinations.
-        #The number of items in each group is specified with the -Size parameter.
-        #If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *the value of the -Size parameter is less than 0
-        #    *the value of the -Size parameter is greater than the length of the list
-        #
-        #This function will return 1 group with 0 items if:
-        #    *the value of the -Size parameter is 0
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Combine')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Combine,
 
-        #Groups items inside a list into permutations.
-        #The number of items in each group is specified with the -Size parameter.
-        #If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *the value of the -Size parameter is less than 0
-        #    *the value of the -Size parameter is greater than the length of the list
-        #
-        #This function will return 1 group with 0 items if:
-        #    *the value of the -Size parameter is 0
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Permute')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Permute,
 
-        #The number of items per group for combinations, permutations, and windows.
         [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='Combine')]
         [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='Permute')]
         [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='Window')]
         [System.Int32]
         $Size,
 
-        #Groups items from 0 or more lists into a filtered output of cartesian product for t-way testing.
-        #Each group has the same number of items as the number of lists specified.
-        #
-        #See the -Strength parameter for more details.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *no lists are specified
-        #    *any of the specified lists are empty
-        #    *the value of the -Strength parameter is negative
-        #    *the value of the -Strength parameter is 0 (this may change)
-        #
-        #This function will return the cartesian product if:
-        #    *the -Strength parameter is not specified
-        #    *the value of the -Strength parameter is greater than or equal to the number of lists
-        #
-        #The lists do not need to have the same number of items.
-        #
-        #
-        #Implementation Notes:
-        #    *does not always create the smallest covering array possible
-        #    *repeatable covering array output (no randomization)
-        #    *streaming covering array output (no unnecessary waiting)
-        #
-        #
-        #=======================================================================
-        #See nist.gov for more details about covering arrays:
-        #    Practical Combinatorial Testing
-        #    by D. Richard Kuhn, Raghu N. Kacker, and Yu Lei
-        #    http://csrc.nist.gov/groups/SNS/acts/documents/SP800-142-101006.pdf
-        #
-        #    NIST Covering Array Tables - What is a covering array?
-        #    http://math.nist.gov/coveringarrays/coveringarray.html
-        #=======================================================================
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='CoveringArray')]
         [AllowEmptyCollection()]
         [ValidateNotNull()]
         [System.Collections.IList[]]
         $CoveringArray,
 
-        #The strength of the covering array.
-        #
-        #A covering array of strength n is a filtered form of Cartesian product where all n-tuple of values from any n lists appears in at least 1 row of the output.
-        #
-        #Example:
-        #
-        #    $aList = @('a1','a2')
-        #    $bList = @('b1','b2')
-        #    $cList = @('c1','c2')
-        #    $dList = @('d1','d2','d3')
-        #
-        #    group-listItem -coveringArray $aList, $bList, $cList, $dList -strength 2
-        #
-        #Outputs the covering array:
-        #
-        #    Items
-        #    -----
-        #    {a1, b1, c1, d1}
-        #    {a1, b1, c1, d2}
-        #    {a1, b1, c1, d3}
-        #    {a1, b1, c2, d1}
-        #    {a1, b1, c2, d2}
-        #    {a1, b1, c2, d3}
-        #    {a1, b2, c1, d1}
-        #    {a1, b2, c1, d2}
-        #    {a1, b2, c1, d3}
-        #    {a1, b2, c2, d1}
-        #    {a2, b1, c1, d1}
-        #    {a2, b1, c1, d2}
-        #    {a2, b1, c1, d3}
-        #    {a2, b1, c2, d1}
-        #    {a2, b2, c1, d1}
-        #
-        #The covering array above has a strength of 2 because if you take any 2 lists from the input, all the ways that the values from those 2 lists can be grouped appears in one or more rows in the output.
-        #    $aList, $bList: (a1, b1) (a1, b2) (a2, b1) (a2, b2)
-        #    $aList, $cList: (a1, c1) (a1, c2) (a2, c1) (a2, c2)
-        #    $aList, $dList: (a1, d1) (a1, d2) (a1, d3) (a2, d1) (a2, d2) (a2, d3)
-        #    $bList, $cList: (b1, c1) (b1, c2) (b2, c1) (b2, c2)
-        #    $bList, $dList: (b1, d1) (b1, d2) (b1, d3) (b2, d1) (b2, d2) (b2, d3)
-        #    $cList, $dList: (c1, d1) (c1, d2) (c1, d3) (c2, d1) (c2, d2) (c2, d3)
-        #
-        #The covering array above DOES NOT have a strength of 3 because if you take any 3 lists from the input, the output DOES NOT contain all the ways that the values from those 3 lists can be grouped.
-        #    $aList, $bList, $cList: (a2, b2, c2) missing
-        #    $aList, $bList, $dList: (a2, b2, d2) (a2, b2, d3) missing
-        #    $aList, $cList, $dList: (a2, c2, d2) (a2, c2, d3) missing
-        #    $bList, $cList, $dList: (b2, c2, d2) (b2, c2, d3) missing
-        #
-        #In general, covering arrays with a high strength have more rows than covering arrays with a low strength, and the Cartesian product is a covering array with the highest strength possible.
-        #
-        #
-        #=======================================================================
-        #See nist.gov for more details about covering arrays:
-        #    Practical Combinatorial Testing
-        #    by D. Richard Kuhn, Raghu N. Kacker, and Yu Lei
-        #    http://csrc.nist.gov/groups/SNS/acts/documents/SP800-142-101006.pdf
-        #
-        #    NIST Covering Array Tables - What is a covering array?
-        #    http://math.nist.gov/coveringarrays/coveringarray.html
-        #=======================================================================
         [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='CoveringArray')]
         [System.Int32]
         $Strength,
 
-        #Groups items from 0 or more lists into cartesian products.
-        #Each group has the same number of items as the number of lists specified.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *no lists are specified
-        #    *any of the specified lists are empty
-        #
-        #The lists do not need to have the same number of items.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='CartesianProduct')]
         [AllowEmptyCollection()]
         [ValidateNotNull()]
         [System.Collections.IList[]]
         $CartesianProduct,
 
-        #Groups items from 0 or more lists that have the same index.
-        #Each group has the same number of items as the number of lists specified.
-        #
-        #Note:
-        #This function does not return any groups if:
-        #    *no lists are specified
-        #    *any of the specified lists are empty
-        #
-        #If the lists do not have the same number of items, the number of groups in the output is equal to the number of items in the list with the fewest items.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Zip')]
         [AllowEmptyCollection()]
         [ValidateNotNull()]
@@ -2012,8 +2031,6 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
     }
 }
 
-function Test-DateTime
-{
 <#
 .Synopsis
 An alternative to PowerShell's comparison operators when testing DateTime objects in unit test scenarios.
@@ -2042,6 +2059,171 @@ This function does NOT normalize dates and times to a common time zone before pe
 This function does NOT take time zone information into consideration when performing comparisons.
 
 See the -Kind and -MatchKind parameters for more details.
+.Parameter Value
+The value to test.
+.Parameter IsDateTime
+Tests if the value is a DateTime value.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         value is not a DateTime*
+$true          value is a DateTime*
+
+*See the -Kind and -MatchKind parameters for more details.
+.Parameter Equals
+Tests if the first value is equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a DateTime*
+$false         System.DateTime.Compare(DateTime, DateTime) != 0
+$true          System.DateTime.Compare(DateTime, DateTime) == 0
+
+*See the -Kind and -MatchKind parameters for more details.
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter NotEquals
+Tests if the first value is not equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a DateTime*
+$false         System.DateTime.Compare(DateTime, DateTime) == 0
+$true          System.DateTime.Compare(DateTime, DateTime) != 0
+
+*See the -Kind and -MatchKind parameters for more details.
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter LessThan
+Tests if the first value is less than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a DateTime*
+$false         System.DateTime.Compare(DateTime, DateTime) >= 0
+$true          System.DateTime.Compare(DateTime, DateTime) < 0
+
+*See the -Kind and -MatchKind parameters for more details.
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter LessThanOrEqualTo
+Tests if the first value is less than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a DateTime*
+$false         System.DateTime.Compare(DateTime, DateTime) > 0
+$true          System.DateTime.Compare(DateTime, DateTime) <= 0
+
+*See the -Kind and -MatchKind parameters for more details.
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter GreaterThan
+Tests if the first value is greater than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a DateTime*
+$false         System.DateTime.Compare(DateTime, DateTime) <= 0
+$true          System.DateTime.Compare(DateTime, DateTime) > 0
+
+*See the -Kind and -MatchKind parameters for more details.
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter GreaterThanOrEqualTo
+Tests if the first value is greater than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a DateTime*
+$false         System.DateTime.Compare(DateTime, DateTime) < 0
+$true          System.DateTime.Compare(DateTime, DateTime) >= 0
+
+*See the -Kind and -MatchKind parameters for more details.
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter MatchKind
+Causes the comparison of two DateTimes to return $null if they do not have the same kind.
+
+*See the -Kind parameter for more details.
+.Parameter Kind
+One or more Enums that can be used to define which kind of DateTime objects are to be considered DateTime objects.
+
+The Kind property of a DateTime object states whether the DateTime object is a Local time, a UTC time, or an Unspecified time.
+
+Note:
+DateTime objects are not normalized to a common Kind before performing comparisons.
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-DateTime objects.
+
+PowerShell Note:
+Get-Date returns DateTime objects in Local time.
+
+For example:
+    $local = new-object 'datetime' 2014, 1, 1, 0, 0, 0, ([datetimekind]::local)
+    $utc   = new-object 'datetime' 2014, 1, 1, 0, 0, 0, ([datetimekind]::utc)
+
+    #$local  is not considered as a DateTime object
+    #
+    test-datetime $local -eq $utc -Kind utc
+    test-datetime $local -eq $utc -Kind utc, unspecified
+
+    #$utc is not considered as a DateTime object
+    #
+    test-datetime $local -eq $utc -Kind local
+    test-datetime $local -eq $utc -Kind local, unspecified
+
+    #$utc and $local are considered as DateTime objects
+    #
+    test-datetime $local -eq $utc -Kind local, utc
+    test-datetime $local -eq $utc -Kind utc, local
+    test-datetime $local -eq $utc -Kind utc, local, unspecified
+    test-datetime $local -eq $utc
+
+WARNING
+=======
+If you run the example above, you will notice that $local and $utc are considered EQUAL.
+
+This means that the comparisons DO NOT take time zone information into consideration.
+
+Part of the reason for this is that DateTime objects can be used to represent many concepts of time:
+    *a time (12:00 AM)
+    *a date (January 1)
+    *a date and time (January 1 12:00 AM)
+    *a specific date and time (2015 January 1 12:00 AM)
+    *a specific date and time at a specific place (2015 January 1 12:00 AM UTC)
+    *a weekly date and time (Weekdays 9:00 AM)
+    *a monthly date (every first Friday)
+    *a yearly date (every January 1st)
+    *and so on...
+
+So, the meaning of the comparisons in the example above is not,
+    "Does $local and $utc represent the same moment in time?",
+but
+    "Does $local and $utc both represent the same date and time values?".
+.Parameter Property
+Compares the DateTime values using the specified properties.
+
+Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
+
+Allowed Properties
+------------------
+Year, Month, Day, Hour, Minute, Second, Millisecond, Date, TimeOfDay, DayOfWeek, DayOfYear, Ticks, Kind
+
+No wildcards are allowed.
+No calculated properties are allowed.
+Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
+
+Comparison method
+-----------------
+1. Start with the first property specified.
+2. Compare the properties from the two DateTime objects using the CompareTo method.
+3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
+4. Done.
+
+Note:
+Synthetic properties are not used in comparisons.
+For example, when the year property is compared, an expression like $a.psbase.year is used instead of $a.year.
 .Example
 Test-DateTime $a
 Returns $true if $a is a DateTime object.
@@ -2080,39 +2262,20 @@ assert (datetime? $a -kind utc)
 assert (datetime? $a -eq $b -matchkind -kind utc, local)
 assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, day)
 #>
+function Test-DateTime
+{
     [CmdletBinding(DefaultParameterSetName='IsDateTime')]
     Param(
-        #The value to test.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
-        #Tests if the value is a DateTime value.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          never
-        #$false         value is not a DateTime*
-        #$true          value is a DateTime*
-        #
-        #*See the -Kind and -MatchKind parameters for more details.
         [Parameter(Mandatory=$false, ParameterSetName='IsDateTime')]
         [System.Management.Automation.SwitchParameter]
         $IsDateTime = $true,
 
-        #Tests if the first value is equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a DateTime*
-        #$false         System.DateTime.Compare(DateTime, DateTime) != 0
-        #$true          System.DateTime.Compare(DateTime, DateTime) == 0
-        #
-        #*See the -Kind and -MatchKind parameters for more details.
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -2120,17 +2283,6 @@ assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, d
         [System.Object]
         $Equals,
 
-        #Tests if the first value is not equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a DateTime*
-        #$false         System.DateTime.Compare(DateTime, DateTime) == 0
-        #$true          System.DateTime.Compare(DateTime, DateTime) != 0
-        #
-        #*See the -Kind and -MatchKind parameters for more details.
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -2138,77 +2290,30 @@ assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, d
         [System.Object]
         $NotEquals,
 
-        #Tests if the first value is less than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a DateTime*
-        #$false         System.DateTime.Compare(DateTime, DateTime) >= 0
-        #$true          System.DateTime.Compare(DateTime, DateTime) < 0
-        #
-        #*See the -Kind and -MatchKind parameters for more details.
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [Alias('lt')]
         $LessThan,
 
-        #Tests if the first value is less than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a DateTime*
-        #$false         System.DateTime.Compare(DateTime, DateTime) > 0
-        #$true          System.DateTime.Compare(DateTime, DateTime) <= 0
-        #
-        #*See the -Kind and -MatchKind parameters for more details.
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [Alias('le')]
         $LessThanOrEqualTo,
 
-        #Tests if the first value is greater than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a DateTime*
-        #$false         System.DateTime.Compare(DateTime, DateTime) <= 0
-        #$true          System.DateTime.Compare(DateTime, DateTime) > 0
-        #
-        #*See the -Kind and -MatchKind parameters for more details.
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [Alias('gt')]
         $GreaterThan,
 
-        #Tests if the first value is greater than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a DateTime*
-        #$false         System.DateTime.Compare(DateTime, DateTime) < 0
-        #$true          System.DateTime.Compare(DateTime, DateTime) >= 0
-        #
-        #*See the -Kind and -MatchKind parameters for more details.
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [Alias('ge')]
         $GreaterThanOrEqualTo,
 
-        #Causes the comparison of two DateTimes to return $null if they do not have the same kind.
-        #
-        #*See the -Kind parameter for more details.
         [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
@@ -2218,87 +2323,12 @@ assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, d
         [System.Management.Automation.SwitchParameter]
         $MatchKind,
 
-        #One or more Enums that can be used to define which kind of DateTime objects are to be considered DateTime objects.
-        #
-        #The Kind property of a DateTime object states whether the DateTime object is a Local time, a UTC time, or an Unspecified time.
-        #
-        #Note:
-        #DateTime objects are not normalized to a common Kind before performing comparisons.
-        #Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-DateTime objects.
-        #
-        #PowerShell Note:
-        #Get-Date returns DateTime objects in Local time.
-        #
-        #For example:
-        #    $local = new-object 'datetime' 2014, 1, 1, 0, 0, 0, ([datetimekind]::local)
-        #    $utc   = new-object 'datetime' 2014, 1, 1, 0, 0, 0, ([datetimekind]::utc)
-        #
-        #    #$local  is not considered as a DateTime object
-        #    #
-        #    test-datetime $local -eq $utc -Kind utc
-        #    test-datetime $local -eq $utc -Kind utc, unspecified
-        #
-        #    #$utc is not considered as a DateTime object
-        #    #
-        #    test-datetime $local -eq $utc -Kind local
-        #    test-datetime $local -eq $utc -Kind local, unspecified
-        #
-        #    #$utc and $local are considered as DateTime objects
-        #    #
-        #    test-datetime $local -eq $utc -Kind local, utc
-        #    test-datetime $local -eq $utc -Kind utc, local
-        #    test-datetime $local -eq $utc -Kind utc, local, unspecified
-        #    test-datetime $local -eq $utc
-        #
-        #WARNING
-        #=======
-        #If you run the example above, you will notice that $local and $utc are considered EQUAL.
-        #
-        #This means that the comparisons DO NOT take time zone information into consideration.
-        #
-        #Part of the reason for this is that DateTime objects can be used to represent many concepts of time:
-        #    *a time (12:00 AM)
-        #    *a date (January 1)
-        #    *a date and time (January 1 12:00 AM)
-        #    *a specific date and time (2015 January 1 12:00 AM)
-        #    *a specific date and time at a specific place (2015 January 1 12:00 AM UTC)
-        #    *a weekly date and time (Weekdays 9:00 AM)
-        #    *a monthly date (every first Friday)
-        #    *a yearly date (every January 1st)
-        #    *and so on...
-        #
-        #So, the meaning of the comparisons in the example above is not,
-        #    "Does $local and $utc represent the same moment in time?",
-        #but
-        #    "Does $local and $utc both represent the same date and time values?".
         [Parameter(Mandatory=$false)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.DateTimeKind[]]
         $Kind,
 
-        #Compares the DateTime values using the specified properties.
-        #
-        #Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
-        #
-        #Allowed Properties
-        #------------------
-        #Year, Month, Day, Hour, Minute, Second, Millisecond, Date, TimeOfDay, DayOfWeek, DayOfYear, Ticks, Kind
-        #
-        #No wildcards are allowed.
-        #No calculated properties are allowed.
-        #Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
-        #
-        #Comparison method
-        #-----------------
-        #1. Start with the first property specified.
-        #2. Compare the properties from the two DateTime objects using the CompareTo method.
-        #3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
-        #4. Done.
-        #
-        #Note:
-        #Synthetic properties are not used in comparisons.
-        #For example, when the year property is compared, an expression like $a.psbase.year is used instead of $a.year.
         [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
@@ -2427,8 +2457,6 @@ assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, d
     }
 }
 
-function Test-Guid
-{
 <#
 .Synopsis
 An alternative to PowerShell's comparison operators when testing GUIDs in unit test scenarios.
@@ -2441,6 +2469,131 @@ This function will return one of the following values:
     $null
 
 A return value of $null indicates an invalid test. See each parameter for specific conditions that causes this function to return $true, $false, or $null.
+.Parameter Value
+The value to test.
+.Parameter IsGuid
+Tests if the value is a GUID.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         value is not a GUID*
+$true          value is a GUID*
+
+*See the -Variant and -Version parameters for more details.
+.Parameter Equals
+Tests if the first value is equal to the second.
+
+The -Equals parameter has the alias -eq.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a GUID*
+$false         System.Guid method CompareTo(Guid) != 0
+$true          System.Guid method CompareTo(Guid) == 0
+
+*See the -Variant and -Version parameters for more details.
+.Parameter NotEquals
+Tests if the first value is not equal to the second.
+
+The -NotEquals parameter has the alias -ne.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a GUID*
+$false         System.Guid method CompareTo(Guid) == 0
+$true          System.Guid method CompareTo(Guid) != 0
+
+*See the -Variant and -Version parameters for more details.
+.Parameter LessThan
+Tests if the first value is less than the second.
+
+The -LessThan parameter has the alias -lt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a GUID*
+$false         System.Guid method CompareTo(Guid) >= 0
+$true          System.Guid method CompareTo(Guid) < 0
+
+*See the -Variant and -Version parameters for more details.
+.Parameter LessThanOrEqualTo
+Tests if the first value is less than or equal to the second.
+
+The -LessThanOrEqualTo parameter has the alias -le.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a GUID*
+$false         System.Guid method CompareTo(Guid) > 0
+$true          System.Guid method CompareTo(Guid) <= 0
+
+*See the -Variant and -Version parameters for more details.
+.Parameter GreaterThan
+Tests if the first value is greater than the second.
+
+The -GreaterThan parameter has the alias -gt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a GUID*
+$false         System.Guid method CompareTo(Guid) <= 0
+$true          System.Guid method CompareTo(Guid) > 0
+
+*See the -Variant and -Version parameters for more details.
+.Parameter GreaterThanOrEqualTo
+Tests if the first value is greater than or equal to the second.
+
+The -GreaterThanOrEqualTo parameter has the alias -ge.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a GUID*
+$false         System.Guid method CompareTo(Guid) < 0
+$true          System.Guid method CompareTo(Guid) >= 0
+
+*See the -Variant and -Version parameters for more details.
+.Parameter MatchVariant
+Causes the comparison of two GUIDs to return $null if they do not have an equivalent variant.
+
+*See the -Variant parameter for more details.
+.Parameter MatchVersion
+Causes the comparison of two GUIDs to return $null if they do not have the same value in their version fields.
+
+*See the -Version parameter for more details.
+.Parameter Variant
+One or more Strings that can be used to define which variants of GUIDs are to be considered GUIDs.
+
+Allowed Variants
+----------------
+Standard, Microsoft, NCS, Reserved
+
+    The GUID variant field can be found in the nibble marked with v:
+    00000000-0000-0000-v000-000000000000
+
+    Variant    v
+    -------    -
+    Standard   8, 9, A, B
+    Microsoft  C, D
+    NCS        0, 1, 2, 3, 4, 5, 6, 7
+    Reserved   E, F
+
+Note:
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-GUIDs.
+.Parameter Version
+One or more integers that can be used to define which versions of GUIDs are to be considered GUIDs.
+
+Allowed Versions
+----------------
+0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+
+    The GUID version field can be found in the nibble marked with v:
+    00000000-0000-v000-0000-000000000000
+
+    Note: The meaning of the value in the version field depends on the GUID variant.
+
+Note:
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-GUIDs.
 .Example
 Test-Guid $a
 Returns $true if $a is a GUID.
@@ -2484,132 +2637,55 @@ assert-true (guid? $a)
 assert-true (guid? $a -variant standard -version 1,3,4,5)
 assert-true (guid? $a -ne $b -variant standard -version 1,3,4,5 -matchvariant -matchversion)
 #>
+function Test-Guid
+{
     [CmdletBinding(DefaultParameterSetName='IsGuid')]
     Param(
-        #The value to test.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [System.Object]
         $Value,
 
-        #Tests if the value is a GUID.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          never
-        #$false         value is not a GUID*
-        #$true          value is a GUID*
-        #
-        #*See the -Variant and -Version parameters for more details.
         [Parameter(Mandatory=$false, ParameterSetName='IsGuid')]
         [System.Management.Automation.SwitchParameter]
         $IsGuid = $true,
 
-        #Tests if the first value is equal to the second.
-        #
-        #The -Equals parameter has the alias -eq.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a GUID*
-        #$false         System.Guid method CompareTo(Guid) != 0
-        #$true          System.Guid method CompareTo(Guid) == 0
-        #
-        #*See the -Variant and -Version parameters for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        #Tests if the first value is not equal to the second.
-        #
-        #The -NotEquals parameter has the alias -ne.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a GUID*
-        #$false         System.Guid method CompareTo(Guid) == 0
-        #$true          System.Guid method CompareTo(Guid) != 0
-        #
-        #*See the -Variant and -Version parameters for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
         [AllowNull()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        #Tests if the first value is less than the second.
-        #
-        #The -LessThan parameter has the alias -lt.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a GUID*
-        #$false         System.Guid method CompareTo(Guid) >= 0
-        #$true          System.Guid method CompareTo(Guid) < 0
-        #
-        #*See the -Variant and -Version parameters for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
         [AllowNull()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
 
-        #Tests if the first value is less than or equal to the second.
-        #
-        #The -LessThanOrEqualTo parameter has the alias -le.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a GUID*
-        #$false         System.Guid method CompareTo(Guid) > 0
-        #$true          System.Guid method CompareTo(Guid) <= 0
-        #
-        #*See the -Variant and -Version parameters for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
         [AllowNull()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
-        #Tests if the first value is greater than the second.
-        #
-        #The -GreaterThan parameter has the alias -gt.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a GUID*
-        #$false         System.Guid method CompareTo(Guid) <= 0
-        #$true          System.Guid method CompareTo(Guid) > 0
-        #
-        #*See the -Variant and -Version parameters for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
         [AllowNull()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
-        #Tests if the first value is greater than or equal to the second.
-        #
-        #The -GreaterThanOrEqualTo parameter has the alias -ge.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a GUID*
-        #$false         System.Guid method CompareTo(Guid) < 0
-        #$true          System.Guid method CompareTo(Guid) >= 0
-        #
-        #*See the -Variant and -Version parameters for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        #Causes the comparison of two GUIDs to return $null if they do not have an equivalent variant.
-        #
-        #*See the -Variant parameter for more details.
         [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
@@ -2619,9 +2695,6 @@ assert-true (guid? $a -ne $b -variant standard -version 1,3,4,5 -matchvariant -m
         [System.Management.Automation.SwitchParameter]
         $MatchVariant,
 
-        #Causes the comparison of two GUIDs to return $null if they do not have the same value in their version fields.
-        #
-        #*See the -Version parameter for more details.
         [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
@@ -2631,24 +2704,6 @@ assert-true (guid? $a -ne $b -variant standard -version 1,3,4,5 -matchvariant -m
         [System.Management.Automation.SwitchParameter]
         $MatchVersion,
 
-        #One or more Strings that can be used to define which variants of GUIDs are to be considered GUIDs.
-        #
-        #Allowed Variants
-        #----------------
-        #Standard, Microsoft, NCS, Reserved
-        #
-        #    The GUID variant field can be found in the nibble marked with v:
-        #    00000000-0000-0000-v000-000000000000
-        #
-        #    Variant    v
-        #    -------    -
-        #    Standard   8, 9, A, B
-        #    Microsoft  C, D
-        #    NCS        0, 1, 2, 3, 4, 5, 6, 7
-        #    Reserved   E, F
-        #
-        #Note:
-        #Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-GUIDs.
         [Parameter(Mandatory=$false, ParameterSetName='IsGuid')]
         [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
@@ -2661,19 +2716,6 @@ assert-true (guid? $a -ne $b -variant standard -version 1,3,4,5 -matchvariant -m
         [System.String[]]
         $Variant,
 
-        #One or more integers that can be used to define which versions of GUIDs are to be considered GUIDs.
-        #
-        #Allowed Versions
-        #----------------
-        #0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-        #
-        #    The GUID version field can be found in the nibble marked with v:
-        #    00000000-0000-v000-0000-000000000000
-        #
-        #    Note: The meaning of the value in the version field depends on the GUID variant.
-        #
-        #Note:
-        #Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-GUIDs.
         [Parameter(Mandatory=$false, ParameterSetName='IsGuid')]
         [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
@@ -2836,8 +2878,6 @@ assert-true (guid? $a -ne $b -variant standard -version 1,3,4,5 -matchvariant -m
     }
 }
 
-function Test-Number
-{
 <#
 .Synopsis
 An alternative to PowerShell's comparison operators when testing numbers in unit test scenarios.
@@ -2855,6 +2895,127 @@ A return value of $null indicates an invalid test. See each parameter for specif
 
 Note:
 NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by this function.
+.Parameter Value
+The value to test.
+.Parameter IsNumber
+Tests if the value is a number.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         value is not a number*
+$true          value is a number*
+
+* See -Type parameter for more details.
+.Parameter Equals
+Tests if the first value is equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -eq operator returns $false
+$true          PowerShell's -eq operator returns $true
+
+* See -Type parameter for more details.
+.Parameter NotEquals
+Tests if the first value is not equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -ne operator returns $false
+$true          PowerShell's -ne operator returns $true
+
+* See -Type parameter for more details.
+.Parameter LessThan
+Tests if the first value is less than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -lt operator returns $false
+$true          PowerShell's -lt operator returns $true
+
+* See -Type parameter for more details.
+.Parameter LessThanOrEqualTo
+Tests if the first value is less than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -le operator returns $false
+$true          PowerShell's -le operator returns $true
+
+* See -Type parameter for more details.
+.Parameter GreaterThan
+Tests if the first value is greater than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -gt operator returns $false
+$true          PowerShell's -gt operator returns $true
+
+* See -Type parameter for more details.
+.Parameter GreaterThanOrEqualTo
+Tests if the first value is greater than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -ge operator returns $false
+$true          PowerShell's -ge operator returns $true
+
+* See -Type parameter for more details.
+.Parameter MatchType
+Causes the comparison of two numbers to return $null if they do not have the same type.
+.Parameter Type
+One or more strings that can be used to define which numeric types are to be considered numeric types.
+
+These types are considered to be numeric types:
+   System.Byte, System.SByte,
+   System.Int16, System.Int32, System.Int64,
+   System.UInt16, System.UInt32, System.UInt64,
+   System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
+
+You can use this parameter to specify which of the types above are to be considered numeric types.
+
+Each type can be specified by its type name or by its full type name.
+
+Note:
+NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-numbers.
+
+For example:
+    $a = [uint32]0
+    $b = [double]10.0
+
+    #$a (uint32) is not considered a number
+    #
+    Test-Number $a -lt $b -Type Double
+    Test-Number $a -lt $b -Type Double, Decimal
+    Test-Number $a -lt $b -Type Double, Decimal, Int32
+    Test-Number $a -lt $b -Type Double, Decimal, System.Int32
+
+    #$b (double) is not considered a number
+    #
+    Test-Number $a -lt $b -Type UInt32
+    Test-Number $a -lt $b -Type UInt32, Byte
+    Test-Number $a -lt $b -Type UInt32, Byte, Int64
+    Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
+
+    #$a and $b are considered numbers
+    #
+    Test-Number $a -lt $b
+    Test-Number $a -lt $b -Type UInt32, Double
+    Test-Number $a -lt $b -Type Double, UInt32
+    Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32
 .Example
 Test-Number $n
 Tests if $n is a number.
@@ -2906,38 +3067,20 @@ assert (number? $x -lt $y -MatchType)
 assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double)
 assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
 #>
+function Test-Number
+{
     [CmdletBinding(DefaultParameterSetName='OpIsNumber')]
     Param(
-        #The value to test.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
-        #Tests if the value is a number.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          never
-        #$false         value is not a number*
-        #$true          value is a number*
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$false, ParameterSetName='OpIsNumber')]
         [System.Management.Automation.SwitchParameter]
         $IsNumber = $true,
 
-        #Tests if the first value is equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -eq operator returns $false
-        #$true          PowerShell's -eq operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -2945,16 +3088,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $Equals,
 
-        #Tests if the first value is not equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -ne operator returns $false
-        #$true          PowerShell's -ne operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -2962,16 +3095,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $NotEquals,
 
-        #Tests if the first value is less than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -lt operator returns $false
-        #$true          PowerShell's -lt operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -2979,16 +3102,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $LessThan,
         
-        #Tests if the first value is less than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -le operator returns $false
-        #$true          PowerShell's -le operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -2996,16 +3109,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $LessThanOrEqualTo,
 
-        #Tests if the first value is greater than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -gt operator returns $false
-        #$true          PowerShell's -gt operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3013,16 +3116,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $GreaterThan,
 
-        #Tests if the first value is greater than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a number*
-        #               -MatchType is set and values are not of the same type
-        #$false         PowerShell's -ge operator returns $false
-        #$true          PowerShell's -ge operator returns $true
-        #
-        #* See -Type parameter for more details.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3030,7 +3123,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        #Causes the comparison of two numbers to return $null if they do not have the same type.
         [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
@@ -3040,46 +3132,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
         [System.Management.Automation.SwitchParameter]
         $MatchType,
 
-        #One or more strings that can be used to define which numeric types are to be considered numeric types.
-        #
-        #These types are considered to be numeric types:
-        #   System.Byte, System.SByte,
-        #   System.Int16, System.Int32, System.Int64,
-        #   System.UInt16, System.UInt32, System.UInt64,
-        #   System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
-        #
-        #You can use this parameter to specify which of the types above are to be considered numeric types.
-        #
-        #Each type can be specified by its type name or by its full type name.
-        #
-        #Note:
-        #NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
-        #Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-numbers.
-        #
-        #For example:
-        #    $a = [uint32]0
-        #    $b = [double]10.0
-        #
-        #    #$a (uint32) is not considered a number
-        #    #
-        #    Test-Number $a -lt $b -Type Double
-        #    Test-Number $a -lt $b -Type Double, Decimal
-        #    Test-Number $a -lt $b -Type Double, Decimal, Int32
-        #    Test-Number $a -lt $b -Type Double, Decimal, System.Int32
-        #
-        #    #$b (double) is not considered a number
-        #    #
-        #    Test-Number $a -lt $b -Type UInt32
-        #    Test-Number $a -lt $b -Type UInt32, Byte
-        #    Test-Number $a -lt $b -Type UInt32, Byte, Int64
-        #    Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
-        #
-        #    #$a and $b are considered numbers
-        #    #
-        #    Test-Number $a -lt $b
-        #    Test-Number $a -lt $b -Type UInt32, Double
-        #    Test-Number $a -lt $b -Type Double, UInt32
-        #    Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32
         [Parameter(Mandatory=$false)]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3181,8 +3233,6 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
     }
 }
 
-function Test-String
-{
 <#
 .Synopsis
 An alternative to PowerShell's comparison functions when testing strings in unit test scenarios.
@@ -3225,6 +3275,182 @@ For case-sensitive string comparisons, this function may give a different result
 
     #Int values of characters; returns $false
     [int][char]'A' -gt [int][char]'a'
+.Parameter Value
+The value to test.
+.Parameter IsString
+Tests if the value is a string.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         the value is not a string*
+$true          the value is a string*
+
+*See the -Normalization parameter for more details
+.Parameter Contains
+Tests if the first string contains the second.
+
+Note: The empty string is inside all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method IndexOf(String, StringComparison) < 0
+$true          String method IndexOf(String, StringComparison) >= 0
+
+*See the -Normalization parameter for more details
+.Parameter NotContains
+Tests if the string does not contain the second.
+
+Note: The empty string is inside all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method IndexOf(String, StringComparison) >= 0
+$true          String method IndexOf(String, StringComparison) < 0
+
+*See the -Normalization parameter for more details
+.Parameter StartsWith
+Tests if the first string starts with the second string.
+
+Note: The empty string starts all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method StartsWith(String, StringComparison) returns $false
+$true          String method StartsWith(String, StringComparison) returns $true
+
+*See the -Normalization parameter for more details
+.Parameter NotStartsWith
+Tests if the first string does not start with the second string.
+
+Note: The empty string starts all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method StartsWith(String, StringComparison) returns $true
+$true          String method StartsWith(String, StringComparison) returns $false
+
+*See the -Normalization parameter for more details
+.Parameter EndsWith
+Tests if the first string ends with the second string.
+
+Note: The empty string ends all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method EndsWith(String, StringComparison) returns $false
+$true          String method EndsWith(String, StringComparison) returns $true
+
+*See the -Normalization parameter for more details
+.Parameter NotEndsWith
+Tests if the first string does not end with the second string
+
+Note: The empty string ends all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method EndsWith(String, StringComparison) returns $true
+$true          String method EndsWith(String, StringComparison) returns $false
+
+*See the -Normalization parameter for more details
+.Parameter Equals
+Tests if the first value is equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Equals(String, String, StringComparison) returns $false
+$true          String.Equals(String, String, StringComparison) returns $true
+
+*See the -Normalization parameter for more details
+.Parameter NotEquals
+Tests if the first value is not equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Equals(String, String, StringComparison) returns $true
+$true          String.Equals(String, String, StringComparison) returns $false
+
+*See the -Normalization parameter for more details
+.Parameter LessThan
+Tests if the first value is less than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) >= 0
+$true          String.Compare(String, String, StringComparison) < 0
+
+*See the -Normalization parameter for more details
+.Parameter LessThanOrEqualTo
+Tests if the first value is less than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) > 0
+$true          String.Compare(String, String, StringComparison) <= 0
+
+*See the -Normalization parameter for more details
+.Parameter GreaterThan
+Tests if the first value is greater than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) <= 0
+$true          String.Compare(String, String, StringComparison) > 0
+
+*See the -Normalization parameter for more details
+.Parameter GreaterThanOrEqualTo
+Tests if the first value is greater than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) < 0
+$true          String.Compare(String, String, StringComparison) >= 0
+
+*See the -Normalization parameter for more details
+.Parameter CaseSensitive
+Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.
+.Parameter FormCompatible
+Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.
+.Parameter Normalization
+One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().
 .Example
 Test-String $a
 Tests if $a is a string.
@@ -3275,139 +3501,56 @@ assert (string? $a)
 assert (string? $a -contains $b)
 assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
 #>
+function Test-String
+{
     [CmdletBinding(DefaultParameterSetName='IsString')]
     Param(
-        #The value to test.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
-        #Tests if the value is a string.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          never
-        #$false         the value is not a string*
-        #$true          the value is a string*
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$false, ParameterSetName='IsString')]
         [System.Management.Automation.SwitchParameter]
         $IsString = $true,
 
-        #Tests if the first string contains the second.
-        #
-        #Note: The empty string is inside all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method IndexOf(String, StringComparison) < 0
-        #$true          String method IndexOf(String, StringComparison) >= 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpContains')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $Contains,
 
-        #Tests if the string does not contain the second.
-        #
-        #Note: The empty string is inside all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method IndexOf(String, StringComparison) >= 0
-        #$true          String method IndexOf(String, StringComparison) < 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpNotContains')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $NotContains,
 
-        #Tests if the first string starts with the second string.
-        #
-        #Note: The empty string starts all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method StartsWith(String, StringComparison) returns $false
-        #$true          String method StartsWith(String, StringComparison) returns $true
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpStartsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $StartsWith,
 
-        #Tests if the first string does not start with the second string.
-        #
-        #Note: The empty string starts all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method StartsWith(String, StringComparison) returns $true
-        #$true          String method StartsWith(String, StringComparison) returns $false
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpNotStartsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $NotStartsWith,
 
-        #Tests if the first string ends with the second string.
-        #
-        #Note: The empty string ends all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method EndsWith(String, StringComparison) returns $false
-        #$true          String method EndsWith(String, StringComparison) returns $true
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpEndsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $EndsWith,
 
-        #Tests if the first string does not end with the second string
-        #
-        #Note: The empty string ends all strings.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String method EndsWith(String, StringComparison) returns $true
-        #$true          String method EndsWith(String, StringComparison) returns $false
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEndsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $NotEndsWith,
 
-        #Tests if the first value is equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Equals(String, String, StringComparison) returns $false
-        #$true          String.Equals(String, String, StringComparison) returns $true
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3415,15 +3558,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $Equals,
 
-        #Tests if the first value is not equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Equals(String, String, StringComparison) returns $true
-        #$true          String.Equals(String, String, StringComparison) returns $false
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3431,15 +3565,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $NotEquals,
 
-        #Tests if the first value is less than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Compare(String, String, StringComparison) >= 0
-        #$true          String.Compare(String, String, StringComparison) < 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3447,15 +3572,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $LessThan,
 
-        #Tests if the first value is less than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Compare(String, String, StringComparison) > 0
-        #$true          String.Compare(String, String, StringComparison) <= 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3463,15 +3579,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $LessThanOrEqualTo,
 
-        #Tests if the first value is greater than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Compare(String, String, StringComparison) <= 0
-        #$true          String.Compare(String, String, StringComparison) > 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3479,15 +3586,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $GreaterThan,
 
-        #Tests if the first value is greater than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a string*
-        #$false         String.Compare(String, String, StringComparison) < 0
-        #$true          String.Compare(String, String, StringComparison) >= 0
-        #
-        #*See the -Normalization parameter for more details
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3495,17 +3593,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        #Makes the comparisons case sensitive.
-        #
-        #If this switch is set, the comparisons use
-        #
-        #    [System.StringComparison]::Ordinal
-        #
-        #otherwise, the comparisons use
-        #
-        #    [System.StringComparison]::OrdinalIgnoreCase
-        #
-        #as the default.
         [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotContains')]
         [Parameter(Mandatory=$false, ParameterSetName='OpEndsWith')]
@@ -3521,9 +3608,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Management.Automation.SwitchParameter]
         $CaseSensitive,
 
-        #Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
-        #
-        #See the -Normalization parameter for more details.
         [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotContains')]
         [Parameter(Mandatory=$false, ParameterSetName='OpStartsWith')]
@@ -3539,21 +3623,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
         [System.Management.Automation.SwitchParameter]
         $FormCompatible,
 
-        #One or more Enums that can be used to define which form of strings are to be considered strings.
-        #
-        #Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
-        #
-        #The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
-        #
-        #You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
-        #
-        #Note:
-        #* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
-        #
-        #* This function does not normalize strings to a common form before performing the comparison.
-        #
-        #Reference:
-        #For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().
         [Parameter(Mandatory=$false)]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3696,8 +3765,6 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
     }
 }
 
-function Test-Text
-{
 <#
 .Synopsis
 An alternative to PowerShell's comparison operators when texts are being tested in unit test scenarios with operators that are sensitive to culture and language.
@@ -3721,6 +3788,182 @@ All the operators mentioned above will be affected by the different rules of lan
 If you want text operators that are not affected by language and culture, see the script in the following link:
     A PowerShell String Testing Function - Update
     https://gallery.technet.microsoft.com/scriptcenter/A-PowerShell-String-5ea692a6
+.Parameter Value
+The value to test.
+.Parameter IsText
+Tests if the value is text.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         value is not of type System.String
+$true          value is of type System.String
+.Parameter Match
+Tests if the first value matches the regular expression pattern in the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         Regex.IsMatch(String, String, RegexOptions) returns $false
+$true          Regex.IsMatch(String, String, RegexOptions) returns $true
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter NotMatch
+Tests if the first value does not match the regular expression pattern in the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         Regex.IsMatch(String, String, RegexOptions) returns $true
+$true          Regex.IsMatch(String, String, RegexOptions) returns $false
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter Contains
+Tests if the first value contains the second.
+
+Note: The empty string is inside all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method IndexOf(String, StringComparison) < 0
+$true          String method IndexOf(String, StringComparison) >= 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter NotContains
+Tests if the first value does not contain the second.
+
+Note: The empty string is inside all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method IndexOf(String, StringComparison) >= 0
+$true          String method IndexOf(String, StringComparison) < 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter StartsWith
+Tests if the first value starts with the second.
+
+Note: The empty string starts all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method StartsWith(String, StringComparison) returns $false
+$true          String method StartsWith(String, StringComparison) returns $true
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter NotStartsWith
+Tests if the first value does not start with the second.
+
+Note: The empty string starts all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method StartsWith(String, StringComparison) returns $true
+$true          String method StartsWith(String, StringComparison) returns $false
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter EndsWith
+Tests if the first value ends with the second.
+
+Note: The empty string ends all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method EndsWith(String, StringComparison) returns $false
+$true          String method EndsWith(String, StringComparison) returns $true
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter NotEndsWith
+Tests if the first value does not end with the second.
+
+Note: The empty string ends all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method EndsWith(String, StringComparison) returns $true
+$true          String method EndsWith(String, StringComparison) returns $false
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter Equals
+Tests if the first value is equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Equals(String, String, StringComparison) returns $false
+$true          String.Equals(String, String, StringComparison) returns $true
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter NotEquals
+Tests if the first value is not equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Equals(String, String, StringComparison) returns $true
+$true          String.Equals(String, String, StringComparison) returns $false
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter LessThan
+Tests if the first value is less than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Compare(String, String, StringComparison) >= 0
+$true          String.Compare(String, String, StringComparison) < 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter LessThanOrEqualTo
+Tests if the first value is less than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Compare(String, String, StringComparison) > 0
+$true          String.Compare(String, String, StringComparison) <= 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter GreaterThan
+Tests if the first value is greater than the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Compare(String, String, StringComparison) <= 0
+$true          String.Compare(String, String, StringComparison) > 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter GreaterThanOrEqualTo
+Tests if the first value is greater than or equal to the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Compare(String, String, StringComparison) < 0
+$true          String.Compare(String, String, StringComparison) >= 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter CaseSensitive
+Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
+.Parameter UseCurrentCulture
+Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.
 .Example
 Test-Text $a
 Returns $true if $a is text (an object of type System.String).
@@ -3753,167 +3996,68 @@ assert (text? $greeting)
 assert (text? $greeting -match '[chj]ello world')
 assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
 #>
+function Test-Text
+{
     [CmdletBinding(DefaultParameterSetName='IsText')]
     Param(
-        #The value to test.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
-        #Tests if the value is text.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          never
-        #$false         value is not of type System.String
-        #$true          value is of type System.String
         [Parameter(Mandatory=$false, ParameterSetName='IsText')]
         [System.Management.Automation.SwitchParameter]
         $IsText = $true,
 
-        #Tests if the first value matches the regular expression pattern in the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         Regex.IsMatch(String, String, RegexOptions) returns $false
-        #$true          Regex.IsMatch(String, String, RegexOptions) returns $true
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpMatch')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $Match,
 
-        #Tests if the first value does not match the regular expression pattern in the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         Regex.IsMatch(String, String, RegexOptions) returns $true
-        #$true          Regex.IsMatch(String, String, RegexOptions) returns $false
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpNotMatch')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $NotMatch,
 
-        #Tests if the first value contains the second.
-        #
-        #Note: The empty string is inside all texts.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String method IndexOf(String, StringComparison) < 0
-        #$true          String method IndexOf(String, StringComparison) >= 0
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpContains')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $Contains,
 
-        #Tests if the first value does not contain the second.
-        #
-        #Note: The empty string is inside all texts.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String method IndexOf(String, StringComparison) >= 0
-        #$true          String method IndexOf(String, StringComparison) < 0
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpNotContains')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $NotContains,
 
-        #Tests if the first value starts with the second.
-        #
-        #Note: The empty string starts all texts.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String method StartsWith(String, StringComparison) returns $false
-        #$true          String method StartsWith(String, StringComparison) returns $true
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpStartsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $StartsWith,
 
-        #Tests if the first value does not start with the second.
-        #
-        #Note: The empty string starts all texts.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String method StartsWith(String, StringComparison) returns $true
-        #$true          String method StartsWith(String, StringComparison) returns $false
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpNotStartsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $NotStartsWith,
 
-        #Tests if the first value ends with the second.
-        #
-        #Note: The empty string ends all texts.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String method EndsWith(String, StringComparison) returns $false
-        #$true          String method EndsWith(String, StringComparison) returns $true
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpEndsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $EndsWith,
 
-        #Tests if the first value does not end with the second.
-        #
-        #Note: The empty string ends all texts.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String method EndsWith(String, StringComparison) returns $true
-        #$true          String method EndsWith(String, StringComparison) returns $false
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEndsWith')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Object]
         $NotEndsWith,
 
-        #Tests if the first value is equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String.Equals(String, String, StringComparison) returns $false
-        #$true          String.Equals(String, String, StringComparison) returns $true
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3921,15 +4065,6 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
         [System.Object]
         $Equals,
 
-        #Tests if the first value is not equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String.Equals(String, String, StringComparison) returns $true
-        #$true          String.Equals(String, String, StringComparison) returns $false
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3937,15 +4072,6 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
         [System.Object]
         $NotEquals,
 
-        #Tests if the first value is less than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String.Compare(String, String, StringComparison) >= 0
-        #$true          String.Compare(String, String, StringComparison) < 0
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3953,15 +4079,6 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
         [System.Object]
         $LessThan,
 
-        #Tests if the first value is less than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String.Compare(String, String, StringComparison) > 0
-        #$true          String.Compare(String, String, StringComparison) <= 0
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3969,15 +4086,6 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
         [System.Object]
         $LessThanOrEqualTo,
 
-        #Tests if the first value is greater than the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String.Compare(String, String, StringComparison) <= 0
-        #$true          String.Compare(String, String, StringComparison) > 0
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -3985,15 +4093,6 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
         [System.Object]
         $GreaterThan,
 
-        #Tests if the first value is greater than or equal to the second.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not of type System.String
-        #$false         String.Compare(String, String, StringComparison) < 0
-        #$true          String.Compare(String, String, StringComparison) >= 0
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
@@ -4001,11 +4100,6 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        #Makes the operators case-sensitive.
-        #
-        #If this parameter is not specified, the operators will be case-insensitive.
-        #
-        #*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
         [Parameter(Mandatory=$false, ParameterSetName='OpMatch')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotMatch')]
         [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
@@ -4023,13 +4117,6 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
         [System.Management.Automation.SwitchParameter]
         $CaseSensitive,
 
-        #Makes the operators use the language rules of the current culture.
-        #
-        #If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
-        #
-        #Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
-        #
-        #See the MSDN documentation for System.Globalization.CultureInfo for more information.
         [Parameter(Mandatory=$false, ParameterSetName='OpMatch')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotMatch')]
         [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
@@ -4166,8 +4253,6 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
     }
 }
 
-function Test-TimeSpan
-{
 <#
 .Synopsis
 An alternative to PowerShell's comparison operators when testing TimeSpan objects in unit test scenarios.
@@ -4180,6 +4265,111 @@ This function will return one of the following values:
     $null
 
 A return value of $null indicates an invalid test. See each parameter for specific conditions that causes this function to return $true, $false, or $null.
+.Parameter Value
+The value to test.
+.Parameter IsTimeSpan
+Tests if the value is a TimeSpan value.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         value is not a TimeSpan
+$true          value is a TimeSpan
+.Parameter Equals
+Tests if the first value is equal to the second.
+
+The -Equals parameter has the alias -eq.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a TimeSpan
+$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) != 0
+$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) == 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter NotEquals
+Tests if the first value is not equal to the second.
+
+The -NotEquals parameter has the alias -ne.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a TimeSpan
+$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) == 0
+$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) != 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter LessThan
+Tests if the first value is less than the second.
+
+The -LessThan parameter has the alias -lt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a TimeSpan
+$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) >= 0
+$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) < 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter LessThanOrEqualTo
+Tests if the first value is less than or equal to the second.
+
+The -LessThanOrEqualTo parameter has the alias -le.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a TimeSpan
+$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) > 0
+$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) <= 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter GreaterThan
+Tests if the first value is greater than the second.
+
+The -GreaterThan parameter has the alias -gt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a TimeSpan
+$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) <= 0
+$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) > 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter GreaterThanOrEqualTo
+Tests if the first value is greater than or equal to the second.
+
+The -GreaterThanOrEqualTo parameter has the alias -ge.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a TimeSpan
+$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) < 0
+$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) >= 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter Property
+Compares the TimeSpan values using the specified properties.
+
+Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
+
+Allowed Properties
+------------------
+Days, Hours, Minutes, Seconds, Milliseconds, Ticks, TotalDays, TotalHours, TotalMilliseconds, TotalMinutes, TotalSeconds
+
+No wildcards are allowed.
+No calculated properties (script blocks) are allowed.
+Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
+
+Comparison method
+-----------------
+1. Start with the first property specified.
+2. Compare the properties from the two TimeSpan objects using the CompareTo method.
+3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
+4. Done.
+
+PowerShell Note:
+Synthetic properties are not used in comparisons.
+For example, when the hours property is compared, an expression like $a.psbase.hours is used instead of $a.hours.
 .Example
 Test-TimeSpan $a
 Returns $true if $a is a TimeSpan object.
@@ -4208,149 +4398,55 @@ set-alias 'timespan?' 'test-timeSpan'
 assert-true (timespan? $a)
 assert-true (timespan? $a -eq $b -property days, hours, minutes)
 #>
+function Test-TimeSpan
+{
     [CmdletBinding(DefaultParameterSetName='IsTimeSpan')]
     Param(
-        #The value to test.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [System.Object]
         $Value,
 
-        #Tests if the value is a TimeSpan value.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          never
-        #$false         value is not a TimeSpan
-        #$true          value is a TimeSpan
         [Parameter(Mandatory=$false, ParameterSetName='IsTimeSpan')]
         [System.Management.Automation.SwitchParameter]
         $IsTimeSpan = $true,
 
-        #Tests if the first value is equal to the second.
-        #
-        #The -Equals parameter has the alias -eq.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a TimeSpan
-        #$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) != 0
-        #$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) == 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        #Tests if the first value is not equal to the second.
-        #
-        #The -NotEquals parameter has the alias -ne.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a TimeSpan
-        #$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) == 0
-        #$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) != 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
         [AllowNull()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        #Tests if the first value is less than the second.
-        #
-        #The -LessThan parameter has the alias -lt.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a TimeSpan
-        #$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) >= 0
-        #$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) < 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
         [AllowNull()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
 
-        #Tests if the first value is less than or equal to the second.
-        #
-        #The -LessThanOrEqualTo parameter has the alias -le.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a TimeSpan
-        #$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) > 0
-        #$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) <= 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
         [AllowNull()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
-        #Tests if the first value is greater than the second.
-        #
-        #The -GreaterThan parameter has the alias -gt.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a TimeSpan
-        #$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) <= 0
-        #$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) > 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
         [AllowNull()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
-        #Tests if the first value is greater than or equal to the second.
-        #
-        #The -GreaterThanOrEqualTo parameter has the alias -ge.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a TimeSpan
-        #$false         System.TimeSpan.Compare(TimeSpan, TimeSpan) < 0
-        #$true          System.TimeSpan.Compare(TimeSpan, TimeSpan) >= 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        #Compares the TimeSpan values using the specified properties.
-        #
-        #Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
-        #
-        #Allowed Properties
-        #------------------
-        #Days, Hours, Minutes, Seconds, Milliseconds, Ticks, TotalDays, TotalHours, TotalMilliseconds, TotalMinutes, TotalSeconds
-        #
-        #No wildcards are allowed.
-        #No calculated properties (script blocks) are allowed.
-        #Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
-        #
-        #Comparison method
-        #-----------------
-        #1. Start with the first property specified.
-        #2. Compare the properties from the two TimeSpan objects using the CompareTo method.
-        #3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
-        #4. Done.
-        #
-        #PowerShell Note:
-        #Synthetic properties are not used in comparisons.
-        #For example, when the hours property is compared, an expression like $a.psbase.hours is used instead of $a.hours.
         [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
@@ -4465,8 +4561,6 @@ assert-true (timespan? $a -eq $b -property days, hours, minutes)
     }
 }
 
-function Test-Version
-{
 <#
 .Synopsis
 An alternative to PowerShell's comparison operators when testing Version objects in unit test scenarios.
@@ -4479,6 +4573,111 @@ This function will return one of the following values:
     $null
 
 A return value of $null indicates an invalid test. See each parameter for specific conditions that causes this function to return $true, $false, or $null.
+.Parameter Value
+The value to test.
+.Parameter IsVersion
+Tests if the value is a Version object.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         value is not a Version object
+$true          value is a Version object
+.Parameter Equals
+Tests if the first value is equal to the second.
+
+The -Equals parameter has the alias -eq.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) != 0
+$true          System.Version method CompareTo(Version) == 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter NotEquals
+Tests if the first value is not equal to the second.
+
+The -NotEquals parameter has the alias -ne.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) == 0
+$true          System.Version method CompareTo(Version) != 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter LessThan
+Tests if the first value is less than the second.
+
+The -LessThan parameter has the alias -lt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) >= 0
+$true          System.Version method CompareTo(Version) < 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter LessThanOrEqualTo
+Tests if the first value is less than or equal to the second.
+
+The -LessThanOrEqualTo parameter has the alias -le.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) > 0
+$true          System.Version method CompareTo(Version) <= 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter GreaterThan
+Tests if the first value is greater than the second.
+
+The -GreaterThan parameter has the alias -gt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) <= 0
+$true          System.Version method CompareTo(Version) > 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter GreaterThanOrEqualTo
+Tests if the first value is greater than or equal to the second.
+
+The -GreaterThanOrEqualTo parameter has the alias -ge.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) < 0
+$true          System.Version method CompareTo(Version) >= 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.
+.Parameter Property
+Compares the Version objects using the specified properties.
+
+Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
+
+Allowed Properties
+------------------
+Major, Minor, Build, Revision, MajorRevision, MinorRevision
+
+No wildcards are allowed.
+No calculated properties (script blocks) are allowed.
+Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
+
+Comparison method
+-----------------
+1. Start with the first property specified.
+2. Compare the properties from the two Version objects using the CompareTo method.
+3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
+4. Done.
+
+PowerShell Note:
+Synthetic properties are not used in comparisons.
+For example, when the build property is compared, an expression like $a.psbase.build is used instead of $a.build.
 .Example
 Test-Version $a
 Returns $true if $a is a Version object.
@@ -4507,149 +4706,55 @@ set-alias 'version?' 'test-version'
 assert-true (version? $a)
 assert-true (version? $a -eq $b -property major, minor, build)
 #>
+function Test-Version
+{
     [CmdletBinding(DefaultParameterSetName='IsVersion')]
     Param(
-        #The value to test.
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
         [System.Object]
         $Value,
 
-        #Tests if the value is a Version object.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          never
-        #$false         value is not a Version object
-        #$true          value is a Version object
         [Parameter(Mandatory=$false, ParameterSetName='IsVersion')]
         [System.Management.Automation.SwitchParameter]
         $IsVersion = $true,
 
-        #Tests if the first value is equal to the second.
-        #
-        #The -Equals parameter has the alias -eq.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a Version object
-        #$false         System.Version method CompareTo(Version) != 0
-        #$true          System.Version method CompareTo(Version) == 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        #Tests if the first value is not equal to the second.
-        #
-        #The -NotEquals parameter has the alias -ne.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a Version object
-        #$false         System.Version method CompareTo(Version) == 0
-        #$true          System.Version method CompareTo(Version) != 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
         [AllowNull()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        #Tests if the first value is less than the second.
-        #
-        #The -LessThan parameter has the alias -lt.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a Version object
-        #$false         System.Version method CompareTo(Version) >= 0
-        #$true          System.Version method CompareTo(Version) < 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
         [AllowNull()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
 
-        #Tests if the first value is less than or equal to the second.
-        #
-        #The -LessThanOrEqualTo parameter has the alias -le.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a Version object
-        #$false         System.Version method CompareTo(Version) > 0
-        #$true          System.Version method CompareTo(Version) <= 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
         [AllowNull()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
-        #Tests if the first value is greater than the second.
-        #
-        #The -GreaterThan parameter has the alias -gt.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a Version object
-        #$false         System.Version method CompareTo(Version) <= 0
-        #$true          System.Version method CompareTo(Version) > 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
         [AllowNull()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
-        #Tests if the first value is greater than or equal to the second.
-        #
-        #The -GreaterThanOrEqualTo parameter has the alias -ge.
-        #
-        #Return Value   Condition
-        #------------   ---------
-        #$null          one or both of the values is not a Version object
-        #$false         System.Version method CompareTo(Version) < 0
-        #$true          System.Version method CompareTo(Version) >= 0
-        #
-        #Note: If the -Property parameter is specified, a different comparison method is used.
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        #Compares the Version objects using the specified properties.
-        #
-        #Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
-        #
-        #Allowed Properties
-        #------------------
-        #Major, Minor, Build, Revision, MajorRevision, MinorRevision
-        #
-        #No wildcards are allowed.
-        #No calculated properties (script blocks) are allowed.
-        #Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
-        #
-        #Comparison method
-        #-----------------
-        #1. Start with the first property specified.
-        #2. Compare the properties from the two Version objects using the CompareTo method.
-        #3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
-        #4. Done.
-        #
-        #PowerShell Note:
-        #Synthetic properties are not used in comparisons.
-        #For example, when the build property is compared, an expression like $a.psbase.build is used instead of $a.build.
         [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
         [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]

@@ -1,5 +1,3 @@
-function Assert-PipelineSingle
-{
 <#
 .Synopsis
 Assert that the pipeline only contains one object.
@@ -9,6 +7,11 @@ This function is useful for asserting that a function only returns a single obje
 This function throws an error if any of the following conditions are met:
     *the pipeline contains less than one object
     *the pipeline contains more than one object
+.Parameter InputObject
+The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.
 .Example
 $letter = 'a', 'b', 'c' | Get-Random | Assert-PipelineSingle
 Throws an error if Get-Random does not return a single object.
@@ -45,12 +48,10 @@ Assert-PipelineEmpty
 Assert-PipelineAny
 Assert-PipelineCount
 #>
+function Assert-PipelineSingle
+{
     [CmdletBinding()]
     Param(
-        #The object from the pipeline.
-        #
-        #Note:
-        #The argument for this parameter must come from the pipeline.
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [AllowNull()]
         [System.Object]
