@@ -21,22 +21,26 @@ See which files and directories will be modified without actually modifying thos
 #>
 [CmdletBinding(DefaultParameterSetName='All', SupportsShouldProcess=$true)]
 Param(
-    #Clean "Debug\" and build "Debug\Script\" and build "Debug\Module\".
+    #Clean "Debug\".
+    #Clean "Release\" if the -Release switch is used.
     [Parameter(Mandatory=$false, ParameterSetName='All')]
     [System.Management.Automation.SwitchParameter]
     $All = $true,
 
     #Build "Debug\Script\".
+    #Build "Release\Script\" if the -Release switch is used.
     [Parameter(Mandatory=$true, ParameterSetName='Script')]
     [System.Management.Automation.SwitchParameter]
     $Script,
 
     #Build "Debug\Module\".
+    #Build "Release\Module\" if the -Release switch is used.
     [Parameter(Mandatory=$true, ParameterSetName='Module')]
     [System.Management.Automation.SwitchParameter]
     $Module,
 
     #Clean "Debug\".
+    #Clean "Release\" if the -Release switch is used.
     [Parameter(Mandatory=$true, ParameterSetName='Clean')]
     [System.Management.Automation.SwitchParameter]
     $Clean,
@@ -51,8 +55,7 @@ Param(
     [System.Version]
     $PowerShellVersion = '2.0',
 
-    #Build the "Release" folder.
-    [Parameter(Mandatory=$true, ParameterSetName='Release')]
+    #Perform actions on "Release\" directory.
     [System.Management.Automation.SwitchParameter]
     $Release
 )
@@ -61,86 +64,71 @@ $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
 $basePath = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
 
-$debugDir = Join-Path -Path $basePath -ChildPath 'Debug'
-$debugScriptDir = Join-Path -Path $debugDir -ChildPath 'Script'
-$debugModuleDir = Join-Path -Path $debugDir -ChildPath 'Module\AssertLibrary'
+$buildDir = Join-Path -Path $basePath -ChildPath $(if ($Release) {'Release'} else {'Debug'})
+$buildScriptDir = Join-Path -Path $buildDir -ChildPath 'Script'
+$buildModuleDir = Join-Path -Path $buildDir -ChildPath 'Module\AssertLibrary'
 
-$releaseDir = Join-Path -Path $basePath -ChildPath 'Release'
-$releaseScriptDir = Join-Path -Path $releaseDir -ChildPath 'Script'
-$releaseModuleDir = Join-Path -Path $releaseDir -ChildPath 'Module\AssertLibrary'
+$licenseFile   = Join-Path -Path $basePath -ChildPath 'LICENSE.txt'
+$scriptHelpDir = Join-Path -Path $basePath -ChildPath 'help\Script\en-US'
+$moduleHelpDir = Join-Path -Path $basePath -ChildPath 'help\Module'
 
-$localizedHelpDir = Join-Path -Path $basePath -ChildPath 'help'
-
-$licenseFile = Join-Path -Path $basePath -ChildPath 'LICENSE.txt'
-
-$inputFiles = @(
-    'src\AssertFunctions\Assert-False.ps1',
-    'src\AssertFunctions\Assert-NotNull.ps1',
-    'src\AssertFunctions\Assert-Null.ps1',
-    'src\AssertFunctions\Assert-PipelineAny.ps1',
-    'src\AssertFunctions\Assert-PipelineCount.ps1',
-    'src\AssertFunctions\Assert-PipelineEmpty.ps1',
-    'src\AssertFunctions\Assert-PipelineSingle.ps1',
-    'src\AssertFunctions\Assert-True.ps1',
-    'src\CollectionFunctions\Group-ListItem.ps1',
-    'src\ComparisonFunctions\Test-DateTime.ps1',
-    'src\ComparisonFunctions\Test-Guid.ps1',
-    'src\ComparisonFunctions\Test-Number.ps1',
-    'src\ComparisonFunctions\Test-String.ps1',
-    'src\ComparisonFunctions\Test-Text.ps1',
-    'src\ComparisonFunctions\Test-TimeSpan.ps1',
-    'src\ComparisonFunctions\Test-Version.ps1'
-) | ForEach-Object -Process {Join-Path -Path $basePath -ChildPath $_}
+$functionFiles = @(Get-ChildItem -LiteralPath (Join-Path -Path $basePath -ChildPath 'src') -Filter *.ps1 -Recurse)
 
 function main($target)
 {
     switch ($target) {
         'All' {
             if ($All) {
-                clean $debugDir
-                buildScript $debugScriptDir
-                buildModule $debugModuleDir
+                cleanAll
+                buildScript
+                buildModule
             }
             return
         }
         'Clean' {
             if ($Clean) {
-                clean $debugDir
+                cleanAll
             }
             return
         }
         'Script' {
             if ($Script) {
-                clean $debugScriptDir
-                buildScript $debugScriptDir
+                cleanScript
+                buildScript
             }
             return
         }
         'Module' {
             if ($Module) {
-                clean $debugModuleDir
-                buildModule $debugModuleDir
-            }
-            return
-        }
-        'Release' {
-            if ($Release) {
-                clean $releaseDir
-                buildScript $releaseScriptDir
-                buildModule $releaseModuleDir
+                cleanModule
+                buildModule
             }
             return
         }
         default {
-            throw "Cannot build target unknown target: $target."
+            throw "Cannot build unknown target: $target."
         }
     }
 }
 
-function clean($fullPath)
+function cleanAll
 {
-    if (Test-Path -LiteralPath $fullPath) {
-        Remove-Item -LiteralPath $fullPath -Recurse -Verbose:$VerbosePreference
+    if (Test-Path -LiteralPath $buildDir) {
+        Remove-Item -LiteralPath $buildDir -Recurse -Verbose:$VerbosePreference
+    }
+}
+
+function cleanScript
+{
+    if (Test-Path -LiteralPath $buildScriptDir) {
+        Remove-Item -LiteralPath $buildScriptDir -Recurse -Verbose:$VerbosePreference
+    }
+}
+
+function cleanModule
+{
+    if (Test-Path -LiteralPath $buildModuleDir) {
+        Remove-Item -LiteralPath $buildModuleDir -Recurse -Verbose:$VerbosePreference
     }
 }
 
@@ -157,47 +145,41 @@ function buildHeader
     ''
 }
 
-function buildScript($scriptDir)
+function buildScript
 {
-    $ps1 = Join-Path -Path $scriptDir -ChildPath 'AssertLibrary.ps1'
-    $null = New-Item -Path $scriptDir -ItemType Directory -Force -Verbose:$VerbosePreference
+    $ps1 = Join-Path -Path $buildScriptDir -ChildPath 'AssertLibrary.ps1'
+    $null = New-Item -Path $buildScriptDir -ItemType Directory -Force -Verbose:$VerbosePreference
 
     $(& {
         buildHeader
-        foreach ($item in $inputFiles) {
-            Get-Content -LiteralPath $item
+        foreach ($item in $functionFiles) {
+            Get-Content -LiteralPath (Join-Path -Path $scriptHelpDir -ChildPath ($item.BaseName + '.psd1'))
+            Get-Content -LiteralPath $item.PSPath
             ''
         }
     }) | Out-File -FilePath $ps1 -Encoding ascii -Verbose:$VerbosePreference
 }
 
-function buildModule($moduleDir)
+function buildModule
 {
-    $psm1 = Join-Path -Path $moduleDir -ChildPath 'AssertLibrary.psm1'
-    $psd1 = Join-Path -Path $moduleDir -ChildPath 'AssertLibrary.psd1'
-    $null = New-Item -Path $moduleDir -ItemType Directory -Force -Verbose:$VerbosePreference
+    $psm1 = Join-Path -Path $buildModuleDir -ChildPath 'AssertLibrary.psm1'
+    $psd1 = Join-Path -Path $buildModuleDir -ChildPath 'AssertLibrary.psd1'
+    $null = New-Item -Path $buildModuleDir -ItemType Directory -Force -Verbose:$VerbosePreference
 
-    Copy-Item -LiteralPath $licenseFile -Destination $moduleDir -Verbose:$VerbosePreference
+    Copy-Item -LiteralPath $licenseFile -Destination $buildModuleDir -Verbose:$VerbosePreference
 
     $(& {
         buildHeader
-        foreach ($item in $inputFiles) {
-            $e = @(Get-Content -LiteralPath $item).GetEnumerator()
-
+        foreach ($item in $functionFiles) {
             #------- Uncomment lines below when external help files are ready -------
-
-            #while ($e.MoveNext()) {
-            #    if ($e.Current.Trim().EndsWith('#>', [System.StringComparison]::OrdinalIgnoreCase)) {
-            #        break
-            #    }
-            #}
             #'#.ExternalHelp AssertLibrary.psm1-help.xml'
-
             #------- Uncomment lines above when external help files are ready -------
 
-            while ($e.MoveNext()) {
-                $e.Current
-            }
+            #------- Remove lines below when external help files are ready -------
+            Get-Content -LiteralPath (Join-Path -Path $scriptHelpDir -ChildPath ($item.BaseName + '.psd1'))
+            #------- Remove lines above when external help files are ready -------
+
+            Get-Content -LiteralPath $item.PSPath
             ''
         }
     }) | Out-File -FilePath $psm1 -Encoding ascii -Verbose:$VerbosePreference
@@ -229,9 +211,9 @@ function buildModule($moduleDir)
         "}"
     ) | Out-File -FilePath $psd1 -Encoding ascii -Verbose:$VerbosePreference
 
-    foreach ($item in (Get-ChildItem -LiteralPath $localizedHelpDir)) {
+    foreach ($item in (Get-ChildItem -LiteralPath $moduleHelpDir)) {
         if ($item.PSIsContainer) {
-            $item | Copy-Item -Destination $moduleDir -Recurse -Verbose:$VerbosePreference
+            $item | Copy-Item -Destination $buildModuleDir -Recurse -Verbose:$VerbosePreference
         }
     }
 }
