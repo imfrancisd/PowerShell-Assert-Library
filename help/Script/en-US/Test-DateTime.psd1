@@ -41,6 +41,8 @@ $true          value is a DateTime*
 .Parameter Equals
 Tests if the first value is equal to the second.
 
+The -Equals parameter has the alias -eq.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not a DateTime*
@@ -52,6 +54,8 @@ $true          System.DateTime.Compare(DateTime, DateTime) == 0
 Note: If the -Property parameter is specified, a different comparison method is used.
 .Parameter NotEquals
 Tests if the first value is not equal to the second.
+
+The -NotEquals parameter has the alias -ne.
 
 Return Value   Condition
 ------------   ---------
@@ -65,6 +69,8 @@ Note: If the -Property parameter is specified, a different comparison method is 
 .Parameter LessThan
 Tests if the first value is less than the second.
 
+The -LessThan parameter has the alias -lt.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not a DateTime*
@@ -76,6 +82,8 @@ $true          System.DateTime.Compare(DateTime, DateTime) < 0
 Note: If the -Property parameter is specified, a different comparison method is used.
 .Parameter LessThanOrEqualTo
 Tests if the first value is less than or equal to the second.
+
+The -LessThanOrEqualTo parameter has the alias -le.
 
 Return Value   Condition
 ------------   ---------
@@ -89,6 +97,8 @@ Note: If the -Property parameter is specified, a different comparison method is 
 .Parameter GreaterThan
 Tests if the first value is greater than the second.
 
+The -GreaterThan parameter has the alias -gt.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not a DateTime*
@@ -100,6 +110,8 @@ $true          System.DateTime.Compare(DateTime, DateTime) > 0
 Note: If the -Property parameter is specified, a different comparison method is used.
 .Parameter GreaterThanOrEqualTo
 Tests if the first value is greater than or equal to the second.
+
+The -GreaterThanOrEqualTo parameter has the alias -ge.
 
 Return Value   Condition
 ------------   ---------

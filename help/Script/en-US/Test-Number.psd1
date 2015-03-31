@@ -30,6 +30,8 @@ $true          value is a number*
 .Parameter Equals
 Tests if the first value is equal to the second.
 
+The -Equals parameter has the alias -eq.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not a number*
@@ -40,6 +42,8 @@ $true          PowerShell's -eq operator returns $true
 * See -Type parameter for more details.
 .Parameter NotEquals
 Tests if the first value is not equal to the second.
+
+The -NotEquals parameter has the alias -ne.
 
 Return Value   Condition
 ------------   ---------
@@ -52,6 +56,8 @@ $true          PowerShell's -ne operator returns $true
 .Parameter LessThan
 Tests if the first value is less than the second.
 
+The -LessThan parameter has the alias -lt.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not a number*
@@ -62,6 +68,8 @@ $true          PowerShell's -lt operator returns $true
 * See -Type parameter for more details.
 .Parameter LessThanOrEqualTo
 Tests if the first value is less than or equal to the second.
+
+The -LessThanOrEqualTo parameter has the alias -le.
 
 Return Value   Condition
 ------------   ---------
@@ -74,6 +82,8 @@ $true          PowerShell's -le operator returns $true
 .Parameter GreaterThan
 Tests if the first value is greater than the second.
 
+The -GreaterThan parameter has the alias -gt.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not a number*
@@ -84,6 +94,8 @@ $true          PowerShell's -gt operator returns $true
 * See -Type parameter for more details.
 .Parameter GreaterThanOrEqualTo
 Tests if the first value is greater than or equal to the second.
+
+The -GreaterThanOrEqualTo parameter has the alias -ge.
 
 Return Value   Condition
 ------------   ---------

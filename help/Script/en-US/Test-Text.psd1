@@ -18,9 +18,7 @@ Note about language and culture
 
 All the operators mentioned above will be affected by the different rules of languages and cultures. From the MSDN documentation, it seems that the regular expression operators (Match and NotMatch) are the only operators listed above that cannot be used in a way that is not sensitive to language or culture.
 
-If you want text operators that are not affected by language and culture, see the script in the following link:
-    A PowerShell String Testing Function - Update
-    https://gallery.technet.microsoft.com/scriptcenter/A-PowerShell-String-5ea692a6
+Use Test-String if you want text operators that are not affected by language and culture.
 .Parameter Value
 The value to test.
 .Parameter IsText
@@ -126,6 +124,8 @@ $true          String method EndsWith(String, StringComparison) returns $false
 .Parameter Equals
 Tests if the first value is equal to the second.
 
+The -Equals parameter has the alias -eq.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not of type System.String
@@ -135,6 +135,8 @@ $true          String.Equals(String, String, StringComparison) returns $true
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
 .Parameter NotEquals
 Tests if the first value is not equal to the second.
+
+The -NotEquals parameter has the alias -ne.
 
 Return Value   Condition
 ------------   ---------
@@ -146,6 +148,8 @@ $true          String.Equals(String, String, StringComparison) returns $false
 .Parameter LessThan
 Tests if the first value is less than the second.
 
+The -LessThan parameter has the alias -lt.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not of type System.String
@@ -155,6 +159,8 @@ $true          String.Compare(String, String, StringComparison) < 0
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
 .Parameter LessThanOrEqualTo
 Tests if the first value is less than or equal to the second.
+
+The -LessThanOrEqualTo parameter has the alias -le.
 
 Return Value   Condition
 ------------   ---------
@@ -166,6 +172,8 @@ $true          String.Compare(String, String, StringComparison) <= 0
 .Parameter GreaterThan
 Tests if the first value is greater than the second.
 
+The -GreaterThan parameter has the alias -gt.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not of type System.String
@@ -175,6 +183,8 @@ $true          String.Compare(String, String, StringComparison) > 0
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.
 .Parameter GreaterThanOrEqualTo
 Tests if the first value is greater than or equal to the second.
+
+The -GreaterThanOrEqualTo parameter has the alias -ge.
 
 Return Value   Condition
 ------------   ---------

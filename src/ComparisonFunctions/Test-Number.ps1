@@ -1,6 +1,6 @@
 function Test-Number
 {
-    [CmdletBinding(DefaultParameterSetName='OpIsNumber')]
+    [CmdletBinding(DefaultParameterSetName='IsNumber')]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
@@ -8,7 +8,7 @@ function Test-Number
         [System.Object]
         $Value,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpIsNumber')]
+        [Parameter(Mandatory=$false, ParameterSetName='IsNumber')]
         [System.Management.Automation.SwitchParameter]
         $IsNumber = $true,
 
@@ -117,7 +117,7 @@ function Test-Number
     }
 
     switch ($PSCmdlet.ParameterSetName) {
-        'OpIsNumber' {
+        'IsNumber' {
             return (isNumber $Value) -xor (-not $IsNumber)
         }
         'OpEquals' {

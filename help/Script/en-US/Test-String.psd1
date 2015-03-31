@@ -127,6 +127,8 @@ $true          String method EndsWith(String, StringComparison) returns $false
 .Parameter Equals
 Tests if the first value is equal to the second.
 
+The -Equals parameter has the alias -eq.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not a string*
@@ -136,6 +138,8 @@ $true          String.Equals(String, String, StringComparison) returns $true
 *See the -Normalization parameter for more details
 .Parameter NotEquals
 Tests if the first value is not equal to the second.
+
+The -NotEquals parameter has the alias -ne.
 
 Return Value   Condition
 ------------   ---------
@@ -147,6 +151,8 @@ $true          String.Equals(String, String, StringComparison) returns $false
 .Parameter LessThan
 Tests if the first value is less than the second.
 
+The -LessThan parameter has the alias -lt.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not a string*
@@ -156,6 +162,8 @@ $true          String.Compare(String, String, StringComparison) < 0
 *See the -Normalization parameter for more details
 .Parameter LessThanOrEqualTo
 Tests if the first value is less than or equal to the second.
+
+The -LessThanOrEqualTo parameter has the alias -le.
 
 Return Value   Condition
 ------------   ---------
@@ -167,6 +175,8 @@ $true          String.Compare(String, String, StringComparison) <= 0
 .Parameter GreaterThan
 Tests if the first value is greater than the second.
 
+The -GreaterThan parameter has the alias -gt.
+
 Return Value   Condition
 ------------   ---------
 $null          one or both of the values is not a string*
@@ -176,6 +186,8 @@ $true          String.Compare(String, String, StringComparison) > 0
 *See the -Normalization parameter for more details
 .Parameter GreaterThanOrEqualTo
 Tests if the first value is greater than or equal to the second.
+
+The -GreaterThanOrEqualTo parameter has the alias -ge.
 
 Return Value   Condition
 ------------   ---------
