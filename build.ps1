@@ -69,7 +69,7 @@ $buildScriptDir = Join-Path -Path $buildDir -ChildPath 'Script'
 $buildModuleDir = Join-Path -Path $buildDir -ChildPath 'Module\AssertLibrary'
 
 $licenseFile   = Join-Path -Path $basePath -ChildPath 'LICENSE.txt'
-$scriptHelpDir = Join-Path -Path $basePath -ChildPath 'help\Script\en-US'
+$scriptHelpDir = Join-Path -Path $basePath -ChildPath 'help\Script'
 $moduleHelpDir = Join-Path -Path $basePath -ChildPath 'help\Module'
 
 $functionFiles = @(Get-ChildItem -LiteralPath (Join-Path -Path $basePath -ChildPath 'src') -Filter *.ps1 -Recurse)
@@ -147,17 +147,28 @@ function buildHeader
 
 function buildScript
 {
-    $ps1 = Join-Path -Path $buildScriptDir -ChildPath 'AssertLibrary.ps1'
     $null = New-Item -Path $buildScriptDir -ItemType Directory -Force -Verbose:$VerbosePreference
 
-    $(& {
-        buildHeader
-        foreach ($item in $functionFiles) {
-            Get-Content -LiteralPath (Join-Path -Path $scriptHelpDir -ChildPath ($item.BaseName + '.psd1'))
-            Get-Content -LiteralPath $item.PSPath
-            ''
+    foreach ($dir in @(Get-ChildItem -LiteralPath $scriptHelpDir | Where-Object {$_.PSIsContainer})) {
+        $scriptLocalizedHelpDir = Join-Path -Path $scriptHelpDir -ChildPath $dir.BaseName
+
+        $lines = @(& {
+            buildHeader
+            foreach ($item in $functionFiles) {
+                Get-Content -LiteralPath (Join-Path -Path $scriptLocalizedHelpDir -ChildPath ($item.BaseName + '.psd1'))
+                Get-Content -LiteralPath $item.PSPath
+                ''
+            }
+        })
+
+        $ps1 = Join-Path -Path $buildScriptDir -ChildPath ('AssertLibrary_{0}.ps1' -f $dir.BaseName)
+        $lines | Out-File -FilePath $ps1 -Encoding ascii -Verbose:$VerbosePreference
+
+        if ($dir.BaseName.Equals('en-US', [System.StringComparison]::OrdinalIgnoreCase)) {
+            $ps1 = Join-Path -Path $buildScriptDir -ChildPath 'AssertLibrary.ps1'
+            $lines | Out-File -FilePath $ps1 -Encoding ascii -Verbose:$VerbosePreference
         }
-    }) | Out-File -FilePath $ps1 -Encoding ascii -Verbose:$VerbosePreference
+    }
 }
 
 function buildModule
@@ -176,7 +187,8 @@ function buildModule
             #------- Uncomment lines above when external help files are ready -------
 
             #------- Remove lines below when external help files are ready -------
-            Get-Content -LiteralPath (Join-Path -Path $scriptHelpDir -ChildPath ($item.BaseName + '.psd1'))
+            $scriptLocalizedHelpDir = Join-Path -Path $scriptHelpDir -ChildPath 'en-US'
+            Get-Content -LiteralPath (Join-Path -Path $scriptLocalizedHelpDir -ChildPath ($item.BaseName + '.psd1'))
             #------- Remove lines above when external help files are ready -------
 
             Get-Content -LiteralPath $item.PSPath
