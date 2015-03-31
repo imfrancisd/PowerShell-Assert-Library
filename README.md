@@ -19,15 +19,21 @@ The functions are fully documented with specifications and examples.
 
 Use PowerShell's Get-Help cmdlet to see the documentation for each function.
 
+The functions were tested on PowerShell versions 2 and 4.
+
 #### What do I need?
 You need PowerShell version 2 or higher.
 
 Include 1 of the following in your scripts or module if you want to use these functions in your automated tests:
 * "Release\Script\AssertLibrary.ps1" script file
-* "Release\Script\AssertLibrary_en-US.ps1" script file
 * "Release\Module\AssertLibrary\" module directory.
 
-The functions were tested on PowerShell versions 2 and 4.
+##### NOTE:
+The "Release\Script\" directory has multiple script files.
+
+The only difference between these script files is the language used to write the documentation. For example, "AssertLibrary_en-US.ps1" contains documentation written for people who speak English in the US.
+
+You only need 1 of these files.
 
 #### What kinds of things can I do with these functions?
 There are three kinds of functions in this library:
