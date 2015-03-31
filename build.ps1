@@ -6,35 +6,37 @@ Build a single script or a single module from the files in the "src" directory.
 .Description
 Build a single script or a single module from the files in the "src" directory.
 
-The output will be in a directory called "Release".
+The output will be in a directory called "Debug".
+
+Use the -Release switch to build the "Release" directory.
 .Example
 .\build.ps1 -All -Verbose
-Build a script and a module and store them in the "Release" directory.
+Build a script and a module and store them in the "Debug" directory.
 .Example
 .\build.ps1 -Clean -Verbose
-Remove the "Release" directory.
+Remove the "Debug" directory.
 .Example
 .\build.ps1 -All -WhatIf
 See which files and directories will be modified without actually modifying those files and directories.
 #>
 [CmdletBinding(DefaultParameterSetName='All', SupportsShouldProcess=$true)]
 Param(
-    #Clean "Release\" and build "Release\Script\" and build "Release\Module\".
+    #Clean "Debug\" and build "Debug\Script\" and build "Debug\Module\".
     [Parameter(Mandatory=$false, ParameterSetName='All')]
     [System.Management.Automation.SwitchParameter]
     $All = $true,
 
-    #Build "Release\Script\".
+    #Build "Debug\Script\".
     [Parameter(Mandatory=$true, ParameterSetName='Script')]
     [System.Management.Automation.SwitchParameter]
     $Script,
 
-    #Build "Release\Module\".
+    #Build "Debug\Module\".
     [Parameter(Mandatory=$true, ParameterSetName='Module')]
     [System.Management.Automation.SwitchParameter]
     $Module,
 
-    #Clean "Release\".
+    #Clean "Debug\".
     [Parameter(Mandatory=$true, ParameterSetName='Clean')]
     [System.Management.Automation.SwitchParameter]
     $Clean,
@@ -47,16 +49,25 @@ Param(
     #The minimum PowerShell version required by this library.
     [Parameter(Mandatory=$false)]
     [System.Version]
-    $PowerShellVersion = '2.0'
+    $PowerShellVersion = '2.0',
+
+    #Build the "Release" folder.
+    [Parameter(Mandatory=$true, ParameterSetName='Release')]
+    [System.Management.Automation.SwitchParameter]
+    $Release
 )
 
 $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
 $basePath = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
 
-$outDir = Join-Path -Path $basePath -ChildPath 'Release'
-$outScriptDir = Join-Path -Path $outDir -ChildPath 'Script'
-$outModuleDir = Join-Path -Path $outDir -ChildPath 'Module\AssertLibrary'
+$debugDir = Join-Path -Path $basePath -ChildPath 'Debug'
+$debugScriptDir = Join-Path -Path $debugDir -ChildPath 'Script'
+$debugModuleDir = Join-Path -Path $debugDir -ChildPath 'Module\AssertLibrary'
+
+$releaseDir = Join-Path -Path $basePath -ChildPath 'Release'
+$releaseScriptDir = Join-Path -Path $releaseDir -ChildPath 'Script'
+$releaseModuleDir = Join-Path -Path $releaseDir -ChildPath 'Module\AssertLibrary'
 
 $localizedHelpDir = Join-Path -Path $basePath -ChildPath 'help'
 
@@ -86,29 +97,37 @@ function main($target)
     switch ($target) {
         'All' {
             if ($All) {
-                cleanAll
-                buildScript
-                buildModule
+                clean $debugDir
+                buildScript $debugScriptDir
+                buildModule $debugModuleDir
             }
             return
         }
         'Clean' {
             if ($Clean) {
-                cleanAll
+                clean $debugDir
             }
             return
         }
         'Script' {
             if ($Script) {
-                cleanScript
-                buildScript
+                clean $debugScriptDir
+                buildScript $debugScriptDir
             }
             return
         }
         'Module' {
             if ($Module) {
-                cleanModule
-                buildModule
+                clean $debugModuleDir
+                buildModule $debugModuleDir
+            }
+            return
+        }
+        'Release' {
+            if ($Release) {
+                clean $releaseDir
+                buildScript $releaseScriptDir
+                buildModule $releaseModuleDir
             }
             return
         }
@@ -118,24 +137,10 @@ function main($target)
     }
 }
 
-function cleanAll
+function clean($fullPath)
 {
-    if (Test-Path -LiteralPath $outDir) {
-        Remove-Item -LiteralPath $outDir -Recurse -Verbose:$VerbosePreference
-    }
-}
-
-function cleanScript
-{
-    if (Test-Path -LiteralPath $outScriptDir) {
-        Remove-Item -LiteralPath $outScriptDir -Recurse -Verbose:$VerbosePreference
-    }
-}
-
-function cleanModule
-{
-    if (Test-Path -LiteralPath $outModuleDir) {
-        Remove-Item -LiteralPath $outModuleDir -Recurse -Verbose:$VerbosePreference
+    if (Test-Path -LiteralPath $fullPath) {
+        Remove-Item -LiteralPath $fullPath -Recurse -Verbose:$VerbosePreference
     }
 }
 
@@ -152,10 +157,10 @@ function buildHeader
     ''
 }
 
-function buildScript
+function buildScript($scriptDir)
 {
-    $ps1 = Join-Path -Path $outScriptDir -ChildPath 'AssertLibrary.ps1'
-    $null = New-Item -Path $outScriptDir -ItemType Directory -Force -Verbose:$VerbosePreference
+    $ps1 = Join-Path -Path $scriptDir -ChildPath 'AssertLibrary.ps1'
+    $null = New-Item -Path $scriptDir -ItemType Directory -Force -Verbose:$VerbosePreference
 
     $(& {
         buildHeader
@@ -166,13 +171,13 @@ function buildScript
     }) | Out-File -FilePath $ps1 -Encoding ascii -Verbose:$VerbosePreference
 }
 
-function buildModule
+function buildModule($moduleDir)
 {
-    $psm1 = Join-Path -Path $outModuleDir -ChildPath 'AssertLibrary.psm1'
-    $psd1 = Join-Path -Path $outModuleDir -ChildPath 'AssertLibrary.psd1'
-    $null = New-Item -Path $outModuleDir -ItemType Directory -Force -Verbose:$VerbosePreference
+    $psm1 = Join-Path -Path $moduleDir -ChildPath 'AssertLibrary.psm1'
+    $psd1 = Join-Path -Path $moduleDir -ChildPath 'AssertLibrary.psd1'
+    $null = New-Item -Path $moduleDir -ItemType Directory -Force -Verbose:$VerbosePreference
 
-    Copy-Item -LiteralPath $licenseFile -Destination $outModuleDir -Verbose:$VerbosePreference
+    Copy-Item -LiteralPath $licenseFile -Destination $moduleDir -Verbose:$VerbosePreference
 
     $(& {
         buildHeader
@@ -226,7 +231,7 @@ function buildModule
 
     foreach ($item in (Get-ChildItem -LiteralPath $localizedHelpDir)) {
         if ($item.PSIsContainer) {
-            $item | Copy-Item -Destination $outModuleDir -Recurse -Verbose:$VerbosePreference
+            $item | Copy-Item -Destination $moduleDir -Recurse -Verbose:$VerbosePreference
         }
     }
 }

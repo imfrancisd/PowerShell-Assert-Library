@@ -1,0 +1,5 @@
+*.txt   eol=crlf
+*.ps1   eol=crlf
+*.psd1  eol=crlf
+*.psm1  eol=crlf
+*.xml   eol=crlf
