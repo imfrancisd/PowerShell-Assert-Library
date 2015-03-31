@@ -13,6 +13,21 @@ if ($Silent) {
 }
 
 & {
+    Write-Verbose -Message 'Test Test-DateTime with get-help -full' -Verbose:$headerVerbosity
+
+    $err = try {$fullHelp = Get-Help Test-DateTime -Full} catch {$_}
+
+    Assert-Null $err
+    Assert-True ($fullHelp.Name -is [System.String])
+    Assert-True ($fullHelp.Name.Equals('Test-DateTime', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($fullHelp.description -is [System.Collections.ICollection])
+    Assert-True ($fullHelp.description.Count -gt 0)
+    Assert-NotNull $fullHelp.examples
+    Assert-True (0 -lt @($fullHelp.examples.example).Count)
+    Assert-True ('' -ne @($fullHelp.examples.example)[0].code)
+}
+
+& {
     Write-Verbose -Message 'Test Test-DateTime -IsDateTime' -Verbose:$headerVerbosity
 
     $dateTimes = [System.DateTime[]]@(0, 1, '2015-06-28', '2016-03-14')

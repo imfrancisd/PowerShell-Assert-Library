@@ -13,6 +13,21 @@ if ($Silent) {
 }
 
 & {
+    Write-Verbose -Message 'Test Test-Text with get-help -full' -Verbose:$headerVerbosity
+
+    $err = try {$fullHelp = Get-Help Test-Text -Full} catch {$_}
+
+    Assert-Null $err
+    Assert-True ($fullHelp.Name -is [System.String])
+    Assert-True ($fullHelp.Name.Equals('Test-Text', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($fullHelp.description -is [System.Collections.ICollection])
+    Assert-True ($fullHelp.description.Count -gt 0)
+    Assert-NotNull $fullHelp.examples
+    Assert-True (0 -lt @($fullHelp.examples.example).Count)
+    Assert-True ('' -ne @($fullHelp.examples.example)[0].code)
+}
+
+& {
     Write-Verbose -Message 'Test Test-Text -IsText' -Verbose:$headerVerbosity
 
     $texts = [System.String[]]@('', ' ', '  ', '2.72', '2015-03-14', 'hello world')

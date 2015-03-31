@@ -20,6 +20,27 @@ $nonBooleanTrue = @(
 )
 
 & {
+    Write-Verbose -Message 'Test Assert-Null with get-help -full' -Verbose:$headerVerbosity
+
+    $err = try {$fullHelp = Get-Help Assert-Null -Full} catch {$_}
+
+    $pass =
+        ($null -eq $err) -and
+        ($fullHelp.Name -is [System.String]) -and
+        ($fullHelp.Name.Equals('Assert-Null', [System.StringComparison]::OrdinalIgnoreCase)) -and
+        ($fullHelp.description -is [System.Collections.ICollection]) -and
+        ($fullHelp.description.Count -gt 0) -and
+        ($null -ne $fullHelp.examples) -and
+        (0 -lt @($fullHelp.examples.example).Count) -and
+        ('' -ne @($fullHelp.examples.example)[0].code)
+
+    if (-not $pass) {
+        $message = 'Assert-Null failed with get-help -full.'
+        throw New-Object 'System.Exception' -ArgumentList @($message)
+    }
+}
+
+& {
     Write-Verbose -Message 'Test Assert-Null with Boolean $null' -Verbose:$headerVerbosity
 
     $out1 = New-Object -TypeName 'System.Collections.ArrayList'

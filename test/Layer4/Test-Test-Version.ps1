@@ -13,6 +13,21 @@ if ($Silent) {
 }
 
 & {
+    Write-Verbose -Message 'Test Test-Version with get-help -full' -Verbose:$headerVerbosity
+
+    $err = try {$fullHelp = Get-Help Test-Version -Full} catch {$_}
+
+    Assert-Null $err
+    Assert-True ($fullHelp.Name -is [System.String])
+    Assert-True ($fullHelp.Name.Equals('Test-Version', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($fullHelp.description -is [System.Collections.ICollection])
+    Assert-True ($fullHelp.description.Count -gt 0)
+    Assert-NotNull $fullHelp.examples
+    Assert-True (0 -lt @($fullHelp.examples.example).Count)
+    Assert-True ('' -ne @($fullHelp.examples.example)[0].code)
+}
+
+& {
     Write-Verbose -Message 'Test Test-Version -IsVersion' -Verbose:$headerVerbosity
 
     $versions = [System.Version[]]@('0.0', '1.0', '2.7.2', '3.1.41.6')

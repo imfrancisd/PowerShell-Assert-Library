@@ -20,6 +20,21 @@ $nonBooleanTrue = @(
 )
 
 & {
+    Write-Verbose -Message 'Test Assert-PipelineAny with get-help -full' -Verbose:$headerVerbosity
+
+    $err = try {$fullHelp = Get-Help Assert-PipelineAny -Full} catch {$_}
+
+    Assert-Null $err
+    Assert-True ($fullHelp.Name -is [System.String])
+    Assert-True ($fullHelp.Name.Equals('Assert-PipelineAny', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($fullHelp.description -is [System.Collections.ICollection])
+    Assert-True ($fullHelp.description.Count -gt 0)
+    Assert-NotNull $fullHelp.examples
+    Assert-True (0 -lt @($fullHelp.examples.example).Count)
+    Assert-True ('' -ne @($fullHelp.examples.example)[0].code)
+}
+
+& {
     Write-Verbose -Message 'Test Assert-PipelineAny with Boolean $true' -Verbose:$headerVerbosity
 
     $out1 = New-Object -TypeName 'System.Collections.ArrayList'
