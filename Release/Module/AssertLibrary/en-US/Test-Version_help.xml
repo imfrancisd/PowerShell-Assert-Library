@@ -10,8 +10,6 @@
         </command:parameter>
         <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
           <maml:name>IsVersion</maml:name>
-          <command:parameterValue required="false">
-          </command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>

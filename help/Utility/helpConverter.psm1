@@ -95,15 +95,17 @@ function Add-MamlHelpCommand
                             [System.Void]$cmdSyntaxItemParameterName.AppendChild($cmdSyntaxItemParameterNameValue)
                         [System.Void]$cmdSyntaxItemParameter.AppendChild($cmdSyntaxItemParameterName)
 
-                        $cmdSyntaxItemParameterValue = $shared.xmlDoc.CreateElement('command', 'parameterValue', $shared.cmdUri)
-                            $xmlAttr = $shared.xmlDoc.CreateAttribute('required')
-                                $xmlAttrValue = $shared.xmlDoc.CreateTextNode(($syntaxItemParameter.parameterValue.required -as [System.Boolean]).ToString().ToLowerInvariant())
-                                [System.Void]$xmlAttr.AppendChild($xmlAttrValue)
-                            [System.Void]$cmdSyntaxItemParameterValue.Attributes.Append($xmlAttr)
+                        if ($null -ne $syntaxItemParameter.parameterValue) {
+                            $cmdSyntaxItemParameterValue = $shared.xmlDoc.CreateElement('command', 'parameterValue', $shared.cmdUri)
+                                $xmlAttr = $shared.xmlDoc.CreateAttribute('required')
+                                    $xmlAttrValue = $shared.xmlDoc.CreateTextNode($syntaxItemParameter.parameterValue.required)
+                                    [System.Void]$xmlAttr.AppendChild($xmlAttrValue)
+                                [System.Void]$cmdSyntaxItemParameterValue.Attributes.Append($xmlAttr)
 
-                            $cmdSyntaxItemParameterValueValue = $shared.xmlDoc.CreateTextNode($syntaxItemParameter.parameterValue)
-                            [System.Void]$cmdSyntaxItemParameterValue.AppendChild($cmdSyntaxItemParameterValueValue)
-                        [System.Void]$cmdSyntaxItemParameter.AppendChild($cmdSyntaxItemParameterValue)
+                                $cmdSyntaxItemParameterValueValue = $shared.xmlDoc.CreateTextNode($syntaxItemParameter.parameterValue)
+                                [System.Void]$cmdSyntaxItemParameterValue.AppendChild($cmdSyntaxItemParameterValueValue)
+                            [System.Void]$cmdSyntaxItemParameter.AppendChild($cmdSyntaxItemParameterValue)
+                        }
 
                     [System.Void]$cmdSyntaxItem.AppendChild($cmdSyntaxItemParameter)
                 }
