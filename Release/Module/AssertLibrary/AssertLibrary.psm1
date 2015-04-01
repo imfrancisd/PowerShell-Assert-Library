@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.1.0.1
+#Assert Library version 1.1.0.2
 #
 #PowerShell requirements
 #requires -version 2.0

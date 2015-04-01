@@ -97,7 +97,7 @@ function Add-MamlHelpCommand
 
                         $cmdSyntaxItemParameterValue = $shared.xmlDoc.CreateElement('command', 'parameterValue', $shared.cmdUri)
                             $xmlAttr = $shared.xmlDoc.CreateAttribute('required')
-                                $xmlAttrValue = $shared.xmlDoc.CreateTextNode($syntaxItemParameter.parameterValue.required)
+                                $xmlAttrValue = $shared.xmlDoc.CreateTextNode(($syntaxItemParameter.parameterValue.required -as [System.Boolean]).ToString().ToLowerInvariant())
                                 [System.Void]$xmlAttr.AppendChild($xmlAttrValue)
                             [System.Void]$cmdSyntaxItemParameterValue.Attributes.Append($xmlAttr)
 
