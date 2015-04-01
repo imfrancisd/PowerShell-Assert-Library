@@ -4,14 +4,14 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Assert-PipelineEmpty</maml:name>
-        <command:parameter required="true" globbing="" pipelineInput="true (ByValue)" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="1">
           <maml:name>InputObject</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="" pipelineInput="true (ByValue)" position="1">
+      <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="1">
         <maml:name>InputObject</maml:name>
         <maml:description>
           <maml:para>The object from the pipeline.
@@ -29,10 +29,8 @@ The argument for this parameter must come from the pipeline.</maml:para>
     </command:parameters>
     <command:details>
       <command:name>Assert-PipelineEmpty</command:name>
-      <command:verb>
-      </command:verb>
-      <command:noun>
-      </command:noun>
+      <command:verb>Assert</command:verb>
+      <command:noun>PipelineEmpty</command:noun>
       <maml:description>
         <maml:para>Assert that the pipeline does not contain any objects.</maml:para>
       </maml:description>
