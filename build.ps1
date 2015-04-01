@@ -48,7 +48,7 @@ Param(
     #The version number to attach to the built script and module.
     [Parameter(Mandatory=$false)]
     [System.Version]
-    $LibraryVersion = '1.0.0.12',
+    $LibraryVersion = '1.1.0.0',
 
     #The minimum PowerShell version required by this library.
     [Parameter(Mandatory=$false)]
@@ -182,15 +182,7 @@ function buildModule
     $(& {
         buildHeader
         foreach ($item in $functionFiles) {
-            #------- Uncomment lines below when external help files are ready -------
-            #'#.ExternalHelp AssertLibrary.psm1-help.xml'
-            #------- Uncomment lines above when external help files are ready -------
-
-            #------- Remove lines below when external help files are ready -------
-            $scriptLocalizedHelpDir = Join-Path -Path $scriptHelpDir -ChildPath 'en-US'
-            Get-Content -LiteralPath (Join-Path -Path $scriptLocalizedHelpDir -ChildPath ($item.BaseName + '.psd1'))
-            #------- Remove lines above when external help files are ready -------
-
+            "#.ExternalHelp $($item.BaseName)_help.xml"
             Get-Content -LiteralPath $item.PSPath
             ''
         }

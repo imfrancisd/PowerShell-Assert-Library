@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<helpItems schema="maml">
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10">
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Assert-NotNull</maml:name>
+        <command:parameter required="true" globbing="" pipelineInput="false" position="1">
+          <maml:name>Value</maml:name>
+          <command:parameterValue required="true">Object</command:parameterValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" globbing="" pipelineInput="false" position="1">
+        <maml:name>Value</maml:name>
+        <maml:description>
+          <maml:para>The value to assert.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">Object</command:parameterValue>
+        <dev:type>
+          <maml:name>Object</maml:name>
+        </dev:type>
+        <dev:defaultValue>
+        </dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:details>
+      <command:name>Assert-NotNull</command:name>
+      <command:verb>
+      </command:verb>
+      <command:noun>
+      </command:noun>
+      <maml:description>
+        <maml:para>Assert that a value is not $null.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>This function throws an error if any of the following conditions are met:
+    *the value being asserted is $null</maml:para>
+    </maml:description>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+Assert-NotNull $a
+Assert-NotNull $b
+Assert-NotNull $c</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>Assert-NotNull $a</dev:code>
+        <dev:remarks>
+          <maml:para>Throws an error if $a evaluates to $null.</maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>Assert-NotNull $a -Verbose</dev:code>
+        <dev:remarks>
+          <maml:para>Throws an error if $a evaluates to $null.
+The -Verbose switch will output the result of the assertion to the Verbose stream.</maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>Assert-NotNull $a -Debug</dev:code>
+        <dev:remarks>
+          <maml:para>Throws an error if $a evaluates to $null.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.</maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <maml:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Assert-True
+Assert-False
+Assert-Null
+Assert-PipelineEmpty
+Assert-PipelineAny
+Assert-PipelineSingle
+Assert-PipelineCount</maml:linkText>
+      </maml:navigationLink>
+    </maml:relatedLinks>
+  </command:command>
+</helpItems>
