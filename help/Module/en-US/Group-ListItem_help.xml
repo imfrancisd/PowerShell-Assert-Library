@@ -1,6 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <helpItems schema="maml">
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10">
+    <command:details>
+      <command:name>Group-ListItem</command:name>
+      <maml:description>
+        <maml:para>Generates groups of items (such as combinations, permutations, and Cartesian products) from lists that make common testing tasks easy and simple.</maml:para>
+      </maml:description>
+      <command:verb>Group</command:verb>
+      <command:noun>ListItem</command:noun>
+    </command:details>
+    <maml:description>
+      <maml:para>The following list processing functions can be used to generate test data, to run functions and scripts with different parameter values, or even to generate parts of test scripts.
+
+Function            Description
+--------            -----------
+Pair                groups adjacent items in a list into groups of 2 items
+Window              groups adjacent items in a list into groups of 0 or more items
+Combine             groups items in a list into combinations of 0 or more items
+Permute             groups items in a list into permutations of 0 or more items
+CoveringArray       groups items from n lists into a covering array for t-way tests
+CartesianProduct    groups items from n lists into cartesian products of n items
+Zip                 groups items from n lists with the same index into groups of n items
+
+With these functions, many tasks that would require nested loops can be simplified to a single loop or a single pipeline.
+
+Here is an example of testing multiple scripts using different PowerShell configurations. This kind of task typically requires nested loops (one loop for each parameter), but this example uses Group-ListItem -CartesianProduct to generate the parameter values for powershell.exe.
+
+    $versions     = @(2, 4)
+    $apStates     = @('-sta', '-mta')
+    $execPolicies = @('remotesigned')
+    $fileNames    = @('.\script1.ps1', '.\script2.ps1', '.\script3.ps1')
+
+    Group-ListItem -CartesianProduct $versions, $apStates, $execPolicies, $fileNames | % {
+        $ver, $aps, $exp, $file = $_.Items
+        if (($ver -le 2) -and ($aps -eq '-mta')) {$aps = ''}    #PS2 has no -mta switch
+
+        powershell -version $ver $aps -noprofile -noninteractive -executionpolicy $exp -file $file
+    }</maml:para>
+    </maml:description>
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Group-ListItem</maml:name>
@@ -318,47 +355,12 @@ If the lists do not have the same number of items, the number of groups in the o
         </dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:details>
-      <command:name>Group-ListItem</command:name>
-      <command:verb>Group</command:verb>
-      <command:noun>ListItem</command:noun>
-      <maml:description>
-        <maml:para>Generates groups of items (such as combinations, permutations, and Cartesian products) from lists that make common testing tasks easy and simple.</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>The following list processing functions can be used to generate test data, to run functions and scripts with different parameter values, or even to generate parts of test scripts.
-
-Function            Description
---------            -----------
-Pair                groups adjacent items in a list into groups of 2 items
-Window              groups adjacent items in a list into groups of 0 or more items
-Combine             groups items in a list into combinations of 0 or more items
-Permute             groups items in a list into permutations of 0 or more items
-CoveringArray       groups items from n lists into a covering array for t-way tests
-CartesianProduct    groups items from n lists into cartesian products of n items
-Zip                 groups items from n lists with the same index into groups of n items
-
-With these functions, many tasks that would require nested loops can be simplified to a single loop or a single pipeline.
-
-Here is an example of testing multiple scripts using different PowerShell configurations. This kind of task typically requires nested loops (one loop for each parameter), but this example uses Group-ListItem -CartesianProduct to generate the parameter values for powershell.exe.
-
-  $versions     = @(2, 4)
-  $apStates     = @('-sta', '-mta')
-  $execPolicies = @('remotesigned')
-  $fileNames    = @('.\script1.ps1', '.\script2.ps1', '.\script3.ps1')
-
-  Group-ListItem -CartesianProduct $versions, $apStates, $execPolicies, $fileNames | % {
-    $ver, $aps, $exp, $file = $_.Items
-    if (($ver -le 2) -and ($aps -eq '-mta')) {$aps = ''}    #PS2 has no -mta switch
-
-    powershell -version $ver $aps -noprofile -noninteractive -executionpolicy $exp -file $file
-  }</maml:para>
-    </maml:description>
     <command:inputTypes>
       <command:inputType>
         <dev:type>
-          <maml:name>System.Collections.IList</maml:name>
+          <maml:name>None
+
+This function does not accept input from the pipeline.</maml:name>
         </dev:type>
       </command:inputType>
     </command:inputTypes>
@@ -831,11 +833,5 @@ group-listItem -zip $aList, $bList | foreach-object {$a, $b = $_.Items; assert-t
         </dev:remarks>
       </command:example>
     </command:examples>
-    <maml:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>
-        </maml:linkText>
-      </maml:navigationLink>
-    </maml:relatedLinks>
   </command:command>
 </helpItems>
