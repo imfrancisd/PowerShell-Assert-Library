@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.1.0.3
+#Assert Library version 1.2.0.0
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -50,8 +50,9 @@ Assert-False ($a -eq $b) -Debug
 Throws an error if the expression ($a -eq $b) does not evaluate to $false.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
-System.Boolean
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 None
 .Notes
@@ -68,11 +69,17 @@ Assert-False ($null -eq $b)
 Assert-False ($a -eq $b)
 .Link
 Assert-True
+.Link
 Assert-Null
+.Link
 Assert-NotNull
+.Link
 Assert-PipelineEmpty
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineSingle
+.Link
 Assert-PipelineCount
 #>
 function Assert-False
@@ -145,7 +152,9 @@ Assert-NotNull $a -Debug
 Throws an error if $a evaluates to $null.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 None
 .Notes
@@ -162,11 +171,17 @@ Assert-NotNull $b
 Assert-NotNull $c
 .Link
 Assert-True
+.Link
 Assert-False
+.Link
 Assert-Null
+.Link
 Assert-PipelineEmpty
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineSingle
+.Link
 Assert-PipelineCount
 #>
 function Assert-NotNull
@@ -239,7 +254,9 @@ Assert-Null $a -Debug
 Throws an error if $a does not evaluate to $null.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 None
 .Notes
@@ -256,11 +273,17 @@ Assert-Null $b
 Assert-Null $c
 .Link
 Assert-True
+.Link
 Assert-False
+.Link
 Assert-NotNull
+.Link
 Assert-PipelineEmpty
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineSingle
+.Link
 Assert-PipelineCount
 #>
 function Assert-Null
@@ -339,8 +362,12 @@ Throws an error if Get-Random does not return any objects.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
 System.Object
+
+This function accepts any kind of object from the pipeline.
 .Outputs
 System.Object
+
+If the assertion passes, this function outputs the objects from the pipeline input.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -355,11 +382,17 @@ $b = myFunc2 | Assert-PipelineAny
 $c = myFunc3 | Assert-PipelineAny
 .Link
 Assert-True
+.Link
 Assert-False
+.Link
 Assert-Null
+.Link
 Assert-NotNull
+.Link
 Assert-PipelineEmpty
+.Link
 Assert-PipelineSingle
+.Link
 Assert-PipelineCount
 #>
 function Assert-PipelineAny
@@ -489,8 +522,12 @@ $a = Get-ChildItem 'a*' | Assert-PipelineCount -Minimum 5 | Assert-PipelineCount
 Throws an error if Get-ChildItem 'a*' either returns less than five objects, or returns more than 10 objects.
 .Inputs
 System.Object
+
+This function accepts any kind of object from the pipeline.
 .Outputs
 System.Object
+
+If the assertion passes, this function outputs the objects from the pipeline input.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -506,11 +543,17 @@ $c = myFunc3 | Assert-PipelineCount -Maximum 2
 $d = myFunc4 | Assert-PipelineCount -Minimum 3 | Assert-PipelineCount -Maximum 14
 .Link
 Assert-True
+.Link
 Assert-False
+.Link
 Assert-Null
+.Link
 Assert-NotNull
+.Link
 Assert-PipelineEmpty
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineSingle
 #>
 function Assert-PipelineCount
@@ -663,6 +706,8 @@ Throws an error if Get-ChildItem 'aFileThatDoesNotExist*' returns an object.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
 System.Object
+
+This function accepts any kind of object from the pipeline.
 .Outputs
 None
 .Notes
@@ -679,11 +724,17 @@ myFunc2 | Assert-PipelineEmpty
 myFunc3 | Assert-PipelineEmpty
 .Link
 Assert-True
+.Link
 Assert-False
+.Link
 Assert-Null
+.Link
 Assert-NotNull
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineSingle
+.Link
 Assert-PipelineCount
 #>
 function Assert-PipelineEmpty
@@ -789,8 +840,12 @@ Throws an error if Get-Random does not return a single object.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
 System.Object
+
+This function accepts any kind of object from the pipeline.
 .Outputs
 System.Object
+
+If the assertion passes, this function outputs the objects from the pipeline input.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -805,11 +860,17 @@ $b = myFunc2 | Assert-PipelineSingle
 $c = myFunc3 | Assert-PipelineSingle
 .Link
 Assert-True
+.Link
 Assert-False
+.Link
 Assert-Null
+.Link
 Assert-NotNull
+.Link
 Assert-PipelineEmpty
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineCount
 #>
 function Assert-PipelineSingle
@@ -933,8 +994,9 @@ Assert-True ($a -eq $b) -Debug
 Throws an error if the expression ($a -eq $b) does not evaluate to $true.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
-System.Boolean
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 None
 .Notes
@@ -951,11 +1013,17 @@ Assert-True ($b -is [System.Int32])
 Assert-True ($a -eq $b)
 .Link
 Assert-False
+.Link
 Assert-Null
+.Link
 Assert-NotNull
+.Link
 Assert-PipelineEmpty
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineSingle
+.Link
 Assert-PipelineCount
 #>
 function Assert-True
@@ -1028,17 +1096,17 @@ With these functions, many tasks that would require nested loops can be simplifi
 
 Here is an example of testing multiple scripts using different PowerShell configurations. This kind of task typically requires nested loops (one loop for each parameter), but this example uses Group-ListItem -CartesianProduct to generate the parameter values for powershell.exe.
 
-  $versions     = @(2, 4)
-  $apStates     = @('-sta', '-mta')
-  $execPolicies = @('remotesigned')
-  $fileNames    = @('.\script1.ps1', '.\script2.ps1', '.\script3.ps1')
+    $versions     = @(2, 4)
+    $apStates     = @('-sta', '-mta')
+    $execPolicies = @('remotesigned')
+    $fileNames    = @('.\script1.ps1', '.\script2.ps1', '.\script3.ps1')
 
-  Group-ListItem -CartesianProduct $versions, $apStates, $execPolicies, $fileNames | % {
-    $ver, $aps, $exp, $file = $_.Items
-    if (($ver -le 2) -and ($aps -eq '-mta')) {$aps = ''}    #PS2 has no -mta switch
+    Group-ListItem -CartesianProduct $versions, $apStates, $execPolicies, $fileNames | % {
+        $ver, $aps, $exp, $file = $_.Items
+        if (($ver -le 2) -and ($aps -eq '-mta')) {$aps = ''}    #PS2 has no -mta switch
 
-    powershell -version $ver $aps -noprofile -noninteractive -executionpolicy $exp -file $file
-  }
+        powershell -version $ver $aps -noprofile -noninteractive -executionpolicy $exp -file $file
+    }
 .Parameter Pair
 Groups adjacent items inside a list.
 Each group has two items.
@@ -1440,7 +1508,9 @@ Assert that two lists are equal
 assert-true ($aList.count -eq $bList.count)
 group-listItem -zip $aList, $bList | foreach-object {$a, $b = $_.Items; assert-true ($a -eq $b)}
 .Inputs
-System.Collections.IList
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Management.Automation.PSCustomObject
 
@@ -2257,11 +2327,17 @@ Returns $null if $a or $b is not a DateTime object.
 
 Note that the order of the properties specified is significant. See the -Property parameter for more details.
 .Inputs
-System.DateTime
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -2273,6 +2349,18 @@ assert (datetime? $a)
 assert (datetime? $a -kind utc)
 assert (datetime? $a -eq $b -matchkind -kind utc, local)
 assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, day)
+.Link
+Test-Guid
+.Link
+Test-Number
+.Link
+Test-String
+.Link
+Test-Text
+.Link
+Test-TimeSpan
+.Link
+Test-Version
 #>
 function Test-DateTime
 {
@@ -2634,11 +2722,17 @@ Test-Guid $a -lt $b -variant standard -matchversion
 Returns $true if $a is less than $b, and both $a and $b are standard variant GUIDs with the same value in their version field.
 Returns $null if $a or $b is not a standard variant GUID, or $a and $b do not have the same value in their version field.
 .Inputs
-System.Guid
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -2648,6 +2742,18 @@ set-alias 'guid?' 'test-guid'
 assert-true (guid? $a)
 assert-true (guid? $a -variant standard -version 1,3,4,5)
 assert-true (guid? $a -ne $b -variant standard -version 1,3,4,5 -matchvariant -matchversion)
+.Link
+Test-DateTime
+.Link
+Test-Number
+.Link
+Test-String
+.Link
+Test-Text
+.Link
+Test-TimeSpan
+.Link
+Test-Version
 #>
 function Test-Guid
 {
@@ -3062,22 +3168,17 @@ Test-Number $x -lt $y -Type Int32, Int64, Double
 Returns the result of ($x -lt $y) if both $x and $y are numbers of type Int32, Int64, or Double.
 Returns $null if $x or $y is not of type Int32, Int64, or Double.
 .Inputs
-System.Byte
-System.SByte
-System.Int16
-System.Int32
-System.Int64
-System.UInt16
-System.UInt32
-System.UInt64
-System.Single
-System.Double
-System.Decimal
-System.Numerics.BigInteger
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -3090,6 +3191,18 @@ assert (number? $x -lt $y)
 assert (number? $x -lt $y -MatchType)
 assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double)
 assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
+.Link
+Test-DateTime
+.Link
+Test-Guid
+.Link
+Test-String
+.Link
+Test-Text
+.Link
+Test-TimeSpan
+.Link
+Test-Version
 #>
 function Test-Number
 {
@@ -3521,11 +3634,17 @@ Returns $null if $a or $b is not a string that is compatible with Normalization 
 
 NOTE: See the -Normalization parameter for more details.
 .Inputs
-System.String
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -3536,6 +3655,18 @@ set-alias 'string?' 'test-string'
 assert (string? $a)
 assert (string? $a -contains $b)
 assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
+.Link
+Test-DateTime
+.Link
+Test-Guid
+.Link
+Test-Number
+.Link
+Test-Text
+.Link
+Test-TimeSpan
+.Link
+Test-Version
 #>
 function Test-String
 {
@@ -4026,11 +4157,17 @@ Test-Text $a -match $b
 Returns $true if the text in $a matches the regular expression pattern in $b (case-insensitive match) according to the rules of InvariantCulture.
 Returns $null if $a or $b is not text.
 .Inputs
-System.String
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -4041,6 +4178,18 @@ set-alias 'text?' 'test-text'
 assert (text? $greeting)
 assert (text? $greeting -match '[chj]ello world')
 assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
+.Link
+Test-DateTime
+.Link
+Test-Guid
+.Link
+Test-Number
+.Link
+Test-String
+.Link
+Test-TimeSpan
+.Link
+Test-Version
 #>
 function Test-Text
 {
@@ -4430,11 +4579,17 @@ Returns $null if $a or $b is not a TimeSpan object.
 
 Note that the order of the properties specified is significant. See the -Property parameter for more details.
 .Inputs
-System.TimeSpan
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -4443,6 +4598,18 @@ set-alias 'timespan?' 'test-timeSpan'
 
 assert-true (timespan? $a)
 assert-true (timespan? $a -eq $b -property days, hours, minutes)
+.Link
+Test-DateTime
+.Link
+Test-Guid
+.Link
+Test-Number
+.Link
+Test-String
+.Link
+Test-Text
+.Link
+Test-Version
 #>
 function Test-TimeSpan
 {
@@ -4738,11 +4905,17 @@ Returns $null if $a or $b is not a Version object.
 
 Note that the order of the properties specified is significant. See the -Property parameter for more details.
 .Inputs
-System.Version
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -4751,6 +4924,18 @@ set-alias 'version?' 'test-version'
 
 assert-true (version? $a)
 assert-true (version? $a -eq $b -property major, minor, build)
+.Link
+Test-DateTime
+.Link
+Test-Guid
+.Link
+Test-Number
+.Link
+Test-String
+.Link
+Test-Text
+.Link
+Test-TimeSpan
 #>
 function Test-Version
 {
