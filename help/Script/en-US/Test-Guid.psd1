@@ -163,11 +163,17 @@ Test-Guid $a -lt $b -variant standard -matchversion
 Returns $true if $a is less than $b, and both $a and $b are standard variant GUIDs with the same value in their version field.
 Returns $null if $a or $b is not a standard variant GUID, or $a and $b do not have the same value in their version field.
 .Inputs
-System.Guid
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -177,4 +183,16 @@ set-alias 'guid?' 'test-guid'
 assert-true (guid? $a)
 assert-true (guid? $a -variant standard -version 1,3,4,5)
 assert-true (guid? $a -ne $b -variant standard -version 1,3,4,5 -matchvariant -matchversion)
+.Link
+Test-DateTime
+.Link
+Test-Number
+.Link
+Test-String
+.Link
+Test-Text
+.Link
+Test-TimeSpan
+.Link
+Test-Version
 #>

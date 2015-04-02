@@ -262,11 +262,17 @@ Returns $null if $a or $b is not a string that is compatible with Normalization 
 
 NOTE: See the -Normalization parameter for more details.
 .Inputs
-System.String
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -277,4 +283,16 @@ set-alias 'string?' 'test-string'
 assert (string? $a)
 assert (string? $a -contains $b)
 assert (string? $a -notStartsWith $c -casesensitive -formcompatible)
+.Link
+Test-DateTime
+.Link
+Test-Guid
+.Link
+Test-Number
+.Link
+Test-Text
+.Link
+Test-TimeSpan
+.Link
+Test-Version
 #>

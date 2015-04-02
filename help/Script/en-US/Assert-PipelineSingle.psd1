@@ -25,8 +25,12 @@ Throws an error if Get-Random does not return a single object.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
 System.Object
+
+This function accepts any kind of object from the pipeline.
 .Outputs
 System.Object
+
+If the assertion passes, this function outputs the objects from the pipeline input.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -41,10 +45,16 @@ $b = myFunc2 | Assert-PipelineSingle
 $c = myFunc3 | Assert-PipelineSingle
 .Link
 Assert-True
+.Link
 Assert-False
+.Link
 Assert-Null
+.Link
 Assert-NotNull
+.Link
 Assert-PipelineEmpty
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineCount
 #>

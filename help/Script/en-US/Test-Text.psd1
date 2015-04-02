@@ -223,11 +223,17 @@ Test-Text $a -match $b
 Returns $true if the text in $a matches the regular expression pattern in $b (case-insensitive match) according to the rules of InvariantCulture.
 Returns $null if $a or $b is not text.
 .Inputs
-System.String
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -238,4 +244,16 @@ set-alias 'text?' 'test-text'
 assert (text? $greeting)
 assert (text? $greeting -match '[chj]ello world')
 assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)
+.Link
+Test-DateTime
+.Link
+Test-Guid
+.Link
+Test-Number
+.Link
+Test-String
+.Link
+Test-TimeSpan
+.Link
+Test-Version
 #>

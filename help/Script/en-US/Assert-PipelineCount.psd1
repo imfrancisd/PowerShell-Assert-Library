@@ -50,8 +50,12 @@ $a = Get-ChildItem 'a*' | Assert-PipelineCount -Minimum 5 | Assert-PipelineCount
 Throws an error if Get-ChildItem 'a*' either returns less than five objects, or returns more than 10 objects.
 .Inputs
 System.Object
+
+This function accepts any kind of object from the pipeline.
 .Outputs
 System.Object
+
+If the assertion passes, this function outputs the objects from the pipeline input.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -67,10 +71,16 @@ $c = myFunc3 | Assert-PipelineCount -Maximum 2
 $d = myFunc4 | Assert-PipelineCount -Minimum 3 | Assert-PipelineCount -Maximum 14
 .Link
 Assert-True
+.Link
 Assert-False
+.Link
 Assert-Null
+.Link
 Assert-NotNull
+.Link
 Assert-PipelineEmpty
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineSingle
 #>

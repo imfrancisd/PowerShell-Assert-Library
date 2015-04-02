@@ -18,7 +18,9 @@ Assert-NotNull $a -Debug
 Throws an error if $a evaluates to $null.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 None
 .Notes
@@ -35,10 +37,16 @@ Assert-NotNull $b
 Assert-NotNull $c
 .Link
 Assert-True
+.Link
 Assert-False
+.Link
 Assert-Null
+.Link
 Assert-PipelineEmpty
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineSingle
+.Link
 Assert-PipelineCount
 #>

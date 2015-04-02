@@ -18,17 +18,17 @@ With these functions, many tasks that would require nested loops can be simplifi
 
 Here is an example of testing multiple scripts using different PowerShell configurations. This kind of task typically requires nested loops (one loop for each parameter), but this example uses Group-ListItem -CartesianProduct to generate the parameter values for powershell.exe.
 
-  $versions     = @(2, 4)
-  $apStates     = @('-sta', '-mta')
-  $execPolicies = @('remotesigned')
-  $fileNames    = @('.\script1.ps1', '.\script2.ps1', '.\script3.ps1')
+    $versions     = @(2, 4)
+    $apStates     = @('-sta', '-mta')
+    $execPolicies = @('remotesigned')
+    $fileNames    = @('.\script1.ps1', '.\script2.ps1', '.\script3.ps1')
 
-  Group-ListItem -CartesianProduct $versions, $apStates, $execPolicies, $fileNames | % {
-    $ver, $aps, $exp, $file = $_.Items
-    if (($ver -le 2) -and ($aps -eq '-mta')) {$aps = ''}    #PS2 has no -mta switch
+    Group-ListItem -CartesianProduct $versions, $apStates, $execPolicies, $fileNames | % {
+        $ver, $aps, $exp, $file = $_.Items
+        if (($ver -le 2) -and ($aps -eq '-mta')) {$aps = ''}    #PS2 has no -mta switch
 
-    powershell -version $ver $aps -noprofile -noninteractive -executionpolicy $exp -file $file
-  }
+        powershell -version $ver $aps -noprofile -noninteractive -executionpolicy $exp -file $file
+    }
 .Parameter Pair
 Groups adjacent items inside a list.
 Each group has two items.
@@ -430,7 +430,9 @@ Assert that two lists are equal
 assert-true ($aList.count -eq $bList.count)
 group-listItem -zip $aList, $bList | foreach-object {$a, $b = $_.Items; assert-true ($a -eq $b)}
 .Inputs
-System.Collections.IList
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Management.Automation.PSCustomObject
 

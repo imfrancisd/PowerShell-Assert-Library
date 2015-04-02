@@ -224,11 +224,17 @@ Returns $null if $a or $b is not a DateTime object.
 
 Note that the order of the properties specified is significant. See the -Property parameter for more details.
 .Inputs
-System.DateTime
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -240,4 +246,16 @@ assert (datetime? $a)
 assert (datetime? $a -kind utc)
 assert (datetime? $a -eq $b -matchkind -kind utc, local)
 assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, day)
+.Link
+Test-Guid
+.Link
+Test-Number
+.Link
+Test-String
+.Link
+Test-Text
+.Link
+Test-TimeSpan
+.Link
+Test-Version
 #>

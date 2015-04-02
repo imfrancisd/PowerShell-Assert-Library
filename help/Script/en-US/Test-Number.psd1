@@ -170,22 +170,17 @@ Test-Number $x -lt $y -Type Int32, Int64, Double
 Returns the result of ($x -lt $y) if both $x and $y are numbers of type Int32, Int64, or Double.
 Returns $null if $x or $y is not of type Int32, Int64, or Double.
 .Inputs
-System.Byte
-System.SByte
-System.Int16
-System.Int32
-System.Int64
-System.UInt16
-System.UInt32
-System.UInt64
-System.Single
-System.Double
-System.Decimal
-System.Numerics.BigInteger
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
 $null
+
+This function returns $null if the test cannot be performed.
 .Notes
 An example of how this function might be used in a unit test.
 
@@ -198,4 +193,16 @@ assert (number? $x -lt $y)
 assert (number? $x -lt $y -MatchType)
 assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double)
 assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
+.Link
+Test-DateTime
+.Link
+Test-Guid
+.Link
+Test-String
+.Link
+Test-Text
+.Link
+Test-TimeSpan
+.Link
+Test-Version
 #>

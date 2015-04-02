@@ -24,6 +24,8 @@ Throws an error if Get-ChildItem 'aFileThatDoesNotExist*' returns an object.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
 System.Object
+
+This function accepts any kind of object from the pipeline.
 .Outputs
 None
 .Notes
@@ -40,10 +42,16 @@ myFunc2 | Assert-PipelineEmpty
 myFunc3 | Assert-PipelineEmpty
 .Link
 Assert-True
+.Link
 Assert-False
+.Link
 Assert-Null
+.Link
 Assert-NotNull
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineSingle
+.Link
 Assert-PipelineCount
 #>

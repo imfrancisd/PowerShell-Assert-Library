@@ -20,8 +20,9 @@ Assert-True ($a -eq $b) -Debug
 Throws an error if the expression ($a -eq $b) does not evaluate to $true.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
-System.Boolean
-System.Object
+None
+
+This function does not accept input from the pipeline.
 .Outputs
 None
 .Notes
@@ -38,10 +39,16 @@ Assert-True ($b -is [System.Int32])
 Assert-True ($a -eq $b)
 .Link
 Assert-False
+.Link
 Assert-Null
+.Link
 Assert-NotNull
+.Link
 Assert-PipelineEmpty
+.Link
 Assert-PipelineAny
+.Link
 Assert-PipelineSingle
+.Link
 Assert-PipelineCount
 #>
