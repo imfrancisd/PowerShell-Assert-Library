@@ -21,8 +21,8 @@ See which files and directories will be modified without actually modifying thos
 #>
 [CmdletBinding(DefaultParameterSetName='All', SupportsShouldProcess=$true)]
 Param(
-    #Clean "Debug\".
-    #Clean "Release\" if the -Release switch is used.
+    #Build "Debug\".
+    #Build "Release\" if the -Release switch is used.
     [Parameter(Mandatory=$false, ParameterSetName='All')]
     [System.Management.Automation.SwitchParameter]
     $All = $true,
