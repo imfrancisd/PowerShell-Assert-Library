@@ -851,4 +851,260 @@ if ($Silent) {
     }
 }
 
-Write-Warning -Message 'Remaining tests not implemented here.' -WarningAction 'Continue'
+& {
+    Write-Verbose -Message 'Test Test-String -Eq' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Eq not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Ne' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Ne not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Lt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Lt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Le' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Le not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Gt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Gt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Ge' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Ge not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -IsString -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -IsString -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Eq -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Eq -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Ne -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Ne -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Lt -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Lt -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Le -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Le -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Gt -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Gt -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Ge -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Ge -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Contains -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Contains -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -NotContains -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -NotContains -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -StartsWith -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -StartsWith -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -NotStartsWith -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -NotStartsWith -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -EndsWith -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -EndsWith -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -NotEndsWith -Normalization' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -NotEndsWith -Normalization not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Eq -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Eq -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Ne -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Ne -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Lt -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Lt -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Le -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Le -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Gt -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Gt -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Ge -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Ge -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Contains -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Contains -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -NotContains -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -NotContains -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -StartsWith -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -StartsWith -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -NotStartsWith -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -NotStartsWith -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -EndsWith -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -EndsWith -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -NotEndsWith -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -NotEndsWith -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Eq -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Eq -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Ne -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Ne -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Lt -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Lt -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Le -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Le -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Gt -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Gt -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Ge -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Ge -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -Contains -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -Contains -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -NotContains -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -NotContains -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -StartsWith -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -StartsWith -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -NotStartsWith -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -NotStartsWith -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -EndsWith -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -EndsWith -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-String -NotEndsWith -Normalization -FormCompatible' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-String -NotEndsWith -Normalization -FormCompatible not implemented here.' -WarningAction 'Continue'
+}

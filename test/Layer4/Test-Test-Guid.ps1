@@ -550,4 +550,164 @@ if ($Silent) {
     }
 }
 
-Write-Warning -Message 'Remaining tests not implemented here.' -WarningAction 'Continue'
+& {
+    Write-Verbose -Message 'Test Test-Guid -Eq' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Eq not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Ne' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Ne not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Lt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Lt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Le' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Le not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Gt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Gt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Ge' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Ge not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -IsGuid -Variant' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -IsGuid -Variant not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Eq -Variant -MatchVariant' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Eq -Variant -MatchVariant not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Ne -Variant -MatchVariant' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Ne -Variant -MatchVariant not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Lt -Variant -MatchVariant' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Lt -Variant -MatchVariant not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Le -Variant -MatchVariant' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Le -Variant -MatchVariant not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Gt -Variant -MatchVariant' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Gt -Variant -MatchVariant not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Ge -Variant -MatchVariant' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Ge -Variant -MatchVariant not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -IsGuid -Version' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -IsGuid -Version not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Eq -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Eq -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Ne -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Ne -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Lt -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Lt -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Le -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Le -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Gt -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Gt -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Ge -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Ge -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -IsGuid -Variant -Version' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -IsGuid -Variant -Version not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Eq -Variant -MatchVariant -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Eq -Variant -MatchVariant -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Ne -Variant -MatchVariant -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Ne -Variant -MatchVariant -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Lt -Variant -MatchVariant -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Lt -Variant -MatchVariant -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Le -Variant -MatchVariant -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Le -Variant -MatchVariant -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Gt -Variant -MatchVariant -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Gt -Variant -MatchVariant -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Guid -Ge -Variant -MatchVariant -Version -MatchVersion' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Guid -Ge -Variant -MatchVariant -Version -MatchVersion not implemented here.' -WarningAction 'Continue'
+}

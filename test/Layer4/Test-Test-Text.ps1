@@ -812,4 +812,170 @@ if ($Silent) {
     }
 }
 
-Write-Warning -Message 'Remaining tests not implemented here.' -WarningAction 'Continue'
+& {
+    Write-Verbose -Message 'Test Test-Text -Eq' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Eq not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Ne' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Ne not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Lt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Lt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Le' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Le not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Gt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Gt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Ge' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Ge not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Contains' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Contains not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -NotContains' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -NotContains not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -StartsWith' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -StartsWith not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -NotStartsWith' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -NotStartsWith not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -EndsWith' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -EndsWith not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -NotEndsWith' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -NotEndsWith not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Match' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Match not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -NotMatch' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -NotMatch not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Eq -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Eq -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Ne -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Ne -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Lt -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Lt -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Le -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Le -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Gt -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Gt -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Ge -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Ge -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Contains -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Contains -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -NotContains -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -NotContains -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -StartsWith -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -StartsWith -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -NotStartsWith -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -NotStartsWith -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -EndsWith -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -EndsWith -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -NotEndsWith -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -NotEndsWith -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -Match -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -Match -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Text -NotMatch -UseCurrentCulture' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Text -NotMatch -UseCurrentCulture not implemented here.' -WarningAction 'Continue'
+}

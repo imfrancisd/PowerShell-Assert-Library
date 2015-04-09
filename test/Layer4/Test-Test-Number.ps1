@@ -407,4 +407,80 @@ if ($Silent) {
     }
 }
 
-Write-Warning -Message 'Remaining tests not implemented here.' -WarningAction 'Continue'
+& {
+    Write-Verbose -Message 'Test Test-Number -Eq' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Eq not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -Ne' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Ne not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -Lt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Lt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -Le' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Le not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -Gt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Gt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -Ge' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Ge not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -IsNumber -Type' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -IsNumber -Type not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -Eq -Type -MatchType' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Eq -Type -MatchType not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -Ne -Type -MatchType' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Ne -Type -MatchType not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -Lt -Type -MatchType' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Lt -Type -MatchType not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -Le -Type -MatchType' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Le -Type -MatchType not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -Gt -Type -MatchType' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Gt -Type -MatchType not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Number -Ge -Type -MatchType' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Number -Ge -Type -MatchType not implemented here.' -WarningAction 'Continue'
+}

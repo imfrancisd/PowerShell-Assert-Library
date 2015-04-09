@@ -320,11 +320,6 @@ if ($Silent) {
         Assert-True  (Test-TimeSpan $timeSpan -IsTimeSpan)
         Assert-True  (Test-TimeSpan $timeSpan -IsTimeSpan:$true)
         Assert-False (Test-TimeSpan $timeSpan -IsTimeSpan:$false)
-
-        Assert-True  (Test-TimeSpan -Value $timeSpan)
-        Assert-True  (Test-TimeSpan -Value $timeSpan -IsTimeSpan)
-        Assert-True  (Test-TimeSpan -Value $timeSpan -IsTimeSpan:$true)
-        Assert-False (Test-TimeSpan -Value $timeSpan -IsTimeSpan:$false)
     }
 
     foreach ($nonTimeSpan in $nonTimeSpans) {
@@ -332,12 +327,77 @@ if ($Silent) {
         Assert-False (Test-TimeSpan $nonTimeSpan -IsTimeSpan)
         Assert-False (Test-TimeSpan $nonTimeSpan -IsTimeSpan:$true)
         Assert-True  (Test-TimeSpan $nonTimeSpan -IsTimeSpan:$false)
-
-        Assert-False (Test-TimeSpan -Value $nonTimeSpan)
-        Assert-False (Test-TimeSpan -Value $nonTimeSpan -IsTimeSpan)
-        Assert-False (Test-TimeSpan -Value $nonTimeSpan -IsTimeSpan:$true)
-        Assert-True  (Test-TimeSpan -Value $nonTimeSpan -IsTimeSpan:$false)
     }
 }
 
-Write-Warning -Message 'Remaining tests not implemented here.' -WarningAction 'Continue'
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Eq' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Eq not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Ne' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Ne not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Lt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Lt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Le' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Le not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Gt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Gt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Ge' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Ge not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Eq -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Eq -Property not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Ne -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Ne -Property not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Lt -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Lt -Property not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Le -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Le -Property not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Gt -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Gt -Property not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-TimeSpan -Ge -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-TimeSpan -Ge -Property not implemented here.' -WarningAction 'Continue'
+}

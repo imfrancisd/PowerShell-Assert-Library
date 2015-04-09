@@ -330,4 +330,74 @@ if ($Silent) {
     }
 }
 
-Write-Warning -Message 'Remaining tests not implemented here.' -WarningAction 'Continue'
+& {
+    Write-Verbose -Message 'Test Test-Version -Eq' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Eq not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Version -Ne' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Ne not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Version -Lt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Lt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Version -Le' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Le not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Version -Gt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Gt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Version -Ge' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Ge not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Version -Eq -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Eq -Property not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Version -Ne -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Ne -Property not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Version -Lt -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Lt -Property not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Version -Le -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Le -Property not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Version -Gt -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Gt -Property not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-Version -Ge -Property' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-Version -Ge -Property not implemented here.' -WarningAction 'Continue'
+}

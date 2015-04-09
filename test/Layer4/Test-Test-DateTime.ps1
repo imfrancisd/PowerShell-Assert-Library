@@ -473,4 +473,80 @@ if ($Silent) {
     }
 }
 
-Write-Warning -Message 'Remaining tests not implemented here.' -WarningAction 'Continue'
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Eq' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Eq not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Ne' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Ne not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Lt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Lt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Le' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Le not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Gt' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Gt not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Ge' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Ge not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -IsDateTime -Kind' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -IsDateTime -Kind not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Eq -Kind -MatchKind' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Eq -Kind -MatchKind not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Ne -Kind -MatchKind' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Ne -Kind -MatchKind not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Lt -Kind -MatchKind' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Lt -Kind -MatchKind not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Le -Kind -MatchKind' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Le -Kind -MatchKind not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Gt -Kind -MatchKind' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Gt -Kind -MatchKind not implemented here.' -WarningAction 'Continue'
+}
+
+& {
+    Write-Verbose -Message 'Test Test-DateTime -Ge -Kind -MatchKind' -Verbose:$headerVerbosity
+
+    Write-Warning -Message 'Test Test-DateTime -Ge -Kind -MatchKind not implemented here.' -WarningAction 'Continue'
+}
