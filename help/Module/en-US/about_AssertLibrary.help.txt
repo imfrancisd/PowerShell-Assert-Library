@@ -55,6 +55,8 @@ SEE ALSO
     Assert-True
     Assert-False
     Assert-Null
+    Assert-NotTrue
+    Assert-NotFalse
     Assert-NotNull
     Assert-PipelineAny
     Assert-PipelineCount
