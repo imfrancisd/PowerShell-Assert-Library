@@ -42,6 +42,10 @@ Assert-True
 .Link
 Assert-Null
 .Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
+.Link
 Assert-NotNull
 .Link
 Assert-PipelineEmpty
