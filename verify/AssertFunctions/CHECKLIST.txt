@@ -6,7 +6,9 @@ such as clarity, tone, consistency, and choice of words and examples.
 
 You can run the following scripts to display the help files:
     Verify-Assert-False-Help.ps1
+    Verify-Assert-NotFalse-Help.ps1
     Verify-Assert-NotNull-Help.ps1
+    Verify-Assert-NotTrue-Help.ps1
     Verify-Assert-Null-Help.ps1
     Verify-Assert-PipelineAny-Help.ps1
     Verify-Assert-PipelineCount-Help.ps1
@@ -37,7 +39,9 @@ improved and suggest changes.
 
 You can run the following scripts to display the messages:
     Verify-Assert-False-Messages.ps1
+    Verify-Assert-NotFalse-Messages.ps1
     Verify-Assert-NotNull-Messages.ps1
+    Verify-Assert-NotTrue-Messages.ps1
     Verify-Assert-Null-Messages.ps1
     Verify-Assert-PipelineAny-Messages.ps1
     Verify-Assert-PipelineCount-Messages.ps1
