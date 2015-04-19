@@ -2,20 +2,20 @@
 <helpItems schema="maml">
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10">
     <command:details>
-      <command:name>Assert-NotNull</command:name>
+      <command:name>Assert-NotFalse</command:name>
       <maml:description>
-        <maml:para>Assert that a value is not $null.</maml:para>
+        <maml:para>Assert that a value is not the Boolean value $false.</maml:para>
       </maml:description>
       <command:verb>Assert</command:verb>
-      <command:noun>NotNull</command:noun>
+      <command:noun>NotFalse</command:noun>
     </command:details>
     <maml:description>
       <maml:para>This function throws an error if any of the following conditions are met:
-    *the value being asserted is $null</maml:para>
+    *the value being asserted is the System.Boolean value $false</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Assert-NotNull</maml:name>
+        <maml:name>Assert-NotFalse</maml:name>
         <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
@@ -62,9 +62,9 @@ $VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
 #display debug prompt on failing assertions
 $DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
 
-Assert-NotNull $a
-Assert-NotNull $b
-Assert-NotNull $c</maml:para>
+Assert-NotFalse ($null -eq $a)
+Assert-NotFalse ($null -eq $b)
+Assert-NotFalse ($a -eq $b)</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -73,9 +73,9 @@ Assert-NotNull $c</maml:para>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Assert-NotNull $a</dev:code>
+        <dev:code>Assert-NotFalse ($a -eq $b)</dev:code>
         <dev:remarks>
-          <maml:para>Throws an error if $a evaluates to $null.</maml:para>
+          <maml:para>Throws an error if the expression ($a -eq $b) evaluates to $false.</maml:para>
           <maml:para>
           </maml:para>
           <maml:para>
@@ -91,9 +91,9 @@ Assert-NotNull $c</maml:para>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Assert-NotNull $a -Verbose</dev:code>
+        <dev:code>Assert-NotFalse ($a -eq $b) -Verbose</dev:code>
         <dev:remarks>
-          <maml:para>Throws an error if $a evaluates to $null.
+          <maml:para>Throws an error if the expression ($a -eq $b) evaluates to $false.
 The -Verbose switch will output the result of the assertion to the Verbose stream.</maml:para>
           <maml:para>
           </maml:para>
@@ -110,9 +110,9 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Assert-NotNull $a -Debug</dev:code>
+        <dev:code>Assert-NotFalse ($a -eq $b) -Debug</dev:code>
         <dev:remarks>
-          <maml:para>Throws an error if $a evaluates to $null.
+          <maml:para>Throws an error if the expression ($a -eq $b) evaluates to $false.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.</maml:para>
           <maml:para>
           </maml:para>
@@ -139,7 +139,7 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
         <maml:linkText>Assert-NotTrue</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Assert-NotFalse</maml:linkText>
+        <maml:linkText>Assert-NotNull</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineEmpty</maml:linkText>

@@ -141,6 +141,12 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
         <maml:linkText>Assert-Null</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Assert-NotTrue</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-NotFalse</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Assert-NotNull</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>

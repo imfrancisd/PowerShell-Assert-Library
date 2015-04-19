@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.2.0.0
+#Assert Library version 1.3.0.0
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -72,6 +72,10 @@ Assert-True
 .Link
 Assert-Null
 .Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
+.Link
 Assert-NotNull
 .Link
 Assert-PipelineEmpty
@@ -101,6 +105,112 @@ function Assert-False
     }
 
     $fail = -not (($Value -is [System.Boolean]) -and (-not $Value))
+
+    if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
+        $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
+            $(if ($fail) {'failed'} else {'passed'}),
+            $MyInvocation.Line.Trim(),
+            $MyInvocation.ScriptName,
+            $MyInvocation.ScriptLineNumber
+        )
+
+        Write-Verbose -Message $message
+
+        if ($fail) {
+            if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
+                if ($null -eq $DebugPreference) {
+                    $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
+                }
+            }
+            Write-Debug -Message $message
+
+            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
+                'AssertionFailed',
+                [System.Management.Automation.ErrorCategory]::OperationStopped,
+                $Value
+            )
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
+        }
+    }
+}
+
+<#
+.Synopsis
+Assert that a value is not the Boolean value $false.
+.Description
+This function throws an error if any of the following conditions are met:
+    *the value being asserted is the System.Boolean value $false
+.Parameter Value
+The value to assert.
+.Example
+Assert-NotFalse ($a -eq $b)
+Throws an error if the expression ($a -eq $b) evaluates to $false.
+.Example
+Assert-NotFalse ($a -eq $b) -Verbose
+Throws an error if the expression ($a -eq $b) evaluates to $false.
+The -Verbose switch will output the result of the assertion to the Verbose stream.
+.Example
+Assert-NotFalse ($a -eq $b) -Debug
+Throws an error if the expression ($a -eq $b) evaluates to $false.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+None
+.Notes
+An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+Assert-NotFalse ($null -eq $a)
+Assert-NotFalse ($null -eq $b)
+Assert-NotFalse ($a -eq $b)
+.Link
+Assert-True
+.Link
+Assert-False
+.Link
+Assert-Null
+.Link
+Assert-NotTrue
+.Link
+Assert-NotNull
+.Link
+Assert-PipelineEmpty
+.Link
+Assert-PipelineAny
+.Link
+Assert-PipelineSingle
+.Link
+Assert-PipelineCount
+#>
+function Assert-NotFalse
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
+        if ($null -eq $VerbosePreference) {
+            $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
+        }
+    }
+
+    $fail = ($Value -is [System.Boolean]) -and (-not $Value)
 
     if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
         $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
@@ -176,6 +286,10 @@ Assert-False
 .Link
 Assert-Null
 .Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -203,6 +317,112 @@ function Assert-NotNull
     }
 
     $fail = $null -eq $Value
+
+    if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
+        $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
+            $(if ($fail) {'failed'} else {'passed'}),
+            $MyInvocation.Line.Trim(),
+            $MyInvocation.ScriptName,
+            $MyInvocation.ScriptLineNumber
+        )
+
+        Write-Verbose -Message $message
+
+        if ($fail) {
+            if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
+                if ($null -eq $DebugPreference) {
+                    $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
+                }
+            }
+            Write-Debug -Message $message
+
+            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
+                'AssertionFailed',
+                [System.Management.Automation.ErrorCategory]::OperationStopped,
+                $Value
+            )
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
+        }
+    }
+}
+
+<#
+.Synopsis
+Assert that a value is not the Boolean value $true.
+.Description
+This function throws an error if any of the following conditions are met:
+    *the value being asserted is the System.Boolean value $true
+.Parameter Value
+The value to assert.
+.Example
+Assert-NotTrue ($a -eq $b)
+Throws an error if the expression ($a -eq $b) evaluates to $true.
+.Example
+Assert-NotTrue ($a -eq $b) -Verbose
+Throws an error if the expression ($a -eq $b) evaluates to $true.
+The -Verbose switch will output the result of the assertion to the Verbose stream.
+.Example
+Assert-NotTrue ($a -eq $b) -Debug
+Throws an error if the expression ($a -eq $b) evaluates to $true.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+None
+.Notes
+An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+Assert-NotTrue ($a -is [System.Int32])
+Assert-NotTrue ($b -is [System.Int32])
+Assert-NotTrue ($a -eq $b)
+.Link
+Assert-True
+.Link
+Assert-False
+.Link
+Assert-Null
+.Link
+Assert-NotFalse
+.Link
+Assert-NotNull
+.Link
+Assert-PipelineEmpty
+.Link
+Assert-PipelineAny
+.Link
+Assert-PipelineSingle
+.Link
+Assert-PipelineCount
+#>
+function Assert-NotTrue
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
+        if ($null -eq $VerbosePreference) {
+            $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
+        }
+    }
+
+    $fail = ($Value -is [System.Boolean]) -and $Value
 
     if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
         $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
@@ -275,6 +495,10 @@ Assert-Null $c
 Assert-True
 .Link
 Assert-False
+.Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
@@ -386,6 +610,10 @@ Assert-True
 Assert-False
 .Link
 Assert-Null
+.Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
@@ -547,6 +775,10 @@ Assert-True
 Assert-False
 .Link
 Assert-Null
+.Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
@@ -729,6 +961,10 @@ Assert-False
 .Link
 Assert-Null
 .Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
+.Link
 Assert-NotNull
 .Link
 Assert-PipelineAny
@@ -864,6 +1100,10 @@ Assert-True
 Assert-False
 .Link
 Assert-Null
+.Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
@@ -1015,6 +1255,10 @@ Assert-True ($a -eq $b)
 Assert-False
 .Link
 Assert-Null
+.Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
