@@ -55,6 +55,12 @@ Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineSingle
