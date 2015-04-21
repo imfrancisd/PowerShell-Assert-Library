@@ -22,6 +22,11 @@ Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
 Set the $ErrorActionPreference variable inside the predicate if you need to use that variable.
+
+Important:
+The $ErrorActionPreference variable outside of the predicate may or may not have an effect on the predicate.
+
+A predicate throwing an error is very rare, but it is recommended that you set the $ErrorActionPreference variable to 'Stop' before calling Assert-All.
 .Example
 .Example
 .Example

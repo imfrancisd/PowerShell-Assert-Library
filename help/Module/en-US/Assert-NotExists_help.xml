@@ -11,7 +11,7 @@
     </command:details>
     <maml:description>
       <maml:para>This function throws an error if any of the following conditions are met:
-    *the predicate is true some of the items in the collection
+    *the predicate is true for some of the items in the collection
 
 Note:
 The assertion will always pass if the collection is empty.
@@ -56,7 +56,12 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
-Set the $ErrorActionPreference variable inside the predicate if you need to use that variable.</maml:para>
+Set the $ErrorActionPreference variable inside the predicate if you need to use that variable.
+
+Important:
+The $ErrorActionPreference variable outside of the predicate may or may not have an effect on the predicate.
+
+A predicate throwing an error is very rare, but it is recommended that you set the $ErrorActionPreference variable to 'Stop' before calling Assert-NotExists.</maml:para>
         </maml:description>
         <command:parameterValue required="true">ScriptBlock</command:parameterValue>
         <dev:type>
