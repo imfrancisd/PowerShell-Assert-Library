@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<helpItems schema="maml">
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10">
+    <command:details>
+      <command:name>Assert-Exists</command:name>
+      <maml:description>
+        <maml:para>Assert that a predicate is true for some of the items in a collection.</maml:para>
+      </maml:description>
+      <command:verb>Assert</command:verb>
+      <command:noun>Exists</command:noun>
+    </command:details>
+    <maml:description>
+      <maml:para>This function throws an error if any of the following conditions are met:
+    *the predicate is not true for any item in the collection
+
+Note:
+The assertion will always fail if the collection is empty.
+
+*See the -Collection and -Predicate parameters for more details.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Assert-Exists</maml:name>
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+          <maml:name>private:Collection</maml:name>
+          <command:parameterValue required="true">ICollection</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="2">
+          <maml:name>private:Predicate</maml:name>
+          <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <maml:name>private:Collection</maml:name>
+        <maml:description>
+          <maml:para>The collection of items used to test the predicate.
+
+The order in which the items in the collection are tested is determined by the collection's GetEnumerator method.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">ICollection</command:parameterValue>
+        <dev:type>
+          <maml:name>ICollection</maml:name>
+        </dev:type>
+        <dev:defaultValue>
+        </dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="2">
+        <maml:name>private:Predicate</maml:name>
+        <maml:description>
+          <maml:para>The script block that will be invoked on each item in the collection.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.
+Set the $ErrorActionPreference variable inside the predicate if you need to use that variable.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+        <dev:type>
+          <maml:name>ScriptBlock</maml:name>
+        </dev:type>
+        <dev:defaultValue>
+        </dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None
+
+This function does not accept input from the pipeline.</maml:name>
+        </dev:type>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>
+        </dev:code>
+        <dev:remarks>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>
+        </dev:code>
+        <dev:remarks>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>
+        </dev:code>
+        <dev:remarks>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <maml:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Assert-True</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-False</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-Null</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-NotTrue</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-NotFalse</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-NotNull</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-All</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-NotExists</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineEmpty</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineAny</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineSingle</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineCount</maml:linkText>
+      </maml:navigationLink>
+    </maml:relatedLinks>
+  </command:command>
+</helpItems>
