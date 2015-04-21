@@ -87,17 +87,32 @@ This function does not accept input from the pipeline.</maml:name>
         </dev:type>
       </command:returnValue>
     </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+#set $ErrorActionPreference to stop in case the predicate fails
+$ErrorActionPreference = 'Stop'
+
+Assert-Exists $numbers {param($n) $n -is [system.int32]}
+Assert-Exists $numbers {param($n) $n % 2 -eq 0}</maml:para>
+      </maml:alert>
+    </maml:alertSet>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>
-        </dev:code>
+        <dev:code>Assert-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}</dev:code>
         <dev:remarks>
-          <maml:para>
-          </maml:para>
+          <maml:para>Assert that at least one item in the array is greater than 3.</maml:para>
           <maml:para>
           </maml:para>
           <maml:para>
@@ -113,11 +128,12 @@ This function does not accept input from the pipeline.</maml:name>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>
-        </dev:code>
+        <dev:code>Assert-Exists @() {param($n) $n -gt 3}</dev:code>
         <dev:remarks>
-          <maml:para>
-          </maml:para>
+          <maml:para>Assert that at least one item in the array is greater than 3.
+
+Note:
+This assertion will always fail because the array is empty.</maml:para>
           <maml:para>
           </maml:para>
           <maml:para>
@@ -133,11 +149,29 @@ This function does not accept input from the pipeline.</maml:name>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>
-        </dev:code>
+        <dev:code>Assert-Exists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 25} -Verbose</dev:code>
         <dev:remarks>
+          <maml:para>Assert that at least one entry in the hashtable has a value greater than 25.
+The -Verbose switch will output the result of the assertion to the Verbose stream.</maml:para>
           <maml:para>
           </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>Assert-Exists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 25} -Debug</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that at least one entry in the hashtable has a value greater than 25.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.</maml:para>
           <maml:para>
           </maml:para>
           <maml:para>

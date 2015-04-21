@@ -28,8 +28,23 @@ The $ErrorActionPreference variable outside of the predicate may or may not have
 
 A predicate throwing an error is very rare, but it is recommended that you set the $ErrorActionPreference variable to 'Stop' before calling Assert-All.
 .Example
+Assert-All @(1, 2, 3, 4, 5) {param($n) $n -gt 0}
+Assert that all items in the array are greater than 0.
 .Example
+Assert-All @() {param($n) $n -gt 0}
+Assert that all items in the array are greater than 0.
+
+Note:
+This assertion will always pass because the array is empty.
+This is known as vacuous truth.
 .Example
+Assert-All @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 5} -Verbose
+Assert that all entries in the hashtable have a value greater than 5.
+The -Verbose switch will output the result of the assertion to the Verbose stream.
+.Example
+Assert-All @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 5} -Debug
+Assert that all entries in the hashtable have a value greater than 5.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
 None
 
@@ -37,6 +52,19 @@ This function does not accept input from the pipeline.
 .Outputs
 None
 .Notes
+An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+#set $ErrorActionPreference to stop in case the predicate fails
+$ErrorActionPreference = 'Stop'
+
+Assert-All $numbers {param($n) $n -is [system.int32]}
+Assert-All $numbers {param($n) $n % 2 -eq 0}
 .Link
 Assert-True
 .Link

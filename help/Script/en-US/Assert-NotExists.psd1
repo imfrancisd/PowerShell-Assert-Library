@@ -28,8 +28,22 @@ The $ErrorActionPreference variable outside of the predicate may or may not have
 
 A predicate throwing an error is very rare, but it is recommended that you set the $ErrorActionPreference variable to 'Stop' before calling Assert-NotExists.
 .Example
+Assert-NotExists @(1, 2, 3, 4, 5) {param($n) $n -gt 10}
+Assert that no item in the array is greater than 10.
 .Example
+Assert-NotExists @() {param($n) $n -gt 10}
+Assert that no item in the array is greater than 10.
+
+Note:
+This assertion will always pass because the array is empty.
 .Example
+Assert-NotExists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -lt 0} -Verbose
+Assert that no entry in the hashtable has a value less than 0.
+The -Verbose switch will output the result of the assertion to the Verbose stream.
+.Example
+Assert-NotExists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -lt 0} -Debug
+Assert that no entry in the hashtable has a value less than 0.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs
 None
 
@@ -37,6 +51,19 @@ This function does not accept input from the pipeline.
 .Outputs
 None
 .Notes
+An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+#set $ErrorActionPreference to stop in case the predicate fails
+$ErrorActionPreference = 'Stop'
+
+Assert-NotExists $numbers {param($n) $n -isnot [system.int32]}
+Assert-NotExists $numbers {param($n) $n % 2 -ne 0}
 .Link
 Assert-True
 .Link
