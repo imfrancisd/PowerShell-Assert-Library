@@ -28,7 +28,7 @@ Include 1 of the following in your scripts or module if you want to use these fu
 * "Release\Script\AssertLibrary.ps1" script file
 * "Release\Module\AssertLibrary\" module directory.
 
-##### NOTE:
+##### Note:
 The "Release\Script\" directory has multiple script files.
 
 The only difference between these script files is the language used to write the documentation. For example, "AssertLibrary_en-US.ps1" contains documentation written for people who speak English in the US.
@@ -65,4 +65,45 @@ In fact, the functions were designed so that they can be used in different Power
 Yes.
 
 You can even use these functions directly in the shell.
+
+#### What are the names of the functions?
+If you are using the module, you can get a list of all the functions using this command:
+````
+    get-help about_assertlibrary
+````
+or by using this command:
+````
+    (get-module assertlibrary).exportedfunctions.keys
+````
+
+If you are not using the module, here are the names of the functions:
+* Assert-True
+* Assert-False
+* Assert-Null
+* Assert-NotTrue
+* Assert-NotFalse
+* Assert-NotNull
+* Assert-All
+* Assert-Exists
+* Assert-NotExists
+* Assert-PipelineAny
+* Assert-PipelineCount
+* Assert-PipelineEmpty
+* Assert-PipelineSingle
+* Group-ListItem
+* Test-DateTime
+* Test-Guid
+* Test-Number
+* Test-String
+* Test-Text
+* Test-TimeSpan
+* Test-Version
+
+#### How do I use the functions?
+You can view the help file for each function using PowerShell's Get-Help cmdlet.
+````
+    # this will display the help file for Group-ListItem
+    Get-Help Group-ListItem -Full
+````
+The help file contains detailed information about the function as well as examples of how to use the function.
 
