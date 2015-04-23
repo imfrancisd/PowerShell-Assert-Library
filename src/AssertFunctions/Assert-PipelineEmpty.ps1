@@ -25,16 +25,7 @@ function Assert-PipelineEmpty
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
-                    'Assert-PipelineEmpty must take its input from the pipeline.',
-                    'InputObject'
-                )),
-                'PipelineArgumentOnly',
-                [System.Management.Automation.ErrorCategory]::InvalidArgument,
-                $InputObject
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineEmpty' -argumentName 'InputObject' -argumentValue $InputObject))
         }
     }
 
@@ -43,32 +34,17 @@ function Assert-PipelineEmpty
         #fail immediately
         #do not wait for all pipeline objects
 
-        $message = 'Assertion failed: {0}, file {1}, line {2}' -f @(
-            $MyInvocation.Line.Trim(),
-            $MyInvocation.ScriptName,
-            $MyInvocation.ScriptLineNumber
-        )
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
         Write-Verbose -Message $message
         Write-Debug -Message $message
-
-        $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-            (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-            'AssertionFailed',
-            [System.Management.Automation.ErrorCategory]::OperationStopped,
-            $InputObject
-        )
-        $PSCmdlet.ThrowTerminatingError($errorRecord)
+        $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
     }
 
     End
     {
         if ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue) {
-            $message = 'Assertion passed: {0}, file {1}, line {2}' -f @(
-                $MyInvocation.Line.Trim(),
-                $MyInvocation.ScriptName,
-                $MyInvocation.ScriptLineNumber
-            )
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
             Write-Verbose -Message $message
         }
     }

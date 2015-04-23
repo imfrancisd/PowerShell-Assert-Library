@@ -29,15 +29,7 @@ function Assert-NotExists
 
     foreach ($item in $Collection.psbase.GetEnumerator()) {
         try   {$result = & $Predicate $item}
-        catch {
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.InvalidOperationException' -ArgumentList @('Could not invoke predicate.', $_.Exception)),
-                'PredicateError',
-                [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $Predicate
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
-        }
+        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
         if (($result -is [System.Boolean]) -and $result) {
             $fail = $true
@@ -46,25 +38,12 @@ function Assert-NotExists
     }
 
     if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-        $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
-            $(if ($fail) {'failed'} else {'passed'}),
-            $MyInvocation.Line.Trim(),
-            $MyInvocation.ScriptName,
-            $MyInvocation.ScriptLineNumber
-        )
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
-
         if ($fail) {
             Write-Debug -Message $message
-
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                'AssertionFailed',
-                [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $Collection
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
         }
     }
 }

@@ -19,12 +19,7 @@ function Assert-True
     $fail = -not (($Value -is [System.Boolean]) -and $Value)
 
     if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-        $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
-            $(if ($fail) {'failed'} else {'passed'}),
-            $MyInvocation.Line.Trim(),
-            $MyInvocation.ScriptName,
-            $MyInvocation.ScriptLineNumber
-        )
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
@@ -36,14 +31,7 @@ function Assert-True
                 }
             }
             Write-Debug -Message $message
-
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                'AssertionFailed',
-                [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $Value
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }

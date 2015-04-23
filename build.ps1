@@ -157,7 +157,9 @@ function buildScript
             ''
             'New-Module -Name {0} -ScriptBlock {{' -f "'AssertLibrary_$($dir.BaseName)_v$LibraryVersion'"
             foreach ($item in $functionFiles) {
-                Get-Content -LiteralPath (Join-Path -Path $scriptLocalizedHelpDir -ChildPath ($item.BaseName + '.psd1'))
+                if (-not $item.BaseName.StartsWith('_private_', [System.StringComparison]::OrdinalIgnoreCase)) {
+                    Get-Content -LiteralPath (Join-Path -Path $scriptLocalizedHelpDir -ChildPath ($item.BaseName + '.psd1'))
+                }
                 Get-Content -LiteralPath $item.PSPath
                 ''
             }
@@ -185,7 +187,9 @@ function buildModule
     $(& {
         buildHeader
         foreach ($item in $functionFiles) {
-            "#.ExternalHelp $($item.BaseName)_help.xml"
+            if (-not $item.BaseName.StartsWith('_private_', [System.StringComparison]::OrdinalIgnoreCase)) {
+                "#.ExternalHelp $($item.BaseName)_help.xml"
+            }
             Get-Content -LiteralPath $item.PSPath
             ''
         }
