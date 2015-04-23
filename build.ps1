@@ -154,11 +154,14 @@ function buildScript
 
         $lines = @(& {
             buildHeader
+            ''
+            'New-Module -Name {0} -ScriptBlock {{' -f "'AssertLibrary_$($dir.BaseName)_v$LibraryVersion'"
             foreach ($item in $functionFiles) {
                 Get-Content -LiteralPath (Join-Path -Path $scriptLocalizedHelpDir -ChildPath ($item.BaseName + '.psd1'))
                 Get-Content -LiteralPath $item.PSPath
                 ''
             }
+            '} | Import-Module'
         })
 
         $ps1 = Join-Path -Path $buildScriptDir -ChildPath ('AssertLibrary_{0}.ps1' -f $dir.BaseName)
