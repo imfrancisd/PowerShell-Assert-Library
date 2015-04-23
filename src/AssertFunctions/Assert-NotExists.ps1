@@ -4,11 +4,11 @@ function Assert-NotExists
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [System.Collections.ICollection]
-        $private:Collection,
+        $Collection,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
         [System.Management.Automation.ScriptBlock]
-        $private:Predicate
+        $Predicate
     )
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -25,46 +25,46 @@ function Assert-NotExists
         }
     }
 
-    $private:fail = $false
+    $fail = $false
 
-    foreach ($private:item in $private:Collection.psbase.GetEnumerator()) {
-        try   {$private:result = & $private:Predicate $private:item}
+    foreach ($item in $Collection.psbase.GetEnumerator()) {
+        try   {$result = & $Predicate $item}
         catch {
-            $private:errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
                 (New-Object -TypeName 'System.InvalidOperationException' -ArgumentList @('Could not invoke predicate.', $_.Exception)),
                 'PredicateError',
                 [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $private:Predicate
+                $Predicate
             )
-            $PSCmdlet.ThrowTerminatingError($private:errorRecord)
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
         
-        if (($private:result -is [System.Boolean]) -and $private:result) {
-            $private:fail = $true
+        if (($result -is [System.Boolean]) -and $result) {
+            $fail = $true
             break
         }
     }
 
-    if ($private:fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-        $private:message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
+    if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
+        $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
             $(if ($fail) {'failed'} else {'passed'}),
             $MyInvocation.Line.Trim(),
             $MyInvocation.ScriptName,
             $MyInvocation.ScriptLineNumber
         )
 
-        Write-Verbose -Message $private:message
+        Write-Verbose -Message $message
 
-        if ($private:fail) {
-            Write-Debug -Message $private:message
+        if ($fail) {
+            Write-Debug -Message $message
 
-            $private:errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.Exception' -ArgumentList @($private:message)),
+            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
                 'AssertionFailed',
                 [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $private:Collection
+                $Collection
             )
-            $PSCmdlet.ThrowTerminatingError($private:errorRecord)
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
     }
 }

@@ -22,18 +22,18 @@ The assertion will always pass if the collection is empty.
       <command:syntaxItem>
         <maml:name>Assert-NotExists</maml:name>
         <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
-          <maml:name>private:Collection</maml:name>
+          <maml:name>Collection</maml:name>
           <command:parameterValue required="true">ICollection</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" globbing="false" pipelineInput="false" position="2">
-          <maml:name>private:Predicate</maml:name>
+          <maml:name>Predicate</maml:name>
           <command:parameterValue required="true">ScriptBlock</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
       <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
-        <maml:name>private:Collection</maml:name>
+        <maml:name>Collection</maml:name>
         <maml:description>
           <maml:para>The collection of items used to test the predicate.
 
@@ -47,7 +47,7 @@ The order in which the items in the collection are tested is determined by the c
         </dev:defaultValue>
       </command:parameter>
       <command:parameter required="true" globbing="false" pipelineInput="false" position="2">
-        <maml:name>private:Predicate</maml:name>
+        <maml:name>Predicate</maml:name>
         <maml:description>
           <maml:para>The script block that will be invoked on each item in the collection.
 
@@ -55,13 +55,7 @@ The script block must take one argument and return a value.
 
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
-An InvalidOperationException is thrown if the predicate throws an error.
-Set the $ErrorActionPreference variable inside the predicate if you need to use that variable.
-
-Important:
-The $ErrorActionPreference variable outside of the predicate may or may not have an effect on the predicate.
-
-A predicate throwing an error is very rare, but it is recommended that you set the $ErrorActionPreference variable to 'Stop' before calling Assert-NotExists.</maml:para>
+An InvalidOperationException is thrown if the predicate throws an error.</maml:para>
         </maml:description>
         <command:parameterValue required="true">ScriptBlock</command:parameterValue>
         <dev:type>
@@ -96,9 +90,6 @@ $VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
 
 #display debug prompt on failing assertions
 $DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
-
-#set $ErrorActionPreference to stop in case the predicate fails
-$ErrorActionPreference = 'Stop'
 
 Assert-NotExists $numbers {param($n) $n -isnot [system.int32]}
 Assert-NotExists $numbers {param($n) $n % 2 -ne 0}</maml:para>

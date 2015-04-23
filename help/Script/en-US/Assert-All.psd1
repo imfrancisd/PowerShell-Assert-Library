@@ -9,11 +9,11 @@ Note:
 The assertion will always pass if the collection is empty.
 
 *See the -Collection and -Predicate parameters for more details.
-.Parameter private:Collection
+.Parameter Collection
 The collection of items used to test the predicate.
 
 The order in which the items in the collection are tested is determined by the collection's GetEnumerator method.
-.Parameter private:Predicate
+.Parameter Predicate
 The script block that will be invoked on each item in the collection.
 
 The script block must take one argument and return a value.
@@ -21,12 +21,6 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
-Set the $ErrorActionPreference variable inside the predicate if you need to use that variable.
-
-Important:
-The $ErrorActionPreference variable outside of the predicate may or may not have an effect on the predicate.
-
-A predicate throwing an error is very rare, but it is recommended that you set the $ErrorActionPreference variable to 'Stop' before calling Assert-All.
 .Example
 Assert-All @(1, 2, 3, 4, 5) {param($n) $n -gt 0}
 Assert that all items in the array are greater than 0.
@@ -59,9 +53,6 @@ $VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
 
 #display debug prompt on failing assertions
 $DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
-
-#set $ErrorActionPreference to stop in case the predicate fails
-$ErrorActionPreference = 'Stop'
 
 Assert-All $numbers {param($n) $n -is [system.int32]}
 Assert-All $numbers {param($n) $n % 2 -eq 0}
