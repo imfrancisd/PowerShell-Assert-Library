@@ -163,7 +163,7 @@ function buildScript
                 Get-Content -LiteralPath $item.PSPath
                 ''
             }
-            '} | Import-Module'
+            "Export-ModuleMember -Function '*-*'} | Import-Module"
         })
 
         $ps1 = Join-Path -Path $buildScriptDir -ChildPath ('AssertLibrary_{0}.ps1' -f $dir.BaseName)
@@ -193,6 +193,7 @@ function buildModule
             Get-Content -LiteralPath $item.PSPath
             ''
         }
+        "Export-ModuleMember -Function '*-*'"
     }) | Out-File -FilePath $psm1 -Encoding ascii -Verbose:$VerbosePreference
 
     @(
