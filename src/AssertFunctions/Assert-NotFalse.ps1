@@ -9,12 +9,7 @@ function Assert-NotFalse
     )
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
-        if ($null -eq $VerbosePreference) {
-            $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-        }
-    }
+    _7ddd17460d1743b2b6e683ef649e01b7_setVerbosePreference -cmdlet $PSCmdlet
 
     $fail = ($Value -is [System.Boolean]) -and (-not $Value)
 
@@ -24,12 +19,7 @@ function Assert-NotFalse
         Write-Verbose -Message $message
 
         if ($fail) {
-            if (-not $PSBoundParameters.ContainsKey('Debug')) {
-                $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
-                if ($null -eq $DebugPreference) {
-                    $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-                }
-            }
+            _7ddd17460d1743b2b6e683ef649e01b7_setDebugPreference -cmdlet $PSCmdlet
             Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
