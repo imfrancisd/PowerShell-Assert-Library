@@ -2,35 +2,64 @@
 <helpItems schema="maml">
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10">
     <command:details>
-      <command:name>Assert-NotTrue</command:name>
+      <command:name>Assert-Exists</command:name>
       <maml:description>
-        <maml:para>Assert that a value is not the Boolean value $true.</maml:para>
+        <maml:para>Assert that a predicate is true for some of the items in a collection.</maml:para>
       </maml:description>
       <command:verb>Assert</command:verb>
-      <command:noun>NotTrue</command:noun>
+      <command:noun>Exists</command:noun>
     </command:details>
     <maml:description>
       <maml:para>This function throws an error if any of the following conditions are met:
-    *the value being asserted is the System.Boolean value $true</maml:para>
+    *the predicate is not true for any item in the collection
+
+Note:
+The assertion will always fail if the collection is empty.
+
+*See the -Collection and -Predicate parameters for more details.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Assert-NotTrue</maml:name>
+        <maml:name>Assert-Exists</maml:name>
         <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
-          <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <maml:name>Collection</maml:name>
+          <command:parameterValue required="true">ICollection</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="2">
+          <maml:name>Predicate</maml:name>
+          <command:parameterValue required="true">ScriptBlock</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
       <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
-        <maml:name>Value</maml:name>
+        <maml:name>Collection</maml:name>
         <maml:description>
-          <maml:para>The value to assert.</maml:para>
+          <maml:para>The collection of items used to test the predicate.
+
+The order in which the items in the collection are tested is determined by the collection's GetEnumerator method.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true">ICollection</command:parameterValue>
         <dev:type>
-          <maml:name>Object</maml:name>
+          <maml:name>ICollection</maml:name>
+        </dev:type>
+        <dev:defaultValue>
+        </dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="2">
+        <maml:name>Predicate</maml:name>
+        <maml:description>
+          <maml:para>The script block that will be invoked on each item in the collection.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+        <dev:type>
+          <maml:name>ScriptBlock</maml:name>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -62,9 +91,8 @@ $VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
 #display debug prompt on failing assertions
 $DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
 
-Assert-NotTrue ($a -is [System.Int32])
-Assert-NotTrue ($b -is [System.Int32])
-Assert-NotTrue ($a -eq $b)</maml:para>
+Assert-Exists $numbers {param($n) $n -is [system.int32]}
+Assert-Exists $numbers {param($n) $n % 2 -eq 0}</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -73,9 +101,9 @@ Assert-NotTrue ($a -eq $b)</maml:para>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Assert-NotTrue ($a -eq $b)</dev:code>
+        <dev:code>Assert-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}</dev:code>
         <dev:remarks>
-          <maml:para>Throws an error if the expression ($a -eq $b) evaluates to $true.</maml:para>
+          <maml:para>Assert that at least one item in the array is greater than 3.</maml:para>
           <maml:para>
           </maml:para>
           <maml:para>
@@ -91,10 +119,12 @@ Assert-NotTrue ($a -eq $b)</maml:para>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Assert-NotTrue ($a -eq $b) -Verbose</dev:code>
+        <dev:code>Assert-Exists @() {param($n) $n -gt 3}</dev:code>
         <dev:remarks>
-          <maml:para>Throws an error if the expression ($a -eq $b) evaluates to $true.
-The -Verbose switch will output the result of the assertion to the Verbose stream.</maml:para>
+          <maml:para>Assert that at least one item in the array is greater than 3.
+
+Note:
+This assertion will always fail because the array is empty.</maml:para>
           <maml:para>
           </maml:para>
           <maml:para>
@@ -110,9 +140,28 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Assert-NotTrue ($a -eq $b) -Debug</dev:code>
+        <dev:code>Assert-Exists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 25} -Verbose</dev:code>
         <dev:remarks>
-          <maml:para>Throws an error if the expression ($a -eq $b) evaluates to $true.
+          <maml:para>Assert that at least one entry in the hashtable has a value greater than 25.
+The -Verbose switch will output the result of the assertion to the Verbose stream.</maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>Assert-Exists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 25} -Debug</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that at least one entry in the hashtable has a value greater than 25.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.</maml:para>
           <maml:para>
           </maml:para>
@@ -136,6 +185,9 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
         <maml:linkText>Assert-Null</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Assert-NotTrue</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Assert-NotFalse</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -143,9 +195,6 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-All</maml:linkText>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Assert-Exists</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotExists</maml:linkText>

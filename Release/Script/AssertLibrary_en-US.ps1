@@ -23,10 +23,349 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.3.0.0
+#Assert Library version 1.4.0.0
 #
 #PowerShell requirements
 #requires -version 2.0
+
+
+New-Module -Name 'AssertLibrary_en-US_v1.4.0.0' -ScriptBlock {
+
+function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError
+{
+    Param(
+        [System.String]
+        $message,
+
+        [System.Exception]
+        $innerException,
+
+        [System.Object]
+        $value
+    )
+
+    New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+        (New-Object -TypeName 'System.Exception' -ArgumentList @($message, $innerException)),
+        'AssertionFailed',
+        [System.Management.Automation.ErrorCategory]::OperationStopped,
+        $value
+    )
+}
+
+function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus
+{
+    Param(
+        [System.Management.Automation.InvocationInfo]
+        $invocation,
+
+        [System.Management.Automation.SwitchParameter]
+        $fail
+    )
+
+    'Assertion {0}: {1}, file {2}, line {3}' -f @(
+        $(if ($fail) {'failed'} else {'passed'}),
+        $invocation.Line.Trim(),
+        $invocation.ScriptName,
+        $invocation.ScriptLineNumber
+    )
+}
+
+function _7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError
+{
+    Param(
+        [System.String]
+        $functionName,
+
+        [System.String]
+        $argumentName,
+
+        [System.Object]
+        $argumentValue
+    )
+
+    New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+        (New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
+            "$functionName must take its input from the pipeline.",
+            $argumentName
+        )),
+        'PipelineArgumentOnly',
+        [System.Management.Automation.ErrorCategory]::InvalidArgument,
+        $argumentValue
+    )
+}
+
+function _7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError
+{
+    Param(
+        [System.Management.Automation.ErrorRecord]
+        $errorRecord,
+
+        [System.Management.Automation.ScriptBlock]
+        $predicate
+    )
+
+    New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+        (New-Object -TypeName 'System.InvalidOperationException' -ArgumentList @('Could not invoke predicate.', $errorRecord.Exception)),
+        'PredicateFailed',
+        [System.Management.Automation.ErrorCategory]::OperationStopped,
+        $predicate
+    )
+}
+
+<#
+.Synopsis
+Assert that a predicate is true for all items in a collection.
+.Description
+This function throws an error if any of the following conditions are met:
+    *the predicate is not true for at least one item in the collection
+
+Note:
+The assertion will always pass if the collection is empty.
+
+*See the -Collection and -Predicate parameters for more details.
+.Parameter Collection
+The collection of items used to test the predicate.
+
+The order in which the items in the collection are tested is determined by the collection's GetEnumerator method.
+.Parameter Predicate
+The script block that will be invoked on each item in the collection.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.
+.Example
+Assert-All @(1, 2, 3, 4, 5) {param($n) $n -gt 0}
+Assert that all items in the array are greater than 0.
+.Example
+Assert-All @() {param($n) $n -gt 0}
+Assert that all items in the array are greater than 0.
+
+Note:
+This assertion will always pass because the array is empty.
+This is known as vacuous truth.
+.Example
+Assert-All @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 5} -Verbose
+Assert that all entries in the hashtable have a value greater than 5.
+The -Verbose switch will output the result of the assertion to the Verbose stream.
+.Example
+Assert-All @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 5} -Debug
+Assert that all entries in the hashtable have a value greater than 5.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+None
+.Notes
+An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+Assert-All $numbers {param($n) $n -is [system.int32]}
+Assert-All $numbers {param($n) $n % 2 -eq 0}
+.Link
+Assert-True
+.Link
+Assert-False
+.Link
+Assert-Null
+.Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
+.Link
+Assert-NotNull
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
+Assert-PipelineEmpty
+.Link
+Assert-PipelineAny
+.Link
+Assert-PipelineSingle
+.Link
+Assert-PipelineCount
+#>
+function Assert-All
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [System.Collections.ICollection]
+        $Collection,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+    }
+
+    $fail = $false
+
+    foreach ($item in $Collection.psbase.GetEnumerator()) {
+        try   {$result = & $Predicate $item}
+        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+        if (-not (($result -is [System.Boolean]) -and $result)) {
+            $fail = $true
+            break
+        }
+    }
+
+    if ($fail -or $VerbosePreference) {
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+
+        Write-Verbose -Message $message
+
+        if ($fail) {
+            if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+            }
+            Write-Debug -Message $message
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
+        }
+    }
+}
+
+<#
+.Synopsis
+Assert that a predicate is true for some of the items in a collection.
+.Description
+This function throws an error if any of the following conditions are met:
+    *the predicate is not true for any item in the collection
+
+Note:
+The assertion will always fail if the collection is empty.
+
+*See the -Collection and -Predicate parameters for more details.
+.Parameter Collection
+The collection of items used to test the predicate.
+
+The order in which the items in the collection are tested is determined by the collection's GetEnumerator method.
+.Parameter Predicate
+The script block that will be invoked on each item in the collection.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.
+.Example
+Assert-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}
+Assert that at least one item in the array is greater than 3.
+.Example
+Assert-Exists @() {param($n) $n -gt 3}
+Assert that at least one item in the array is greater than 3.
+
+Note:
+This assertion will always fail because the array is empty.
+.Example
+Assert-Exists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 25} -Verbose
+Assert that at least one entry in the hashtable has a value greater than 25.
+The -Verbose switch will output the result of the assertion to the Verbose stream.
+.Example
+Assert-Exists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 25} -Debug
+Assert that at least one entry in the hashtable has a value greater than 25.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+None
+.Notes
+An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+Assert-Exists $numbers {param($n) $n -is [system.int32]}
+Assert-Exists $numbers {param($n) $n % 2 -eq 0}
+.Link
+Assert-True
+.Link
+Assert-False
+.Link
+Assert-Null
+.Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
+.Link
+Assert-NotNull
+.Link
+Assert-All
+.Link
+Assert-NotExists
+.Link
+Assert-PipelineEmpty
+.Link
+Assert-PipelineAny
+.Link
+Assert-PipelineSingle
+.Link
+Assert-PipelineCount
+#>
+function Assert-Exists
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [System.Collections.ICollection]
+        $Collection,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+    }
+
+    $fail = $true
+
+    foreach ($item in $Collection.psbase.GetEnumerator()) {
+        try   {$result = & $Predicate $item}
+        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+        if (($result -is [System.Boolean]) -and $result) {
+            $fail = $false
+            break
+        }
+    }
+
+    if ($fail -or $VerbosePreference) {
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+
+        Write-Verbose -Message $message
+
+        if ($fail) {
+            if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+            }
+            Write-Debug -Message $message
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
+        }
+    }
+}
 
 <#
 .Synopsis
@@ -78,6 +417,12 @@ Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -98,40 +443,149 @@ function Assert-False
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
-        if ($null -eq $VerbosePreference) {
-            $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-        }
+        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
     }
 
     $fail = -not (($Value -is [System.Boolean]) -and (-not $Value))
 
-    if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-        $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
-            $(if ($fail) {'failed'} else {'passed'}),
-            $MyInvocation.Line.Trim(),
-            $MyInvocation.ScriptName,
-            $MyInvocation.ScriptLineNumber
-        )
+    if ($fail -or $VerbosePreference) {
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
-                $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
-                if ($null -eq $DebugPreference) {
-                    $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-                }
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
+        }
+    }
+}
 
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                'AssertionFailed',
-                [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $Value
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+<#
+.Synopsis
+Assert that a predicate is not true for any item in a collection.
+.Description
+This function throws an error if any of the following conditions are met:
+    *the predicate is true for some of the items in the collection
+
+Note:
+The assertion will always pass if the collection is empty.
+
+*See the -Collection and -Predicate parameters for more details.
+.Parameter Collection
+The collection of items used to test the predicate.
+
+The order in which the items in the collection are tested is determined by the collection's GetEnumerator method.
+.Parameter Predicate
+The script block that will be invoked on each item in the collection.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.
+.Example
+Assert-NotExists @(1, 2, 3, 4, 5) {param($n) $n -gt 10}
+Assert that no item in the array is greater than 10.
+.Example
+Assert-NotExists @() {param($n) $n -gt 10}
+Assert that no item in the array is greater than 10.
+
+Note:
+This assertion will always pass because the array is empty.
+.Example
+Assert-NotExists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -lt 0} -Verbose
+Assert that no entry in the hashtable has a value less than 0.
+The -Verbose switch will output the result of the assertion to the Verbose stream.
+.Example
+Assert-NotExists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -lt 0} -Debug
+Assert that no entry in the hashtable has a value less than 0.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+None
+.Notes
+An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+Assert-NotExists $numbers {param($n) $n -isnot [system.int32]}
+Assert-NotExists $numbers {param($n) $n % 2 -ne 0}
+.Link
+Assert-True
+.Link
+Assert-False
+.Link
+Assert-Null
+.Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
+.Link
+Assert-NotNull
+.Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-PipelineEmpty
+.Link
+Assert-PipelineAny
+.Link
+Assert-PipelineSingle
+.Link
+Assert-PipelineCount
+#>
+function Assert-NotExists
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [System.Collections.ICollection]
+        $Collection,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+    }
+
+    $fail = $false
+
+    foreach ($item in $Collection.psbase.GetEnumerator()) {
+        try   {$result = & $Predicate $item}
+        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+        if (($result -is [System.Boolean]) -and $result) {
+            $fail = $true
+            break
+        }
+    }
+
+    if ($fail -or $VerbosePreference) {
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+
+        Write-Verbose -Message $message
+
+        if ($fail) {
+            if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+            }
+            Write-Debug -Message $message
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
         }
     }
 }
@@ -184,6 +638,12 @@ Assert-NotTrue
 .Link
 Assert-NotNull
 .Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -204,40 +664,22 @@ function Assert-NotFalse
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
-        if ($null -eq $VerbosePreference) {
-            $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-        }
+        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
     }
 
     $fail = ($Value -is [System.Boolean]) -and (-not $Value)
 
-    if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-        $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
-            $(if ($fail) {'failed'} else {'passed'}),
-            $MyInvocation.Line.Trim(),
-            $MyInvocation.ScriptName,
-            $MyInvocation.ScriptLineNumber
-        )
+    if ($fail -or $VerbosePreference) {
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
-                $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
-                if ($null -eq $DebugPreference) {
-                    $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-                }
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                'AssertionFailed',
-                [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $Value
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }
@@ -290,6 +732,12 @@ Assert-NotTrue
 .Link
 Assert-NotFalse
 .Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -310,40 +758,22 @@ function Assert-NotNull
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
-        if ($null -eq $VerbosePreference) {
-            $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-        }
+        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
     }
 
     $fail = $null -eq $Value
 
-    if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-        $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
-            $(if ($fail) {'failed'} else {'passed'}),
-            $MyInvocation.Line.Trim(),
-            $MyInvocation.ScriptName,
-            $MyInvocation.ScriptLineNumber
-        )
+    if ($fail -or $VerbosePreference) {
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
-                $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
-                if ($null -eq $DebugPreference) {
-                    $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-                }
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                'AssertionFailed',
-                [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $Value
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }
@@ -396,6 +826,12 @@ Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -416,40 +852,22 @@ function Assert-NotTrue
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
-        if ($null -eq $VerbosePreference) {
-            $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-        }
+        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
     }
 
     $fail = ($Value -is [System.Boolean]) -and $Value
 
-    if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-        $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
-            $(if ($fail) {'failed'} else {'passed'}),
-            $MyInvocation.Line.Trim(),
-            $MyInvocation.ScriptName,
-            $MyInvocation.ScriptLineNumber
-        )
+    if ($fail -or $VerbosePreference) {
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
-                $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
-                if ($null -eq $DebugPreference) {
-                    $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-                }
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                'AssertionFailed',
-                [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $Value
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }
@@ -502,6 +920,12 @@ Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -522,40 +946,22 @@ function Assert-Null
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
-        if ($null -eq $VerbosePreference) {
-            $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-        }
+        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
     }
 
     $fail = $null -ne $Value
 
-    if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-        $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
-            $(if ($fail) {'failed'} else {'passed'}),
-            $MyInvocation.Line.Trim(),
-            $MyInvocation.ScriptName,
-            $MyInvocation.ScriptLineNumber
-        )
+    if ($fail -or $VerbosePreference) {
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
-                $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
-                if ($null -eq $DebugPreference) {
-                    $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-                }
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                'AssertionFailed',
-                [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $Value
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }
@@ -617,6 +1023,12 @@ Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineSingle
@@ -637,29 +1049,11 @@ function Assert-PipelineAny
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
-            if ($null -eq $VerbosePreference) {
-                $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-            }
-        }
-        if (-not $PSBoundParameters.ContainsKey('Debug')) {
-            $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
-            if ($null -eq $DebugPreference) {
-                $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-            }
+            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
-                    'Assert-PipelineAny must take its input from the pipeline.',
-                    'InputObject'
-                )),
-                'PipelineArgumentOnly',
-                [System.Management.Automation.ErrorCategory]::InvalidArgument,
-                $InputObject
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineAny' -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         $fail = $true
@@ -673,26 +1067,17 @@ function Assert-PipelineAny
 
     End
     {
-        if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-            $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
-                $(if ($fail) {'failed'} else {'passed'}),
-                $MyInvocation.Line.Trim(),
-                $MyInvocation.ScriptName,
-                $MyInvocation.ScriptLineNumber
-            )
+        if ($fail -or $VerbosePreference) {
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
 
             if ($fail) {
+                if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                    $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                }
                 Write-Debug -Message $message
-
-                $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                    (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                    'AssertionFailed',
-                    [System.Management.Automation.ErrorCategory]::OperationStopped,
-                    $InputObject
-                )
-                $PSCmdlet.ThrowTerminatingError($errorRecord)
+                $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
     }
@@ -782,6 +1167,12 @@ Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -814,29 +1205,11 @@ function Assert-PipelineCount
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
-            if ($null -eq $VerbosePreference) {
-                $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-            }
-        }
-        if (-not $PSBoundParameters.ContainsKey('Debug')) {
-            $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
-            if ($null -eq $DebugPreference) {
-                $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-            }
+            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
-                    'Assert-PipelineCount must take its input from the pipeline.',
-                    'InputObject'
-                )),
-                'PipelineArgumentOnly',
-                [System.Management.Automation.ErrorCategory]::InvalidArgument,
-                $InputObject
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         #Make sure we can count higher than -Equals, -Minimum, and -Maximum.
@@ -862,22 +1235,15 @@ function Assert-PipelineCount
             #fail immediately
             #do not wait for all pipeline objects
 
-            $message = 'Assertion failed: {0}, file {1}, line {2}' -f @(
-                $MyInvocation.Line.Trim(),
-                $MyInvocation.ScriptName,
-                $MyInvocation.ScriptLineNumber
-            )
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
             Write-Verbose -Message $message
-            Write-Debug -Message $message
 
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                'AssertionFailed',
-                [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $InputObject
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+            }
+            Write-Debug -Message $message
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
         ,$InputObject
@@ -887,26 +1253,17 @@ function Assert-PipelineCount
     {
         $fail = & $failAssert
 
-        if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-            $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
-                $(if ($fail) {'failed'} else {'passed'}),
-                $MyInvocation.Line.Trim(),
-                $MyInvocation.ScriptName,
-                $MyInvocation.ScriptLineNumber
-            )
+        if ($fail -or $VerbosePreference) {
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
 
             if ($fail) {
+                if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                    $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                }
                 Write-Debug -Message $message
-
-                $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                    (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                    'AssertionFailed',
-                    [System.Management.Automation.ErrorCategory]::OperationStopped,
-                    $InputObject
-                )
-                $PSCmdlet.ThrowTerminatingError($errorRecord)
+                $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
     }
@@ -967,6 +1324,12 @@ Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
 Assert-PipelineAny
 .Link
 Assert-PipelineSingle
@@ -987,29 +1350,11 @@ function Assert-PipelineEmpty
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
-            if ($null -eq $VerbosePreference) {
-                $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-            }
-        }
-        if (-not $PSBoundParameters.ContainsKey('Debug')) {
-            $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
-            if ($null -eq $DebugPreference) {
-                $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-            }
+            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
-                    'Assert-PipelineEmpty must take its input from the pipeline.',
-                    'InputObject'
-                )),
-                'PipelineArgumentOnly',
-                [System.Management.Automation.ErrorCategory]::InvalidArgument,
-                $InputObject
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineEmpty' -argumentName 'InputObject' -argumentValue $InputObject))
         }
     }
 
@@ -1018,32 +1363,21 @@ function Assert-PipelineEmpty
         #fail immediately
         #do not wait for all pipeline objects
 
-        $message = 'Assertion failed: {0}, file {1}, line {2}' -f @(
-            $MyInvocation.Line.Trim(),
-            $MyInvocation.ScriptName,
-            $MyInvocation.ScriptLineNumber
-        )
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
         Write-Verbose -Message $message
-        Write-Debug -Message $message
 
-        $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-            (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-            'AssertionFailed',
-            [System.Management.Automation.ErrorCategory]::OperationStopped,
-            $InputObject
-        )
-        $PSCmdlet.ThrowTerminatingError($errorRecord)
+        if (-not $PSBoundParameters.ContainsKey('Debug')) {
+            $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+        }
+        Write-Debug -Message $message
+        $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
     }
 
     End
     {
-        if ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue) {
-            $message = 'Assertion passed: {0}, file {1}, line {2}' -f @(
-                $MyInvocation.Line.Trim(),
-                $MyInvocation.ScriptName,
-                $MyInvocation.ScriptLineNumber
-            )
+        if ($VerbosePreference) {
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
             Write-Verbose -Message $message
         }
     }
@@ -1107,6 +1441,12 @@ Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -1127,29 +1467,11 @@ function Assert-PipelineSingle
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
-            if ($null -eq $VerbosePreference) {
-                $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-            }
-        }
-        if (-not $PSBoundParameters.ContainsKey('Debug')) {
-            $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
-            if ($null -eq $DebugPreference) {
-                $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-            }
+            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
-                    'Assert-PipelineSingle must take its input from the pipeline.',
-                    'InputObject'
-                )),
-                'PipelineArgumentOnly',
-                [System.Management.Automation.ErrorCategory]::InvalidArgument,
-                $InputObject
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineSingle' -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         $anyItems = $false
@@ -1161,22 +1483,15 @@ function Assert-PipelineSingle
             #fail immediately
             #do not wait for all pipeline objects
 
-            $message = 'Assertion failed: {0}, file {1}, line {2}' -f @(
-                $MyInvocation.Line.Trim(),
-                $MyInvocation.ScriptName,
-                $MyInvocation.ScriptLineNumber
-            )
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
             Write-Verbose -Message $message
-            Write-Debug -Message $message
 
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                'AssertionFailed',
-                [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $InputObject
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+            }
+            Write-Debug -Message $message
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
         $anyItems = $true
@@ -1187,26 +1502,17 @@ function Assert-PipelineSingle
     {
         $fail = -not $anyItems
 
-        if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-            $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
-                $(if ($fail) {'failed'} else {'passed'}),
-                $MyInvocation.Line.Trim(),
-                $MyInvocation.ScriptName,
-                $MyInvocation.ScriptLineNumber
-            )
+        if ($fail -or $VerbosePreference) {
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
 
             if ($fail) {
+                if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                    $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                }
                 Write-Debug -Message $message
-
-                $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                    (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                    'AssertionFailed',
-                    [System.Management.Automation.ErrorCategory]::OperationStopped,
-                    $InputObject
-                )
-                $PSCmdlet.ThrowTerminatingError($errorRecord)
+                $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
     }
@@ -1262,6 +1568,12 @@ Assert-NotFalse
 .Link
 Assert-NotNull
 .Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -1282,40 +1594,22 @@ function Assert-True
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
-        if ($null -eq $VerbosePreference) {
-            $VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-        }
+        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
     }
 
     $fail = -not (($Value -is [System.Boolean]) -and $Value)
 
-    if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
-        $message = 'Assertion {0}: {1}, file {2}, line {3}' -f @(
-            $(if ($fail) {'failed'} else {'passed'}),
-            $MyInvocation.Line.Trim(),
-            $MyInvocation.ScriptName,
-            $MyInvocation.ScriptLineNumber
-        )
+    if ($fail -or $VerbosePreference) {
+        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
-                $DebugPreference = $PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference]
-                if ($null -eq $DebugPreference) {
-                    $DebugPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-                }
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.Exception' -ArgumentList @($message)),
-                'AssertionFailed',
-                [System.Management.Automation.ErrorCategory]::OperationStopped,
-                $Value
-            )
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }
@@ -5343,3 +5637,4 @@ function Test-Version
     }
 }
 
+Export-ModuleMember -Function '*-*'} | Import-Module
