@@ -23,7 +23,9 @@ function Assert-PipelineCount
     Begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
-        _7ddd17460d1743b2b6e683ef649e01b7_setVerbosePreference -cmdlet $PSCmdlet
+        if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
             $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
@@ -56,7 +58,9 @@ function Assert-PipelineCount
 
             Write-Verbose -Message $message
 
-            _7ddd17460d1743b2b6e683ef649e01b7_setDebugPreference -cmdlet $PSCmdlet
+            if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+            }
             Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
@@ -68,13 +72,15 @@ function Assert-PipelineCount
     {
         $fail = & $failAssert
 
-        if ($fail -or ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::SilentlyContinue)) {
+        if ($fail -or $VerbosePreference) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
 
             if ($fail) {
-                _7ddd17460d1743b2b6e683ef649e01b7_setDebugPreference -cmdlet $PSCmdlet
+                if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                    $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                }
                 Write-Debug -Message $message
                 $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
