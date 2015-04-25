@@ -5,7 +5,10 @@ examples. Be mindful of things that are difficult to test automatically,
 such as clarity, tone, consistency, and choice of words and examples.
 
 You can run the following scripts to display the help files:
+    Verify-Assert-All-Help.ps1
+    Verify-Assert-Exists-Help.ps1
     Verify-Assert-False-Help.ps1
+    Verify-Assert-NotExists-Help.ps1
     Verify-Assert-NotFalse-Help.ps1
     Verify-Assert-NotNull-Help.ps1
     Verify-Assert-NotTrue-Help.ps1
@@ -38,7 +41,10 @@ improved and suggest changes.
         - All messages are consistent (file name, line number, pass/fail)
 
 You can run the following scripts to display the messages:
+    Verify-Assert-All-Messages.ps1
+    Verify-Assert-Exists-Messages.ps1
     Verify-Assert-False-Messages.ps1
+    Verify-Assert-NotExists-Messages.ps1
     Verify-Assert-NotFalse-Messages.ps1
     Verify-Assert-NotNull-Messages.ps1
     Verify-Assert-NotTrue-Messages.ps1
@@ -48,4 +54,3 @@ You can run the following scripts to display the messages:
     Verify-Assert-PipelineEmpty-Messages.ps1
     Verify-Assert-PipelineSingle-Messages.ps1
     Verify-Assert-True-Messages.ps1
-
