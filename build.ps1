@@ -72,7 +72,10 @@ $licenseFile   = Join-Path -Path $basePath -ChildPath 'LICENSE.txt'
 $scriptHelpDir = Join-Path -Path $basePath -ChildPath 'help\Script'
 $moduleHelpDir = Join-Path -Path $basePath -ChildPath 'help\Module'
 
-$functionFiles = @(Get-ChildItem -LiteralPath (Join-Path -Path $basePath -ChildPath 'src') -Filter *.ps1 -Recurse)
+$functionFiles = @(
+    Get-ChildItem -LiteralPath (Join-Path -Path $basePath -ChildPath 'src') -Filter *.ps1 -Recurse |
+        Sort-Object -Property 'Name'
+)
 
 function main($target)
 {
