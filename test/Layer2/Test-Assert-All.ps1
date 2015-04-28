@@ -178,6 +178,10 @@ $emptyCollections = @(
     Assert-True ($er2.FullyQualifiedErrorId.Equals('PredicateFailed,Assert-All', [System.StringComparison]::OrdinalIgnoreCase))
     Assert-True ($er3.FullyQualifiedErrorId.Equals('PredicateFailed,Assert-All', [System.StringComparison]::OrdinalIgnoreCase))
 
+    Assert-True ($er1.Exception -is [System.InvalidOperationException])
+    Assert-True ($er2.Exception -is [System.InvalidOperationException])
+    Assert-True ($er3.Exception -is [System.InvalidOperationException])
+
     Assert-NotNull ($er1.Exception.InnerException)
     Assert-NotNull ($er2.Exception.InnerException)
     Assert-NotNull ($er3.Exception.InnerException)
