@@ -203,10 +203,19 @@ The GetEnumerator() method must be used in order to pipe the entries of a hashta
         <maml:linkText>Assert-NotNull</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Assert-All</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Assert-Exists</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotExists</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineExists</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineNotExists</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineEmpty</maml:linkText>

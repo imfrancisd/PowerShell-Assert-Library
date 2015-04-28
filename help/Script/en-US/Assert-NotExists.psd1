@@ -72,6 +72,12 @@ Assert-All
 .Link
 Assert-Exists
 .Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
