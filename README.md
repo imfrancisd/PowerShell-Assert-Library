@@ -44,7 +44,7 @@ There are three kinds of functions in this library:
 The Assert Functions will throw an error if some condition is not met. For example, you can:
 * assert that the result of a comparison is true
 * assert that a pipeline is empty in order to make sure that a function doesn't return anything
-* assert that a pipeline has n objects in order to make sure that a function returns the correct number of objects.
+* assert that a predicate is true for all objects in a collection.
 
 The Collection Functions will allow you to process collections. For example, you can:
 * pair up adjacent items in a list in order to assert that a list is sorted
@@ -86,6 +86,9 @@ If you are not using the module, here are the names of the functions:
 * Assert-All
 * Assert-Exists
 * Assert-NotExists
+* Assert-PipelineAll
+* Assert-PipelineExists
+* Assert-PipelineNotExists
 * Assert-PipelineAny
 * Assert-PipelineCount
 * Assert-PipelineEmpty
