@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<helpItems schema="maml">
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10">
+    <command:details>
+      <command:name>Assert-PipelineExists</command:name>
+      <maml:description>
+        <maml:para>Assert that a predicate is true for some objects in the pipeline.</maml:para>
+      </maml:description>
+      <command:verb>Assert</command:verb>
+      <command:noun>PipelineExists</command:noun>
+    </command:details>
+    <maml:description>
+      <maml:para>This function throws an error if any of the following conditions are met:
+    *the predicate is not true for any object in the pipeline
+
+Note:
+The assertion will always fail if the pipeline is empty.
+
+*See the -InputObject and -Predicate parameters for more details.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Assert-PipelineExists</maml:name>
+        <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="named">
+          <maml:name>InputObject</maml:name>
+          <command:parameterValue required="true">Object</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+          <maml:name>Predicate</maml:name>
+          <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="named">
+        <maml:name>InputObject</maml:name>
+        <maml:description>
+          <maml:para>The object that is used to test the predicate.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">Object</command:parameterValue>
+        <dev:type>
+          <maml:name>Object</maml:name>
+        </dev:type>
+        <dev:defaultValue>
+        </dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <maml:name>Predicate</maml:name>
+        <maml:description>
+          <maml:para>The script block that will be invoked for each object in the pipeline.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+        <dev:type>
+          <maml:name>ScriptBlock</maml:name>
+        </dev:type>
+        <dev:defaultValue>
+        </dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Object
+
+This function accepts any kind of object from the pipeline.</maml:name>
+        </dev:type>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object
+
+If the assertion passes, this function outputs the objects from the pipeline input.</maml:name>
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+$numbers = myNumberGenerator |
+    Assert-PipelineExists {param($n) $n -is [system.int32]} |
+    Assert-PipelineExists {param($n) $n % 2 -eq 0} |
+    Assert-PipelineExists {param($n) $n -gt 0}</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>@(1, 2, 3, 4, 5) | Assert-PipelineExists {param($n) $n -gt 3}</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that at least one item in the array is greater than 3, and outputs each item one at a time.</maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>@() | Assert-PipelineExists {param($n) $n -gt 3}</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that at least one item in the array is greater than 3, and outputs each item one at a time.
+
+Note:
+This assertion will always fail because the array is empty.</maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Verbose</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that at least one entry in the hashtable has a value greater than 25, and outputs each entry one at a time.
+The -Verbose switch will output the result of the assertion to the Verbose stream.
+
+Note:
+The GetEnumerator() method must be used in order to pipe the entries of a hashtable into a function.</maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Debug</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that at least one entry in the hashtable has a value greater than 25, and outputs each entry one at a time.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
+
+Note:
+The GetEnumerator() method must be used in order to pipe the entries of a hashtable into a function.</maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+          <maml:para>
+          </maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <maml:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Assert-True</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-False</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-Null</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-NotTrue</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-NotFalse</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-NotNull</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-All</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-NotExists</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineEmpty</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineAny</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineSingle</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineCount</maml:linkText>
+      </maml:navigationLink>
+    </maml:relatedLinks>
+  </command:command>
+</helpItems>
