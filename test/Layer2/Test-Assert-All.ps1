@@ -79,9 +79,9 @@ $emptyCollections = @(
         $out4 = New-Object -TypeName 'System.Collections.ArrayList'
 
         $er1 = try {Assert-All $emptyCollection {$true} -OutVariable out1 | Out-Null} catch {$_}
-        $er2 = try {Assert-All $emptyCollection {$false} -OutVariable out1 | Out-Null} catch {$_}
-        $er3 = try {Assert-All $emptyCollection {param($a) ,$a} -OutVariable out1 | Out-Null} catch {$_}
-        $er4 = try {Assert-All $emptyCollection {throw 'Bad predicate'} -OutVariable out1 | Out-Null} catch {$_}
+        $er2 = try {Assert-All $emptyCollection {$false} -OutVariable out2 | Out-Null} catch {$_}
+        $er3 = try {Assert-All $emptyCollection {param($a) ,$a} -OutVariable out3 | Out-Null} catch {$_}
+        $er4 = try {Assert-All $emptyCollection {throw 'Bad predicate'} -OutVariable out4 | Out-Null} catch {$_}
 
         Assert-True ($out1.Count -eq 0)
         Assert-True ($out2.Count -eq 0)
@@ -162,7 +162,7 @@ $emptyCollections = @(
     $er1 = try {Assert-All @(1, 2, 3) {param($a) if ($a -eq 1) {throw 'Bad predicate 1'} else {$true}} -OutVariable out1 | Out-Null} catch {$_}
     $er2 = try {Assert-All @(1, 2, 3) {param($a) if ($a -eq 2) {throw 'Bad predicate 2'} else {$true}} -OutVariable out2 | Out-Null} catch {$_}
     $er3 = try {Assert-All @(1, 2, 3) {param($a) if ($a -eq 3) {throw 'Bad predicate 3'} else {$true}} -OutVariable out3 | Out-Null} catch {$_}
-    $er4 = try {Assert-All @(1, 2, 3) {param($a) if ($a -eq 4) {throw 'Bad predicate 4'} else {$true}} -OutVariable out3 | Out-Null} catch {$_}
+    $er4 = try {Assert-All @(1, 2, 3) {param($a) if ($a -eq 4) {throw 'Bad predicate 4'} else {$true}} -OutVariable out4 | Out-Null} catch {$_}
 
     Assert-True ($out1.Count -eq 0)
     Assert-True ($out2.Count -eq 0)
