@@ -61,6 +61,9 @@ SEE ALSO
     Assert-All
     Assert-Exists
     Assert-NotExists
+    Assert-PipelineAll
+    Assert-PipelineExists
+    Assert-PipelineNotExists
     Assert-PipelineAny
     Assert-PipelineCount
     Assert-PipelineEmpty

@@ -161,6 +161,15 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
         <maml:linkText>Assert-NotExists</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Assert-PipelineAll</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineExists</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineNotExists</maml:linkText>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Assert-PipelineEmpty</maml:linkText>
       </maml:navigationLink>
       <maml:navigationLink>

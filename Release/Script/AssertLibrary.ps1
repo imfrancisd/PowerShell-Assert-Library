@@ -23,13 +23,13 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.4.0.0
+#Assert Library version 1.5.0.0
 #
 #PowerShell requirements
 #requires -version 2.0
 
 
-New-Module -Name 'AssertLibrary_en-US_v1.4.0.0' -ScriptBlock {
+New-Module -Name 'AssertLibrary_en-US_v1.5.0.0' -ScriptBlock {
 
 function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError
 {
@@ -187,6 +187,12 @@ Assert-Exists
 .Link
 Assert-NotExists
 .Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -314,6 +320,12 @@ Assert-All
 .Link
 Assert-NotExists
 .Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -422,6 +434,12 @@ Assert-All
 Assert-Exists
 .Link
 Assert-NotExists
+.Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
 .Link
 Assert-PipelineEmpty
 .Link
@@ -537,6 +555,12 @@ Assert-All
 .Link
 Assert-Exists
 .Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -644,6 +668,12 @@ Assert-Exists
 .Link
 Assert-NotExists
 .Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -737,6 +767,12 @@ Assert-All
 Assert-Exists
 .Link
 Assert-NotExists
+.Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
 .Link
 Assert-PipelineEmpty
 .Link
@@ -832,6 +868,12 @@ Assert-Exists
 .Link
 Assert-NotExists
 .Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -926,6 +968,12 @@ Assert-Exists
 .Link
 Assert-NotExists
 .Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
+.Link
 Assert-PipelineEmpty
 .Link
 Assert-PipelineAny
@@ -962,6 +1010,158 @@ function Assert-Null
             }
             Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
+        }
+    }
+}
+
+<#
+.Synopsis
+Assert that a predicate is true for all objects in a pipeline.
+.Description
+This function throws an error if any of the following conditions are met:
+    *the predicate is not true for at least one object in the pipeline
+
+Note:
+The assertion will always pass if the pipeline is empty.
+
+*See the -InputObject and -Predicate parameters for more details.
+.Parameter InputObject
+The object that is used to test the predicate.
+.Parameter Predicate
+The script block that will be invoked for each object in the pipeline.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.
+.Example
+@(1, 2, 3, 4, 5) | Assert-PipelineAll {param($n) $n -gt 0}
+Assert that all items in the array are greater than 0, and outputs each item one at a time.
+.Example
+@() | Assert-PipelineAll {param($n) $n -gt 0}
+Assert that all items in the array are greater than 0, and outputs each item one at a time.
+
+Note:
+This assertion will always pass because the array is empty.
+This is known as vacuous truth.
+.Example
+@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineAll {param($entry) $entry.Value -gt 5} -Verbose
+Assert that all entries in the hashtable have a value greater than 5, and outputs each entry one at a time.
+The -Verbose switch will output the result of the assertion to the Verbose stream.
+
+Note:
+The GetEnumerator() method must be used in order to pipe the entries of a hashtable into a function.
+.Example
+@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineAll {param($entry) $entry.Value -gt 5} -Debug
+Assert that all entries in the hashtable have a value greater than 5, and outputs each entry one at a time.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
+
+Note:
+The GetEnumerator() method must be used in order to pipe the entries of a hashtable into a function.
+.Inputs
+System.Object
+
+This function accepts any kind of object from the pipeline.
+.Outputs
+System.Object
+
+If the assertion passes, this function outputs the objects from the pipeline input.
+.Notes
+An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+$numbers = myNumberGenerator |
+    Assert-PipelineAll {param($n) $n -is [system.int32]} |
+    Assert-PipelineAll {param($n) $n % 2 -eq 0} |
+    Assert-PipelineAll {param($n) $n -gt 0}
+.Link
+Assert-True
+.Link
+Assert-False
+.Link
+Assert-Null
+.Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
+.Link
+Assert-NotNull
+.Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
+.Link
+Assert-PipelineEmpty
+.Link
+Assert-PipelineAny
+.Link
+Assert-PipelineSingle
+.Link
+Assert-PipelineCount
+#>
+function Assert-PipelineAll
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [AllowNull()]
+        [System.Object]
+        $InputObject,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    Begin
+    {
+        $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+        if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        }
+
+        if ($PSBoundParameters.ContainsKey('InputObject')) {
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+        }
+    }
+
+    Process
+    {
+        try   {$result = & $Predicate $InputObject}
+        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+        if (-not (($result -is [System.Boolean]) -and $result)) {
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
+
+            Write-Verbose -Message $message
+
+            if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+            }
+            Write-Debug -Message $message
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+        }
+
+        ,$InputObject
+    }
+
+    End
+    {
+        if ($VerbosePreference) {
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
+            Write-Verbose -Message $message
         }
     }
 }
@@ -1028,6 +1228,12 @@ Assert-All
 Assert-Exists
 .Link
 Assert-NotExists
+.Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
 .Link
 Assert-PipelineEmpty
 .Link
@@ -1172,6 +1378,12 @@ Assert-All
 Assert-Exists
 .Link
 Assert-NotExists
+.Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
 .Link
 Assert-PipelineEmpty
 .Link
@@ -1330,6 +1542,12 @@ Assert-Exists
 .Link
 Assert-NotExists
 .Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
+.Link
 Assert-PipelineAny
 .Link
 Assert-PipelineSingle
@@ -1372,6 +1590,312 @@ function Assert-PipelineEmpty
         }
         Write-Debug -Message $message
         $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+    }
+
+    End
+    {
+        if ($VerbosePreference) {
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
+            Write-Verbose -Message $message
+        }
+    }
+}
+
+<#
+.Synopsis
+Assert that a predicate is true for some objects in the pipeline.
+.Description
+This function throws an error if any of the following conditions are met:
+    *the predicate is not true for any object in the pipeline
+
+Note:
+The assertion will always fail if the pipeline is empty.
+
+*See the -InputObject and -Predicate parameters for more details.
+.Parameter InputObject
+The object that is used to test the predicate.
+.Parameter Predicate
+The script block that will be invoked for each object in the pipeline.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.
+.Example
+@(1, 2, 3, 4, 5) | Assert-PipelineExists {param($n) $n -gt 3}
+Assert that at least one item in the array is greater than 3, and outputs each item one at a time.
+.Example
+@() | Assert-PipelineExists {param($n) $n -gt 3}
+Assert that at least one item in the array is greater than 3, and outputs each item one at a time.
+
+Note:
+This assertion will always fail because the array is empty.
+.Example
+@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Verbose
+Assert that at least one entry in the hashtable has a value greater than 25, and outputs each entry one at a time.
+The -Verbose switch will output the result of the assertion to the Verbose stream.
+
+Note:
+The GetEnumerator() method must be used in order to pipe the entries of a hashtable into a function.
+.Example
+@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Debug
+Assert that at least one entry in the hashtable has a value greater than 25, and outputs each entry one at a time.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
+
+Note:
+The GetEnumerator() method must be used in order to pipe the entries of a hashtable into a function.
+.Inputs
+System.Object
+
+This function accepts any kind of object from the pipeline.
+.Outputs
+System.Object
+
+If the assertion passes, this function outputs the objects from the pipeline input.
+.Notes
+An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+$numbers = myNumberGenerator |
+    Assert-PipelineExists {param($n) $n -is [system.int32]} |
+    Assert-PipelineExists {param($n) $n % 2 -eq 0} |
+    Assert-PipelineExists {param($n) $n -gt 0}
+.Link
+Assert-True
+.Link
+Assert-False
+.Link
+Assert-Null
+.Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
+.Link
+Assert-NotNull
+.Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
+Assert-PipelineAll
+.Link
+Assert-PipelineNotExists
+.Link
+Assert-PipelineEmpty
+.Link
+Assert-PipelineAny
+.Link
+Assert-PipelineSingle
+.Link
+Assert-PipelineCount
+#>
+function Assert-PipelineExists
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [AllowNull()]
+        [System.Object]
+        $InputObject,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    Begin
+    {
+        $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+        if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        }
+
+        if ($PSBoundParameters.ContainsKey('InputObject')) {
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+        }
+
+        $fail = $true
+    }
+
+    Process
+    {
+        if ($fail) {
+            try   {$result = & $Predicate $InputObject}
+            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+            if (($result -is [System.Boolean]) -and $result) {
+                $fail = $false
+            }
+        }
+        ,$InputObject
+    }
+
+    End
+    {
+        if ($fail -or $VerbosePreference) {
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+
+            Write-Verbose -Message $message
+
+            if ($fail) {
+                if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                    $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                }
+                Write-Debug -Message $message
+                $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $null))
+            }
+        }
+    }
+}
+
+<#
+.Synopsis
+Assert that a predicate is not true for any object in the pipeline.
+.Description
+This function throws an error if any of the following conditions are met:
+    *the predicate is true for some of the objects in the pipeline
+
+Note:
+The assertion will always pass if the pipeline is empty.
+
+*See the -InputObject and -Predicate parameters for more details.
+.Parameter InputObject
+The object that is used to test the predicate.
+.Parameter Predicate
+The script block that will be invoked for each object in the pipeline.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.
+.Example
+@(1, 2, 3, 4, 5) | Assert-PipelineNotExists {param($n) $n -gt 10}
+Assert that no item in the array is greater than 10, and outputs each item one at a time.
+.Example
+@() | Assert-PipelineNotExists {param($n) $n -gt 10}
+Assert that no item in the array is greater than 10, and outputs each item one at a time.
+
+Note:
+This assertion will always pass because the array is empty.
+.Example
+@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Verbose
+Assert that no entry in the hashtable has a value less than 0, and outputs each entry one at a time.
+The -Verbose switch will output the result of the assertion to the Verbose stream.
+
+Note:
+The GetEnumerator() method must be used in order to pipe the entries of a hashtable into a function.
+.Example
+@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Debug
+Assert that no entry in the hashtable has a value less than 0, and outputs each entry one at a time.
+The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
+
+Note:
+The GetEnumerator() method must be used in order to pipe the entries of a hashtable into a function.
+.Inputs
+System.Object
+
+This function accepts any kind of object from the pipeline.
+.Outputs
+System.Object
+
+If the assertion passes, this function outputs the objects from the pipeline input.
+.Notes
+An example of how this function might be used in a unit test.
+
+#display passing assertions
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
+#display debug prompt on failing assertions
+$DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+
+$numbers = myNumberGenerator |
+    Assert-PipelineNotExists {param($n) $n -isnot [system.int32]} |
+    Assert-PipelineNotExists {param($n) $n % 2 -ne 0} |
+    Assert-PipelineNotExists {param($n) $n -gt 0}
+.Link
+Assert-True
+.Link
+Assert-False
+.Link
+Assert-Null
+.Link
+Assert-NotTrue
+.Link
+Assert-NotFalse
+.Link
+Assert-NotNull
+.Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineEmpty
+.Link
+Assert-PipelineAny
+.Link
+Assert-PipelineSingle
+.Link
+Assert-PipelineCount
+#>
+function Assert-PipelineNotExists
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [AllowNull()]
+        [System.Object]
+        $InputObject,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    Begin
+    {
+        $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+        if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        }
+
+        if ($PSBoundParameters.ContainsKey('InputObject')) {
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+        }
+    }
+
+    Process
+    {
+        try   {$result = & $Predicate $InputObject}
+        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+        if (($result -is [System.Boolean]) -and $result) {
+            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
+
+            Write-Verbose -Message $message
+
+            if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+            }
+            Write-Debug -Message $message
+            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+        }
+
+        ,$InputObject
     }
 
     End
@@ -1446,6 +1970,12 @@ Assert-All
 Assert-Exists
 .Link
 Assert-NotExists
+.Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
 .Link
 Assert-PipelineEmpty
 .Link
@@ -1573,6 +2103,12 @@ Assert-All
 Assert-Exists
 .Link
 Assert-NotExists
+.Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
 .Link
 Assert-PipelineEmpty
 .Link
