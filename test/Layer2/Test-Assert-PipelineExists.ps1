@@ -63,6 +63,7 @@ $emptyCollections = @(
     Assert-True (0 -eq $inputObject.Aliases.Count)
 
     Assert-True ($predicateParam.IsMandatory)
+    Assert-True ($predicateParam.ParameterType -eq [System.Management.Automation.ScriptBlock])
     Assert-False ($predicateParam.ValueFromPipeline)
     Assert-False ($predicateParam.ValueFromPipelineByPropertyName)
     Assert-False ($predicateParam.ValueFromRemainingArguments)

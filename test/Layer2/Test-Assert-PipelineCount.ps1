@@ -50,6 +50,7 @@ $nonBooleanTrue = @(
     Assert-NotNull $equalsParam
 
     Assert-True ($inputObject.IsMandatory)
+    Assert-True ($inputObject.ParameterType -eq [System.Object])
     Assert-True ($inputObject.ValueFromPipeline)
     Assert-False ($inputObject.ValueFromPipelineByPropertyName)
     Assert-False ($inputObject.ValueFromRemainingArguments)
@@ -57,6 +58,7 @@ $nonBooleanTrue = @(
     Assert-True (0 -eq $inputObject.Aliases.Count)
 
     Assert-True ($equalsParam.IsMandatory)
+    Assert-True ($equalsParam.ParameterType -eq [System.Int64])
     Assert-False ($equalsParam.ValueFromPipeline)
     Assert-False ($equalsParam.ValueFromPipelineByPropertyName)
     Assert-False ($equalsParam.ValueFromRemainingArguments)
@@ -80,6 +82,7 @@ $nonBooleanTrue = @(
     Assert-NotNull $minimumParam
 
     Assert-True ($inputObject.IsMandatory)
+    Assert-True ($inputObject.ParameterType -eq [System.Object])
     Assert-True ($inputObject.ValueFromPipeline)
     Assert-False ($inputObject.ValueFromPipelineByPropertyName)
     Assert-False ($inputObject.ValueFromRemainingArguments)
@@ -87,6 +90,7 @@ $nonBooleanTrue = @(
     Assert-True (0 -eq $inputObject.Aliases.Count)
 
     Assert-True ($minimumParam.IsMandatory)
+    Assert-True ($minimumParam.ParameterType -eq [System.Int64])
     Assert-False ($minimumParam.ValueFromPipeline)
     Assert-False ($minimumParam.ValueFromPipelineByPropertyName)
     Assert-False ($minimumParam.ValueFromRemainingArguments)
@@ -110,6 +114,7 @@ $nonBooleanTrue = @(
     Assert-NotNull $maximumParam
 
     Assert-True ($inputObject.IsMandatory)
+    Assert-True ($inputObject.ParameterType -eq [System.Object])
     Assert-True ($inputObject.ValueFromPipeline)
     Assert-False ($inputObject.ValueFromPipelineByPropertyName)
     Assert-False ($inputObject.ValueFromRemainingArguments)
@@ -117,6 +122,7 @@ $nonBooleanTrue = @(
     Assert-True (0 -eq $inputObject.Aliases.Count)
 
     Assert-True ($maximumParam.IsMandatory)
+    Assert-True ($maximumParam.ParameterType -eq [System.Int64])
     Assert-False ($maximumParam.ValueFromPipeline)
     Assert-False ($maximumParam.ValueFromPipelineByPropertyName)
     Assert-False ($maximumParam.ValueFromRemainingArguments)
