@@ -3,7 +3,8 @@ function Assert-Exists
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
-        [System.Collections.ICollection]
+        [AllowNull()]
+        [System.Object]
         $Collection,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
@@ -17,14 +18,15 @@ function Assert-Exists
     }
 
     $fail = $true
-
-    foreach ($item in $Collection.psbase.GetEnumerator()) {
-        try   {$result = & $Predicate $item}
-        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+    if ($Collection -is [System.Collections.ICollection]) {
+        foreach ($item in $Collection.psbase.GetEnumerator()) {
+            try   {$result = & $Predicate $item}
+            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
-        if (($result -is [System.Boolean]) -and $result) {
-            $fail = $false
-            break
+            if (($result -is [System.Boolean]) -and $result) {
+                $fail = $false
+                break
+            }
         }
     }
 

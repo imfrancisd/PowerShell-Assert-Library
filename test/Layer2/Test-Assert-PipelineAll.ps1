@@ -55,6 +55,7 @@ $emptyCollections = @(
     Assert-NotNull $predicateParam
 
     Assert-True ($inputObject.IsMandatory)
+    Assert-True ($inputObject.ParameterType -eq [System.Object])
     Assert-True ($inputObject.ValueFromPipeline)
     Assert-False ($inputObject.ValueFromPipelineByPropertyName)
     Assert-False ($inputObject.ValueFromRemainingArguments)

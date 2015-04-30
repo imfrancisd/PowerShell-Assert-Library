@@ -55,6 +55,7 @@ $emptyCollections = @(
     Assert-NotNull $predicateParam
 
     Assert-True ($collectionParam.IsMandatory)
+    Assert-True ($collectionParam.ParameterType -eq [System.Object])
     Assert-False ($collectionParam.ValueFromPipeline)
     Assert-False ($collectionParam.ValueFromPipelineByPropertyName)
     Assert-False ($collectionParam.ValueFromRemainingArguments)
@@ -114,13 +115,33 @@ $emptyCollections = @(
     Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
     Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
 
-    Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er2.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er1.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
+}
 
-    Assert-True ($er1.Exception.ParameterName.Equals('Collection', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er2.Exception.ParameterName.Equals('Collection', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er3.Exception.ParameterName.Equals('Collection', [System.StringComparison]::OrdinalIgnoreCase))
+& {
+    Write-Verbose -Message 'Test Assert-NotExists with non-collection' -Verbose:$headerVerbosity
+
+    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
+    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+
+    $er1 = try {Assert-NotExists 1 {$true} -OutVariable out1 | Out-Null} catch {$_}
+    $er2 = try {Assert-NotExists 'hi' {$true} -OutVariable out2 | Out-Null} catch {$_}
+    $er3 = try {Assert-NotExists ([System.DateTime]::Now) {$true} -OutVariable out3 | Out-Null} catch {$_}
+
+    Assert-True ($out1.Count -eq 0)
+    Assert-True ($out2.Count -eq 0)
+    Assert-True ($out3.Count -eq 0)
+
+    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
+
+    Assert-True ($er1.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
+    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {

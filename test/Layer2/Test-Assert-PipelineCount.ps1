@@ -35,6 +35,96 @@ $nonBooleanTrue = @(
 }
 
 & {
+    Write-Verbose -Message 'Test Assert-PipelineCount ParameterSet: Equals' -Verbose:$headerVerbosity
+
+    $paramSet = (Get-Command -Name Assert-PipelineCount).ParameterSets |
+        Where-Object {'Equals'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+    Assert-NotNull $paramSet
+
+    $inputObject = $paramSet.Parameters |
+        Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+    Assert-NotNull $inputObject
+
+    $equalsParam = $paramSet.Parameters |
+        Where-Object {'Equals'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+    Assert-NotNull $equalsParam
+
+    Assert-True ($inputObject.IsMandatory)
+    Assert-True ($inputObject.ValueFromPipeline)
+    Assert-False ($inputObject.ValueFromPipelineByPropertyName)
+    Assert-False ($inputObject.ValueFromRemainingArguments)
+    Assert-True (0 -gt $inputObject.Position)
+    Assert-True (0 -eq $inputObject.Aliases.Count)
+
+    Assert-True ($equalsParam.IsMandatory)
+    Assert-False ($equalsParam.ValueFromPipeline)
+    Assert-False ($equalsParam.ValueFromPipelineByPropertyName)
+    Assert-False ($equalsParam.ValueFromRemainingArguments)
+    Assert-True (0 -eq $equalsParam.Position)
+    Assert-True (0 -eq $equalsParam.Aliases.Count)
+}
+
+& {
+    Write-Verbose -Message 'Test Assert-PipelineCount ParameterSet: Minimum' -Verbose:$headerVerbosity
+
+    $paramSet = (Get-Command -Name Assert-PipelineCount).ParameterSets |
+        Where-Object {'Minimum'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+    Assert-NotNull $paramSet
+
+    $inputObject = $paramSet.Parameters |
+        Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+    Assert-NotNull $inputObject
+
+    $minimumParam = $paramSet.Parameters |
+        Where-Object {'Minimum'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+    Assert-NotNull $minimumParam
+
+    Assert-True ($inputObject.IsMandatory)
+    Assert-True ($inputObject.ValueFromPipeline)
+    Assert-False ($inputObject.ValueFromPipelineByPropertyName)
+    Assert-False ($inputObject.ValueFromRemainingArguments)
+    Assert-True (0 -gt $inputObject.Position)
+    Assert-True (0 -eq $inputObject.Aliases.Count)
+
+    Assert-True ($minimumParam.IsMandatory)
+    Assert-False ($minimumParam.ValueFromPipeline)
+    Assert-False ($minimumParam.ValueFromPipelineByPropertyName)
+    Assert-False ($minimumParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $minimumParam.Position)
+    Assert-True (0 -eq $minimumParam.Aliases.Count)
+}
+
+& {
+    Write-Verbose -Message 'Test Assert-PipelineCount ParameterSet: Maximum' -Verbose:$headerVerbosity
+
+    $paramSet = (Get-Command -Name Assert-PipelineCount).ParameterSets |
+        Where-Object {'Maximum'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+    Assert-NotNull $paramSet
+
+    $inputObject = $paramSet.Parameters |
+        Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+    Assert-NotNull $inputObject
+
+    $maximumParam = $paramSet.Parameters |
+        Where-Object {'Maximum'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+    Assert-NotNull $maximumParam
+
+    Assert-True ($inputObject.IsMandatory)
+    Assert-True ($inputObject.ValueFromPipeline)
+    Assert-False ($inputObject.ValueFromPipelineByPropertyName)
+    Assert-False ($inputObject.ValueFromRemainingArguments)
+    Assert-True (0 -gt $inputObject.Position)
+    Assert-True (0 -eq $inputObject.Aliases.Count)
+
+    Assert-True ($maximumParam.IsMandatory)
+    Assert-False ($maximumParam.ValueFromPipeline)
+    Assert-False ($maximumParam.ValueFromPipelineByPropertyName)
+    Assert-False ($maximumParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $maximumParam.Position)
+    Assert-True (0 -eq $maximumParam.Aliases.Count)
+}
+
+& {
     Write-Verbose -Message 'Test Assert-PipelineCount -Equals with Boolean $true' -Verbose:$headerVerbosity
 
     $out1 = New-Object -TypeName 'System.Collections.ArrayList'

@@ -23,13 +23,13 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.5.0.0
+#Assert Library version 1.5.1.0
 #
 #PowerShell requirements
 #requires -version 2.0
 
 
-New-Module -Name 'AssertLibrary_en-US_v1.5.0.0' -ScriptBlock {
+New-Module -Name 'AssertLibrary_en-US_v1.5.1.0' -ScriptBlock {
 
 function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError
 {
@@ -206,7 +206,8 @@ function Assert-All
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
-        [System.Collections.ICollection]
+        [AllowNull()]
+        [System.Object]
         $Collection,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
@@ -219,15 +220,18 @@ function Assert-All
         $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
     }
 
-    $fail = $false
+    $fail = $true
+    if ($Collection -is [System.Collections.ICollection]) {
+        $fail = $false
 
-    foreach ($item in $Collection.psbase.GetEnumerator()) {
-        try   {$result = & $Predicate $item}
-        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        foreach ($item in $Collection.psbase.GetEnumerator()) {
+            try   {$result = & $Predicate $item}
+            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
-        if (-not (($result -is [System.Boolean]) -and $result)) {
-            $fail = $true
-            break
+            if (-not (($result -is [System.Boolean]) -and $result)) {
+                $fail = $true
+                break
+            }
         }
     }
 
@@ -339,7 +343,8 @@ function Assert-Exists
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
-        [System.Collections.ICollection]
+        [AllowNull()]
+        [System.Object]
         $Collection,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
@@ -353,14 +358,15 @@ function Assert-Exists
     }
 
     $fail = $true
-
-    foreach ($item in $Collection.psbase.GetEnumerator()) {
-        try   {$result = & $Predicate $item}
-        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+    if ($Collection -is [System.Collections.ICollection]) {
+        foreach ($item in $Collection.psbase.GetEnumerator()) {
+            try   {$result = & $Predicate $item}
+            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
-        if (($result -is [System.Boolean]) -and $result) {
-            $fail = $false
-            break
+            if (($result -is [System.Boolean]) -and $result) {
+                $fail = $false
+                break
+            }
         }
     }
 
@@ -574,7 +580,8 @@ function Assert-NotExists
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
-        [System.Collections.ICollection]
+        [AllowNull()]
+        [System.Object]
         $Collection,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
@@ -587,15 +594,18 @@ function Assert-NotExists
         $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
     }
 
-    $fail = $false
+    $fail = $true
+    if ($Collection -is [System.Collections.ICollection]) {
+        $fail = $false
 
-    foreach ($item in $Collection.psbase.GetEnumerator()) {
-        try   {$result = & $Predicate $item}
-        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        foreach ($item in $Collection.psbase.GetEnumerator()) {
+            try   {$result = & $Predicate $item}
+            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
-        if (($result -is [System.Boolean]) -and $result) {
-            $fail = $true
-            break
+            if (($result -is [System.Boolean]) -and $result) {
+                $fail = $true
+                break
+            }
         }
     }
 

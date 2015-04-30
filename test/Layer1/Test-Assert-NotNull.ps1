@@ -41,6 +41,36 @@ $nonBooleanTrue = @(
 }
 
 & {
+    Write-Verbose -Message 'Test Assert-NotNull parameters' -Verbose:$headerVerbosity
+
+    $message = 'Assert-NotNull failed parameter tests.'
+
+    $paramSets = @((Get-Command -Name Assert-NotNull).ParameterSets)
+    if (1 -ne $paramSets.Count) {
+        throw New-Object 'System.Exception' -ArgumentList @($message)
+    }
+
+    $valueParam = $paramSets[0].Parameters |
+        Where-Object {'Value'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+    if ($null -eq $valueParam) {
+        throw New-Object 'System.Exception' -ArgumentList @($message)
+    }
+
+    $pass =
+        ($valueParam.IsMandatory) -and
+        ($valueParam.ParameterType -eq [System.Object]) -and
+        (-not $valueParam.ValueFromPipeline) -and
+        (-not $valueParam.ValueFromPipelineByPropertyName) -and
+        (-not $valueParam.ValueFromRemainingArguments) -and
+        (0 -eq $valueParam.Position) -and
+        (0 -eq $valueParam.Aliases.Count)
+
+    if (-not $pass) {
+        throw New-Object 'System.Exception' -ArgumentList @($message)
+    }
+}
+
+& {
     Write-Verbose -Message 'Test Assert-NotNull with Boolean $null' -Verbose:$headerVerbosity
 
     $out1 = New-Object -TypeName 'System.Collections.ArrayList'

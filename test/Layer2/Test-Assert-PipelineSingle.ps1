@@ -35,6 +35,24 @@ $nonBooleanTrue = @(
 }
 
 & {
+    Write-Verbose -Message 'Test Assert-PipelineSingle parameters' -Verbose:$headerVerbosity
+
+    $paramSets = @((Get-Command -Name Assert-PipelineSingle).ParameterSets)
+    Assert-True (1 -eq $paramSets.Count)
+
+    $inputObject = $paramSets[0].Parameters |
+        Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+    Assert-NotNull $inputObject
+
+    Assert-True ($inputObject.IsMandatory)
+    Assert-True ($inputObject.ParameterType -eq [System.Object])
+    Assert-True ($inputObject.ValueFromPipeline)
+    Assert-False ($inputObject.ValueFromPipelineByPropertyName)
+    Assert-False ($inputObject.ValueFromRemainingArguments)
+    Assert-True (0 -eq $inputObject.Aliases.Count)
+}
+
+& {
     Write-Verbose -Message 'Test Assert-PipelineSingle with Boolean $true' -Verbose:$headerVerbosity
 
     $out1 = New-Object -TypeName 'System.Collections.ArrayList'
