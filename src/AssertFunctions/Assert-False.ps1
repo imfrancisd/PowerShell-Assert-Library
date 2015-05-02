@@ -10,12 +10,12 @@ function Assert-False
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
 
     $fail = -not (($Value -is [System.Boolean]) -and (-not $Value))
 
-    if ($fail -or $VerbosePreference) {
+    if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message

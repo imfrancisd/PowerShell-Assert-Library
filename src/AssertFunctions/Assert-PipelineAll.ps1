@@ -16,7 +16,7 @@ function Assert-PipelineAll
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
@@ -46,7 +46,7 @@ function Assert-PipelineAll
 
     End
     {
-        if ($VerbosePreference) {
+        if (([System.Int32]$VerbosePreference)) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
             Write-Verbose -Message $message
         }
