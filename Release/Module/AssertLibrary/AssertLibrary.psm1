@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.5.1.0
+#Assert Library version 1.5.2.0
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -126,7 +126,7 @@ function Assert-All
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
 
     $fail = $true
@@ -144,7 +144,7 @@ function Assert-All
         }
     }
 
-    if ($fail -or $VerbosePreference) {
+    if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
@@ -176,7 +176,7 @@ function Assert-Exists
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
 
     $fail = $true
@@ -192,7 +192,7 @@ function Assert-Exists
         }
     }
 
-    if ($fail -or $VerbosePreference) {
+    if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
@@ -220,12 +220,12 @@ function Assert-False
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
 
     $fail = -not (($Value -is [System.Boolean]) -and (-not $Value))
 
-    if ($fail -or $VerbosePreference) {
+    if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
@@ -257,7 +257,7 @@ function Assert-NotExists
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
 
     $fail = $true
@@ -275,7 +275,7 @@ function Assert-NotExists
         }
     }
 
-    if ($fail -or $VerbosePreference) {
+    if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
@@ -303,12 +303,12 @@ function Assert-NotFalse
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
 
     $fail = ($Value -is [System.Boolean]) -and (-not $Value)
 
-    if ($fail -or $VerbosePreference) {
+    if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
@@ -336,12 +336,12 @@ function Assert-NotNull
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
 
     $fail = $null -eq $Value
 
-    if ($fail -or $VerbosePreference) {
+    if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
@@ -369,12 +369,12 @@ function Assert-NotTrue
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
 
     $fail = ($Value -is [System.Boolean]) -and $Value
 
-    if ($fail -or $VerbosePreference) {
+    if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
@@ -402,12 +402,12 @@ function Assert-Null
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
 
     $fail = $null -ne $Value
 
-    if ($fail -or $VerbosePreference) {
+    if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
@@ -441,7 +441,7 @@ function Assert-PipelineAll
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
@@ -471,7 +471,7 @@ function Assert-PipelineAll
 
     End
     {
-        if ($VerbosePreference) {
+        if (([System.Int32]$VerbosePreference)) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
             Write-Verbose -Message $message
         }
@@ -493,7 +493,7 @@ function Assert-PipelineAny
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
@@ -511,7 +511,7 @@ function Assert-PipelineAny
 
     End
     {
-        if ($fail -or $VerbosePreference) {
+        if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
@@ -554,7 +554,7 @@ function Assert-PipelineCount
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
@@ -602,7 +602,7 @@ function Assert-PipelineCount
     {
         $fail = & $failAssert
 
-        if ($fail -or $VerbosePreference) {
+        if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
@@ -633,7 +633,7 @@ function Assert-PipelineEmpty
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
@@ -659,7 +659,7 @@ function Assert-PipelineEmpty
 
     End
     {
-        if ($VerbosePreference) {
+        if (([System.Int32]$VerbosePreference)) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
             Write-Verbose -Message $message
         }
@@ -685,7 +685,7 @@ function Assert-PipelineExists
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
@@ -710,7 +710,7 @@ function Assert-PipelineExists
 
     End
     {
-        if ($fail -or $VerbosePreference) {
+        if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
@@ -745,7 +745,7 @@ function Assert-PipelineNotExists
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
@@ -775,7 +775,7 @@ function Assert-PipelineNotExists
 
     End
     {
-        if ($VerbosePreference) {
+        if (([System.Int32]$VerbosePreference)) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
             Write-Verbose -Message $message
         }
@@ -797,7 +797,7 @@ function Assert-PipelineSingle
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-            $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+            $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
@@ -832,7 +832,7 @@ function Assert-PipelineSingle
     {
         $fail = -not $anyItems
 
-        if ($fail -or $VerbosePreference) {
+        if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
@@ -861,12 +861,12 @@ function Assert-True
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-        $VerbosePreference = [System.Int32]($PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference])
+        $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
 
     $fail = -not (($Value -is [System.Boolean]) -and $Value)
 
-    if ($fail -or $VerbosePreference) {
+    if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
