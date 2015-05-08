@@ -8,7 +8,10 @@ function Test-Null
         $Value
     )
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
-    return ($null -eq $Value)
+    $null -eq $Value
 }

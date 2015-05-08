@@ -8,7 +8,10 @@ function Test-NotTrue
         $Value
     )
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
-    return (($Value -isnot [System.Boolean]) -or (-not $Value))
+    ($Value -isnot [System.Boolean]) -or (-not $Value)
 }

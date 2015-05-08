@@ -8,7 +8,10 @@ function Test-True
         $Value
     )
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
-    return (($Value -is [System.Boolean]) -and $Value)
+    ($Value -is [System.Boolean]) -and $Value
 }

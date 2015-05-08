@@ -12,6 +12,9 @@ function Test-All
         $Predicate
     )
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
     if ($Collection -is [System.Collections.ICollection]) {
@@ -20,11 +23,13 @@ function Test-All
             catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (-not (($result -is [System.Boolean]) -and $result)) {
-                return $false
+                $false
+                return
             }
         }
-        return $true
+        $true
+        return
     }
 
-    return $null
+    $null
 }
