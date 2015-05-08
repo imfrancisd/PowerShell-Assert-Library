@@ -162,7 +162,12 @@ function buildScript
             ''
             foreach ($item in $functionFiles) {
                 if (-not $item.BaseName.StartsWith('_', [System.StringComparison]::OrdinalIgnoreCase)) {
-                    Get-Content -LiteralPath (Join-Path -Path $scriptLocalizedHelpDir -ChildPath ($item.BaseName + '.psd1'))
+                    $scriptHelpFile = Join-Path -Path $scriptLocalizedHelpDir -ChildPath ($item.BaseName + '.psd1')
+                    if ((Test-Path -LiteralPath $scriptHelpFile)) {
+                        Get-Content -LiteralPath $scriptHelpFile
+                    } else {
+                        Write-Warning -Message "Missing help file: $scriptHelpFile"
+                    }
                 }
                 Get-Content -LiteralPath $item.PSPath
                 ''
