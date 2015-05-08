@@ -1,0 +1,21 @@
+STEP 1: Verify the help files
+-----------------------------
+The help files should be complete with a synopsis, description, and
+examples. Be mindful of things that are difficult to test automatically,
+such as clarity, tone, consistency, and choice of words and examples.
+
+You can run the following scripts to display the help files:
+    Verify-Test-All-Help.ps1
+    Verify-Test-Exists-Help.ps1
+    Verify-Test-False-Help.ps1
+    Verify-Test-NotExists-Help.ps1
+    Verify-Test-NotFalse-Help.ps1
+    Verify-Test-NotNull-Help.ps1
+    Verify-Test-NotTrue-Help.ps1
+    Verify-Test-Null-Help.ps1
+    Verify-Test-True-Help.ps1
+
+
+STEP 2: Verify the examples
+---------------------------
+The examples in the help files must work.
