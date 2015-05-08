@@ -23,13 +23,13 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.5.2.0
+#Assert Library version 1.6.0.0
 #
 #PowerShell requirements
 #requires -version 2.0
 
 
-New-Module -Name 'AssertLibrary_en-US_v1.5.2.0' -ScriptBlock {
+New-Module -Name 'AssertLibrary_en-US_v1.6.0.0' -ScriptBlock {
 
 function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError
 {
@@ -3187,6 +3187,118 @@ function Group-ListItem
 
 <#
 .Synopsis
+Test that a predicate is true for all items in a collection.
+.Description
+This function tests if a predicate is $true for all items in a collection.
+
+    Return Value   Condition
+    ------------   ---------
+    $null          the collection is not of type System.Collections.ICollection
+    $false         the predicate never returns the System.Boolean value $true
+    $true          the predicate always returns the System.Boolean value $true
+                   the collection is empty
+
+*See the -Collection and -Predicate parameters for more details.
+.Parameter Collection
+The collection of items used to test the predicate.
+
+The order in which the items in the collection are tested is determined by the collection's GetEnumerator method.
+.Parameter Predicate
+The script block that will be invoked on each item in the collection.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.
+.Example
+Test-All @(1, 2, 3, 4, 5) {param($n) $n -gt 0}
+Test that all items in the array are greater than 0.
+.Example
+Test-All @() {param($n) $n -gt 0}
+Test that all items in the array are greater than 0.
+
+Note:
+This test will always return $true because the array is empty.
+This is known as vacuous truth.
+.Example
+Test-All @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 5}
+Test that all entries in the hashtable have a value greater than 5.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
+$null
+
+This function returns $null if the test cannot be performed.
+.Notes
+An example of how this function might be used in a unit test.
+
+#recommended alias
+set-alias 'all?' 'test-all'
+
+assert-all    $items {param($a) all? $a.bArray {param($b) $b -gt 10}}
+assert-exists $items {param($a) all? $a.cArray {param($c) $c -eq 0}}
+.Link
+Test-True
+.Link
+Test-False
+.Link
+Test-Null
+.Link
+Test-NotTrue
+.Link
+Test-NotFalse
+.Link
+Test-NotNull
+.Link
+Test-Exists
+.Link
+Test-NotExists
+#>
+function Test-All
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Collection,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    if ($Collection -is [System.Collections.ICollection]) {
+        foreach ($item in $Collection.psbase.GetEnumerator()) {
+            try   {$result = & $Predicate $item}
+            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+            if (-not (($result -is [System.Boolean]) -and $result)) {
+                $false
+                return
+            }
+        }
+        $true
+        return
+    }
+
+    $null
+}
+
+<#
+.Synopsis
 An alternative to PowerShell's comparison operators when testing DateTime objects in unit test scenarios.
 .Description
 This function tests a DateTime object for type and equality without the implicit conversions or the filtering semantics from the PowerShell comparison operators.
@@ -3643,6 +3755,198 @@ function Test-DateTime
 
 <#
 .Synopsis
+Test that a predicate is true for some of the items in a collection.
+.Description
+This function tests if a predicate is $true for some of the items in a collection.
+
+    Return Value   Condition
+    ------------   ---------
+    $null          the collection is not of type System.Collections.ICollection
+    $false         the predicate never returns the System.Boolean value $true
+                   the collection is empty
+    $true          the predicate returns the System.Boolean value $true one or more times
+
+*See the -Collection and -Predicate parameters for more details.
+.Parameter Collection
+The collection of items used to test the predicate.
+
+The order in which the items in the collection are tested is determined by the collection's GetEnumerator method.
+.Parameter Predicate
+The script block that will be invoked on each item in the collection.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.
+.Example
+Test-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}
+Test that at least one item in the array is greater than 3.
+.Example
+Test-Exists @() {param($n) $n -gt 3}
+Test that at least one item in the array is greater than 3.
+
+Note:
+This test will always return $false because the array is empty.
+.Example
+Test-Exists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 25}
+Test that at least one entry in the hashtable has a value greater than 25.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
+$null
+
+This function returns $null if the test cannot be performed.
+.Notes
+An example of how this function might be used in a unit test.
+
+#recommended alias
+set-alias 'exists?' 'test-exists'
+
+assert-all    $items {param($a) exists? $a.bArray {param($b) $b -gt 10}}
+assert-exists $items {param($a) exists? $a.cArray {param($c) $c -eq 0}}
+.Link
+Test-True
+.Link
+Test-False
+.Link
+Test-Null
+.Link
+Test-NotTrue
+.Link
+Test-NotFalse
+.Link
+Test-NotNull
+.Link
+Test-All
+.Link
+Test-NotExists
+#>
+function Test-Exists
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Collection,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    if ($Collection -is [System.Collections.ICollection]) {
+        foreach ($item in $Collection.psbase.GetEnumerator()) {
+            try   {$result = & $Predicate $item}
+            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+            if (($result -is [System.Boolean]) -and $result) {
+                $true
+                return
+            }
+        }
+        $false
+        return
+    }
+
+    $null
+}
+
+<#
+.Synopsis
+Test that a value is the Boolean value $false.
+.Description
+This function tests if a value is $false without the implicit conversions or the filtering semantics from the PowerShell comparison operators.
+
+    Return Value   Condition
+    ------------   ---------
+    $null          never
+    $false         value is not of type System.Boolean
+                   value is not $false
+    $true          value is $false
+.Parameter Value
+The value to test.
+.Example
+Test-False 0
+Test if the number 0 is $false without performing any implicit conversions.
+
+Note:
+Compare the example above with the following expressions:
+    0 -eq $false
+    '0' -eq $false
+and see how tests can become confusing if those numbers were stored in variables.
+.Example
+Test-False @($false)
+Test if the array is $false without filtering semantics.
+
+Note:
+Compare the example above with the following expressions:
+    @(0, $false) -eq $false
+    @(-1, 0, 1, 2, 3) -eq $false
+and see how tests can become confusing if the value is stored in a variable or if the value is not expected to be an array.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+System.Boolean
+.Notes
+An example of how this function might be used in a unit test.
+
+#recommended alias
+set-alias 'false?' 'test-false'
+
+assert-all    $items {param($a) (false? $a.b) -and (false? $a.c)}
+assert-exists $items {param($a) (false? $a.d) -xor (false? $a.e)}
+.Link
+Test-True
+.Link
+Test-Null
+.Link
+Test-NotTrue
+.Link
+Test-NotFalse
+.Link
+Test-NotNull
+.Link
+Test-All
+.Link
+Test-Exists
+.Link
+Test-NotExists
+#>
+function Test-False
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    ($Value -is [System.Boolean]) -and (-not $Value)
+}
+
+<#
+.Synopsis
 An alternative to PowerShell's comparison operators when testing GUIDs in unit test scenarios.
 .Description
 This function tests a GUID for type and equality without the implicit conversions or the filtering semantics from the PowerShell comparison operators.
@@ -4078,6 +4382,421 @@ function Test-Guid
             )
         }
     }
+}
+
+<#
+.Synopsis
+Test that a predicate is never true for any item in a collection.
+.Description
+This function tests if a predicate is never $true for any item in a collection.
+
+    Return Value   Condition
+    ------------   ---------
+    $null          the collection is not of type System.Collections.ICollection
+    $false         the predicate returns the System.Boolean value $true one or more times
+    $true          the predicate never returns the System.Boolean value $true
+                   the collection is empty
+
+*See the -Collection and -Predicate parameters for more details.
+.Parameter Collection
+The collection of items used to test the predicate.
+
+The order in which the items in the collection are tested is determined by the collection's GetEnumerator method.
+.Parameter Predicate
+The script block that will be invoked on each item in the collection.
+
+The script block must take one argument and return a value.
+
+Note:
+The -ErrorAction parameter has NO effect on the predicate.
+An InvalidOperationException is thrown if the predicate throws an error.
+.Example
+Test-NotExists @(1, 2, 3, 4, 5) {param($n) $n -gt 10}
+Test that no item in the array is greater than 10.
+.Example
+Test-NotExists @() {param($n) $n -gt 10}
+Test that no item in the array is greater than 10.
+
+Note:
+This test will always return $true because the array is empty.
+.Example
+Test-NotExists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -lt 0}
+Test that no entry in the hashtable has a value less than 0.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+System.Boolean
+
+This function returns a Boolean if the test can be performed.
+.Outputs
+$null
+
+This function returns $null if the test cannot be performed.
+.Notes
+An example of how this function might be used in a unit test.
+
+#recommended alias
+set-alias 'notExists?' 'test-notexists'
+
+assert-all    $items {param($a) notExists? $a.bArray {param($b) $b -gt 10}}
+assert-exists $items {param($a) notExists? $a.cArray {param($c) $c -eq 0}}
+.Link
+Test-True
+.Link
+Test-False
+.Link
+Test-Null
+.Link
+Test-NotTrue
+.Link
+Test-NotFalse
+.Link
+Test-NotNull
+.Link
+Test-All
+.Link
+Test-Exists
+#>
+function Test-NotExists
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Collection,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    if ($Collection -is [System.Collections.ICollection]) {
+        foreach ($item in $Collection.psbase.GetEnumerator()) {
+            try   {$result = & $Predicate $item}
+            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+            if (($result -is [System.Boolean]) -and $result) {
+                $false
+                return
+            }
+        }
+        $true
+        return
+    }
+
+    $null
+}
+
+<#
+.Synopsis
+Test that a value is not the Boolean value $false.
+.Description
+This function tests if a value is not $false without the implicit conversions or the filtering semantics from the PowerShell comparison operators.
+
+    Return Value   Condition
+    ------------   ---------
+    $null          never
+    $false         value is not the System.Boolean value $false
+    $true          value is not of type System.Boolean
+                   value is $true
+.Parameter Value
+The value to test.
+.Example
+Test-NotFalse 0
+Test if the number 0 is not $false without performing any implicit conversions.
+
+Note:
+Compare the example above with the following expressions:
+    0 -ne $false
+    '0' -ne $false
+and see how tests can become confusing if those numbers were stored in variables.
+.Example
+Test-NotFalse @($false)
+Test if the array is not $false without filtering semantics.
+
+Note:
+Compare the example above with the following expressions:
+    @(0, $false) -ne $false
+    @(-1, 0, 1, 2, 3) -ne $false
+and see how tests can become confusing if the value is stored in a variable or if the value is not expected to be an array.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+System.Boolean
+.Notes
+An example of how this function might be used in a unit test.
+
+#recommended alias
+set-alias 'notFalse?' 'test-notfalse'
+
+assert-all    $items {param($a) (notFalse? $a.b) -and (notFalse? $a.c)}
+assert-exists $items {param($a) (notFalse? $a.d) -xor (notFalse? $a.e)}
+.Link
+Test-True
+.Link
+Test-False
+.Link
+Test-Null
+.Link
+Test-NotTrue
+.Link
+Test-NotNull
+.Link
+Test-All
+.Link
+Test-Exists
+.Link
+Test-NotExists
+#>
+function Test-NotFalse
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    ($Value -isnot [System.Boolean]) -or $Value
+}
+
+<#
+.Synopsis
+Test that a value is not $null.
+.Description
+This function tests if a value is not $null without the filtering semantics from the PowerShell comparison operators.
+
+    Return Value   Condition
+    ------------   ---------
+    $null          never
+    $false         value is $null
+    $true          value is not $null
+.Parameter Value
+The value to test.
+.Example
+Test-NotNull @(1)
+Test if the value is not $null without filtering semantics.
+
+Note:
+Compare the example above with the following expressions:
+    10 -ne $null
+    @(10) -ne $null
+and see how tests can become confusing if the value is stored in a variable or if the value is not expected to be an array.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+System.Boolean
+.Notes
+An example of how this function might be used in a unit test.
+
+#recommended alias
+set-alias 'notNull?' 'test-notnull'
+
+assert-all    $items {param($a) (notNull? $a.b) -and (notNull? $a.c)}
+assert-exists $items {param($a) (notNull? $a.d) -xor (notNull? $a.e)}
+.Link
+Test-True
+.Link
+Test-False
+.Link
+Test-Null
+.Link
+Test-NotTrue
+.Link
+Test-NotFalse
+.Link
+Test-All
+.Link
+Test-Exists
+.Link
+Test-NotExists
+#>
+function Test-NotNull
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    $null -ne $Value
+}
+
+<#
+.Synopsis
+Test that a value is not the Boolean value $true.
+.Description
+This function tests if a value is not $true without the implicit conversions or the filtering semantics from the PowerShell comparison operators.
+
+    Return Value   Condition
+    ------------   ---------
+    $null          never
+    $false         value is not the System.Boolean value $true
+    $true          value is not of type System.Boolean
+                   value is $false
+.Parameter Value
+The value to test.
+.Example
+Test-NotTrue 1
+Test if the number 1 is not $true without performing any implicit conversions.
+
+Note:
+Compare the example above with the following expressions:
+    1 -ne $true
+    10 -ne $true
+and see how tests can become confusing if those numbers were stored in variables.
+.Example
+Test-NotTrue @($true)
+Test if the array is not $true without filtering semantics.
+
+Note:
+Compare the example above with the following expressions:
+    @(1, $true) -ne $true
+    @(-1, 0, 1, 2, 3) -ne $true
+and see how tests can become confusing if the value is stored in a variable or if the value is not expected to be an array.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+System.Boolean
+.Notes
+An example of how this function might be used in a unit test.
+
+#recommended alias
+set-alias 'notTrue?' 'test-notTrue'
+
+assert-all    $items {param($a) (notTrue? $a.b) -and (notTrue? $a.c)}
+assert-exists $items {param($a) (notTrue? $a.d) -xor (notTrue? $a.e)}
+.Link
+Test-True
+.Link
+Test-False
+.Link
+Test-Null
+.Link
+Test-NotFalse
+.Link
+Test-NotNull
+.Link
+Test-All
+.Link
+Test-Exists
+.Link
+Test-NotExists
+#>
+function Test-NotTrue
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    ($Value -isnot [System.Boolean]) -or (-not $Value)
+}
+
+<#
+.Synopsis
+Test that a value is $null.
+.Description
+This function tests if a value is $null without the filtering semantics from the PowerShell comparison operators.
+
+    Return Value   Condition
+    ------------   ---------
+    $null          never
+    $false         value is not $null
+    $true          value is $null
+.Parameter Value
+The value to test.
+.Example
+Test-Null @(1)
+Test if the value is $null without filtering semantics.
+
+Note:
+Compare the example above with the following expressions:
+    1 -eq $null
+    @(1) -eq $null
+and see how tests can become confusing if the value is stored in a variable or if the value is not expected to be an array.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+System.Boolean
+.Notes
+An example of how this function might be used in a unit test.
+
+#recommended alias
+set-alias 'null?' 'test-null'
+
+assert-all    $items {param($a) (null? $a.b) -and (null? $a.c)}
+assert-exists $items {param($a) (null? $a.d) -xor (null? $a.e)}
+.Link
+Test-True
+.Link
+Test-False
+.Link
+Test-NotTrue
+.Link
+Test-NotFalse
+.Link
+Test-NotNull
+.Link
+Test-All
+.Link
+Test-Exists
+.Link
+Test-NotExists
+#>
+function Test-Null
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    $null -eq $Value
 }
 
 <#
@@ -5856,6 +6575,87 @@ function Test-TimeSpan
             )
         }
     }
+}
+
+<#
+.Synopsis
+Test that a value is the Boolean value $true.
+.Description
+This function tests if a value is $true without the implicit conversions or the filtering semantics from the PowerShell comparison operators.
+
+    Return Value   Condition
+    ------------   ---------
+    $null          never
+    $false         value is not of type System.Boolean
+                   value is not $true
+    $true          value is $true
+.Parameter Value
+The value to test.
+.Example
+Test-True 1
+Test if the number 1 is $true without performing any implicit conversions.
+
+Note:
+Compare the example above with the following expressions:
+    1 -eq $true
+    10 -eq $true
+and see how tests can become confusing if those numbers were stored in variables.
+.Example
+Test-True @($true)
+Test if the array is $true without filtering semantics.
+
+Note:
+Compare the example above with the following expressions:
+    @(1, $true) -eq $true
+    @(-1, 0, 1, 2, 3) -eq $true
+and see how tests can become confusing if the value is stored in a variable or if the value is not expected to be an array.
+.Inputs
+None
+
+This function does not accept input from the pipeline.
+.Outputs
+System.Boolean
+.Notes
+An example of how this function might be used in a unit test.
+
+#recommended alias
+set-alias 'true?' 'test-true'
+
+assert-all    $items {param($a) (true? $a.b) -and (true? $a.c)}
+assert-exists $items {param($a) (true? $a.d) -xor (true? $a.e)}
+.Link
+Test-False
+.Link
+Test-Null
+.Link
+Test-NotTrue
+.Link
+Test-NotFalse
+.Link
+Test-NotNull
+.Link
+Test-All
+.Link
+Test-Exists
+.Link
+Test-NotExists
+#>
+function Test-True
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    ($Value -is [System.Boolean]) -and $Value
 }
 
 <#

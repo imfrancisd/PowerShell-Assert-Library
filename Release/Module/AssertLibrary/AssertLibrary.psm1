@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.5.2.0
+#Assert Library version 1.6.0.0
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -1446,6 +1446,43 @@ function Group-ListItem
     }
 }
 
+#.ExternalHelp Test-All_help.xml
+function Test-All
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Collection,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    if ($Collection -is [System.Collections.ICollection]) {
+        foreach ($item in $Collection.psbase.GetEnumerator()) {
+            try   {$result = & $Predicate $item}
+            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+            if (-not (($result -is [System.Boolean]) -and $result)) {
+                $false
+                return
+            }
+        }
+        $true
+        return
+    }
+
+    $null
+}
+
 #.ExternalHelp Test-DateTime_help.xml
 function Test-DateTime
 {
@@ -1640,6 +1677,62 @@ function Test-DateTime
             )
         }
     }
+}
+
+#.ExternalHelp Test-Exists_help.xml
+function Test-Exists
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Collection,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    if ($Collection -is [System.Collections.ICollection]) {
+        foreach ($item in $Collection.psbase.GetEnumerator()) {
+            try   {$result = & $Predicate $item}
+            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+            if (($result -is [System.Boolean]) -and $result) {
+                $true
+                return
+            }
+        }
+        $false
+        return
+    }
+
+    $null
+}
+
+#.ExternalHelp Test-False_help.xml
+function Test-False
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    ($Value -is [System.Boolean]) -and (-not $Value)
 }
 
 #.ExternalHelp Test-Guid_help.xml
@@ -1882,6 +1975,119 @@ function Test-Guid
             )
         }
     }
+}
+
+#.ExternalHelp Test-NotExists_help.xml
+function Test-NotExists
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Collection,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [System.Management.Automation.ScriptBlock]
+        $Predicate
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    if ($Collection -is [System.Collections.ICollection]) {
+        foreach ($item in $Collection.psbase.GetEnumerator()) {
+            try   {$result = & $Predicate $item}
+            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        
+            if (($result -is [System.Boolean]) -and $result) {
+                $false
+                return
+            }
+        }
+        $true
+        return
+    }
+
+    $null
+}
+
+#.ExternalHelp Test-NotFalse_help.xml
+function Test-NotFalse
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    ($Value -isnot [System.Boolean]) -or $Value
+}
+
+#.ExternalHelp Test-NotNull_help.xml
+function Test-NotNull
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    $null -ne $Value
+}
+
+#.ExternalHelp Test-NotTrue_help.xml
+function Test-NotTrue
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    ($Value -isnot [System.Boolean]) -or (-not $Value)
+}
+
+#.ExternalHelp Test-Null_help.xml
+function Test-Null
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    $null -eq $Value
 }
 
 #.ExternalHelp Test-Number_help.xml
@@ -2736,6 +2942,25 @@ function Test-TimeSpan
             )
         }
     }
+}
+
+#.ExternalHelp Test-True_help.xml
+function Test-True
+{
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [AllowNull()]
+        [System.Object]
+        $Value
+    )
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    ($Value -is [System.Boolean]) -and $Value
 }
 
 #.ExternalHelp Test-Version_help.xml

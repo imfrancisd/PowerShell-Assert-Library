@@ -3,18 +3,25 @@ TOPIC
 
 SHORT DESCRIPTION
     A library of PowerShell functions that gives testers complete control over
-    the meaning of their assertions.
+    the meaning of their assertions. Well, at least that's the goal.
 
 LONG DESCRIPTION
-    A library of PowerShell functions that gives testers complete control over
-    the meaning of their assertions.
+    A library of PowerShell functions that gives you a high degree of control
+    over the meaning of your assertions.
+
+    The control comes from being able to combine the functions in many
+    different ways to create your assertions, or even to create your own
+    assert funtions. Also, the functions are fully documented so you will not
+    need to scour the script in order to guess what each function is supposed
+    to do.
 
     Kinds of functions
     ------------------
-    There are three kinds of functions in this library:
+    There are four kinds of functions in this library:
     * Assert Functions
     * Collection Functions
-    * Comparison Functions.
+    * Comparison Functions
+    * Logic Functions.
 
     Assert Functions
     ----------------
@@ -23,7 +30,7 @@ LONG DESCRIPTION
     For example, you can:
     * assert that the result of a comparison is true
     * assert that a function returns nothing
-    * assert that a function returns the correct number of objects.
+    * assert that a predicate is true for all objects in a collection.
 
     Collection Functions
     --------------------
@@ -44,6 +51,10 @@ LONG DESCRIPTION
     * compare two numbers only if their types are Int32, Int64 or Double, but
       their types don't have to match.
 
+    Logic Functions
+    ---------------
+    The logic functions helps you avoid some quirks in the PowerShell language when you write predicates.
+
     Using the functions
     -------------------
     You can use these functions for different types of tests:
@@ -52,6 +63,8 @@ LONG DESCRIPTION
     * exploratory tests.
 
 SEE ALSO
+    Assert Functions
+    ----------------
     Assert-True
     Assert-False
     Assert-Null
@@ -68,7 +81,13 @@ SEE ALSO
     Assert-PipelineCount
     Assert-PipelineEmpty
     Assert-PipelineSingle
+
+    Collection Functions
+    --------------------
     Group-ListItem
+
+    Comparison Functions
+    --------------------
     Test-DateTime
     Test-Guid
     Test-Number
@@ -76,3 +95,15 @@ SEE ALSO
     Test-Text
     Test-TimeSpan
     Test-Version
+
+    Logic Functions
+    ---------------
+    Test-True
+    Test-False
+    Test-Null
+    Test-NotTrue
+    Test-NotFalse
+    Test-NotNull
+    Test-All
+    Test-Exists
+    Test-NotExists

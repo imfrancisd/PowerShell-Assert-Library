@@ -36,10 +36,11 @@ The only difference between these script files is the language used to write the
 You only need 1 of these files.
 
 #### What kinds of things can I do with these functions?
-There are three kinds of functions in this library:
+There are four kinds of functions in this library:
 * Assert Functions
 * Collection Functions
-* Comparison Functions.
+* Comparison Functions
+* Logic Functions.
 
 The Assert Functions will throw an error if some condition is not met. For example, you can:
 * assert that the result of a comparison is true
@@ -55,6 +56,8 @@ The Comparison Functions will allow you to make comparisons at a high level. For
 * compare strings as programmatic strings or linguistic texts
 * compare the month, day, and year of two dates only if they are both in UTC
 * compare two numbers only if their types are Int32, Int64 or Double, but their types don't have to match.
+
+The logic functions helps you avoid some quirks in the PowerShell language when you write predicates.
 
 #### Can I use these functions in PowerShell testing frameworks?
 Yes.
@@ -101,6 +104,15 @@ If you are not using the module, here are the names of the functions:
 * Test-Text
 * Test-TimeSpan
 * Test-Version
+* Test-True
+* Test-False
+* Test-Null
+* Test-NotTrue
+* Test-NotFalse
+* Test-NotNull
+* Test-All
+* Test-Exists
+* Test-NotExists.
 
 #### How do I use the functions?
 You can view the help file for each function using PowerShell's Get-Help cmdlet.
@@ -109,4 +121,3 @@ You can view the help file for each function using PowerShell's Get-Help cmdlet.
     Get-Help Group-ListItem -Full
 ````
 The help file contains detailed information about the function as well as examples of how to use the function.
-
