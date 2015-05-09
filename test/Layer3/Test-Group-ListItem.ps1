@@ -28,6 +28,194 @@ if ($Silent) {
 }
 
 & {
+    Write-Verbose -Message 'Test Group-ListItem ParameterSet: Pair' -Verbose:$headerVerbosity
+
+    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
+        Where-Object {'Pair'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    $pairParam = $paramSet.Parameters |
+        Where-Object {'Pair'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    Assert-True ($pairParam.IsMandatory)
+    Assert-True ($pairParam.ParameterType -eq [System.Collections.IList])
+    Assert-False ($pairParam.ValueFromPipeline)
+    Assert-False ($pairParam.ValueFromPipelineByPropertyName)
+    Assert-False ($pairParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $pairParam.Position)
+    Assert-True (0 -eq $pairParam.Aliases.Count)
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem ParameterSet: Window' -Verbose:$headerVerbosity
+
+    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
+        Where-Object {'Window'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    $windowParam = $paramSet.Parameters |
+        Where-Object {'Window'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    $sizeParam = $paramSet.Parameters |
+        Where-Object {'Size'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    Assert-True ($windowParam.IsMandatory)
+    Assert-True ($windowParam.ParameterType -eq [System.Collections.IList])
+    Assert-False ($windowParam.ValueFromPipeline)
+    Assert-False ($windowParam.ValueFromPipelineByPropertyName)
+    Assert-False ($windowParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $windowParam.Position)
+    Assert-True (0 -eq $windowParam.Aliases.Count)
+
+    Assert-False ($sizeParam.IsMandatory)
+    Assert-True ($sizeParam.ParameterType -eq [System.Int32])
+    Assert-False ($sizeParam.ValueFromPipeline)
+    Assert-False ($sizeParam.ValueFromPipelineByPropertyName)
+    Assert-False ($sizeParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $sizeParam.Position)
+    Assert-True (0 -eq $sizeParam.Aliases.Count)
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem ParameterSet: Combine' -Verbose:$headerVerbosity
+
+    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
+        Where-Object {'Combine'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    $combineParam = $paramSet.Parameters |
+        Where-Object {'Combine'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    $sizeParam = $paramSet.Parameters |
+        Where-Object {'Size'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    Assert-True ($combineParam.IsMandatory)
+    Assert-True ($combineParam.ParameterType -eq [System.Collections.IList])
+    Assert-False ($combineParam.ValueFromPipeline)
+    Assert-False ($combineParam.ValueFromPipelineByPropertyName)
+    Assert-False ($combineParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $combineParam.Position)
+    Assert-True (0 -eq $combineParam.Aliases.Count)
+
+    Assert-False ($sizeParam.IsMandatory)
+    Assert-True ($sizeParam.ParameterType -eq [System.Int32])
+    Assert-False ($sizeParam.ValueFromPipeline)
+    Assert-False ($sizeParam.ValueFromPipelineByPropertyName)
+    Assert-False ($sizeParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $sizeParam.Position)
+    Assert-True (0 -eq $sizeParam.Aliases.Count)
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem ParameterSet: Permute' -Verbose:$headerVerbosity
+
+    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
+        Where-Object {'Permute'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    $permuteParam = $paramSet.Parameters |
+        Where-Object {'Permute'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    $sizeParam = $paramSet.Parameters |
+        Where-Object {'Size'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    Assert-True ($permuteParam.IsMandatory)
+    Assert-True ($permuteParam.ParameterType -eq [System.Collections.IList])
+    Assert-False ($permuteParam.ValueFromPipeline)
+    Assert-False ($permuteParam.ValueFromPipelineByPropertyName)
+    Assert-False ($permuteParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $permuteParam.Position)
+    Assert-True (0 -eq $permuteParam.Aliases.Count)
+
+    Assert-False ($sizeParam.IsMandatory)
+    Assert-True ($sizeParam.ParameterType -eq [System.Int32])
+    Assert-False ($sizeParam.ValueFromPipeline)
+    Assert-False ($sizeParam.ValueFromPipelineByPropertyName)
+    Assert-False ($sizeParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $sizeParam.Position)
+    Assert-True (0 -eq $sizeParam.Aliases.Count)
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem ParameterSet: Zip' -Verbose:$headerVerbosity
+
+    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
+        Where-Object {'Zip'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    $zipParam = $paramSet.Parameters |
+        Where-Object {'Zip'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    Assert-True ($zipParam.IsMandatory)
+    Assert-True ($zipParam.ParameterType -eq [System.Collections.IList[]])
+    Assert-False ($zipParam.ValueFromPipeline)
+    Assert-False ($zipParam.ValueFromPipelineByPropertyName)
+    Assert-False ($zipParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $zipParam.Position)
+    Assert-True (0 -eq $zipParam.Aliases.Count)
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem ParameterSet: CartesianProduct' -Verbose:$headerVerbosity
+
+    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
+        Where-Object {'CartesianProduct'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    $cartesianProductParam = $paramSet.Parameters |
+        Where-Object {'CartesianProduct'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    Assert-True ($cartesianProductParam.IsMandatory)
+    Assert-True ($cartesianProductParam.ParameterType -eq [System.Collections.IList[]])
+    Assert-False ($cartesianProductParam.ValueFromPipeline)
+    Assert-False ($cartesianProductParam.ValueFromPipelineByPropertyName)
+    Assert-False ($cartesianProductParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $cartesianProductParam.Position)
+    Assert-True (0 -eq $cartesianProductParam.Aliases.Count)
+}
+
+& {
+    Write-Verbose -Message 'Test Group-ListItem ParameterSet: CoveringArray' -Verbose:$headerVerbosity
+
+    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
+        Where-Object {'CoveringArray'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    $coveringArrayParam = $paramSet.Parameters |
+        Where-Object {'CoveringArray'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    $strengthParam = $paramSet.Parameters |
+        Where-Object {'Strength'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineSingle
+
+    Assert-True ($coveringArrayParam.IsMandatory)
+    Assert-True ($coveringArrayParam.ParameterType -eq [System.Collections.IList[]])
+    Assert-False ($coveringArrayParam.ValueFromPipeline)
+    Assert-False ($coveringArrayParam.ValueFromPipelineByPropertyName)
+    Assert-False ($coveringArrayParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $coveringArrayParam.Position)
+    Assert-True (0 -eq $coveringArrayParam.Aliases.Count)
+
+    Assert-False ($strengthParam.IsMandatory)
+    Assert-True ($strengthParam.ParameterType -eq [System.Int32])
+    Assert-False ($strengthParam.ValueFromPipeline)
+    Assert-False ($strengthParam.ValueFromPipelineByPropertyName)
+    Assert-False ($strengthParam.ValueFromRemainingArguments)
+    Assert-True (0 -gt $strengthParam.Position)
+    Assert-True (0 -eq $strengthParam.Aliases.Count)
+}
+
+& {
     Write-Verbose -Message 'Test Group-ListItem -Pair with nulls' -Verbose:$headerVerbosity
 
     $out1 = New-Object -TypeName 'System.Collections.ArrayList'
