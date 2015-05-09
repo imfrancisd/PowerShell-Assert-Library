@@ -7,7 +7,7 @@ This function tests if a value is not $true without the implicit conversions or 
     Return Value   Condition
     ------------   ---------
     $null          never
-    $false         value is not the System.Boolean value $true
+    $false         value is the System.Boolean value $true
     $true          value is not of type System.Boolean
                    value is $false
 .Parameter Value
