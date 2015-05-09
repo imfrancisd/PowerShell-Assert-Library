@@ -15,7 +15,7 @@
     Return Value   Condition
     ------------   ---------
     $null          never
-    $false         value is not the System.Boolean value $true
+    $false         value is the System.Boolean value $true
     $true          value is not of type System.Boolean
                    value is $false</maml:para>
     </maml:description>

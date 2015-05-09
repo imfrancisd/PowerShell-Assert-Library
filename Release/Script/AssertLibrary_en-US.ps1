@@ -23,13 +23,13 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.6.0.0
+#Assert Library version 1.6.0.1
 #
 #PowerShell requirements
 #requires -version 2.0
 
 
-New-Module -Name 'AssertLibrary_en-US_v1.6.0.0' -ScriptBlock {
+New-Module -Name 'AssertLibrary_en-US_v1.6.0.1' -ScriptBlock {
 
 function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError
 {
@@ -4504,7 +4504,7 @@ This function tests if a value is not $false without the implicit conversions or
     Return Value   Condition
     ------------   ---------
     $null          never
-    $false         value is not the System.Boolean value $false
+    $false         value is the System.Boolean value $false
     $true          value is not of type System.Boolean
                    value is $true
 .Parameter Value
@@ -4656,7 +4656,7 @@ This function tests if a value is not $true without the implicit conversions or 
     Return Value   Condition
     ------------   ---------
     $null          never
-    $false         value is not the System.Boolean value $true
+    $false         value is the System.Boolean value $true
     $true          value is not of type System.Boolean
                    value is $false
 .Parameter Value
