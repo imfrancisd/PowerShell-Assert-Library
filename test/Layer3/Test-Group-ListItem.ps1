@@ -400,25 +400,24 @@ if ($Silent) {
 & {
     Write-Verbose -Message 'Test Group-ListItem -Window with nulls' -Verbose:$headerVerbosity
 
-    $noarg = New-Object 'System.Object'
+    $outputSize_  = New-Object -TypeName 'System.Collections.ArrayList'
+    $outputSize0  = New-Object -TypeName 'System.Collections.ArrayList'
+    $outputSize1  = New-Object -TypeName 'System.Collections.ArrayList'
+    $outputSize1m = New-Object -TypeName 'System.Collections.ArrayList'
+    $er_  = try {Group-ListItem -Window $null -OutVariable outputSize_ | Out-Null} catch {$_}
+    $er0  = try {Group-ListItem -Window $null -OutVariable outputSize0 | Out-Null} catch {$_}
+    $er1  = try {Group-ListItem -Window $null -OutVariable outputSize1 | Out-Null} catch {$_}
+    $er1m = try {Group-ListItem -Window $null -OutVariable outputSize1m | Out-Null} catch {$_}
 
-    foreach ($size in @($noarg, -1, 0, 1)) {
-        $gliArgs = @{
-            'Window' = $null
-            'Size' = $size
-        }
-        if ($noarg.Equals($size)) {
-            $gliArgs.Remove('Size')
-        }
+    @($outputSize_, $outputSize0, $outputSize1, $outputSize1m) |
+        Assert-PipelineAll {param($output) $output.Count -eq 0} |
+        Out-Null
 
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {Group-ListItem @gliArgs -OutVariable out1 | Out-Null} catch {$_}
-
-        Assert-True ($out1.Count -eq 0)
-        Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($er1.Exception.ParameterName.Equals('Window', [System.StringComparison]::OrdinalIgnoreCase))
-    }
+    @($er_, $er0, $er1, $er1m) |
+        Assert-PipelineAll {param($er) $er -is [System.Management.Automation.ErrorRecord]} |
+        Assert-PipelineAll {param($er) $er.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineAll {param($er) $er.Exception.ParameterName.Equals('Window', [System.StringComparison]::OrdinalIgnoreCase)} |
+        Out-Null
 }
 
 & {
@@ -606,8 +605,6 @@ if ($Silent) {
             Assert-PipelineAll {param($row) $outputSize2[$row].Items -is $expectedType} |
             Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 2} |
             Assert-PipelineAll {param($row) $outputSize2[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) areEqual $outputSize_[$row].Items[0] $list[$row + 0]} |
-            Assert-PipelineAll {param($row) areEqual $outputSize2[$row].Items[0] $list[$row + 0]} |
             Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize_[$row].Items[$col] $list[$row + $col]}} |
             Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize2[$row].Items[$col] $list[$row + $col]}} |
             Out-Null
@@ -691,8 +688,6 @@ if ($Silent) {
             Assert-PipelineAll {param($row) $outputSize3[$row].Items -is $expectedType} |
             Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 3} |
             Assert-PipelineAll {param($row) $outputSize3[$row].Items.Length -eq 3} |
-            Assert-PipelineAll {param($row) areEqual $outputSize_[$row].Items[0] $list[$row + 0]} |
-            Assert-PipelineAll {param($row) areEqual $outputSize3[$row].Items[0] $list[$row + 0]} |
             Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $outputSize_[$row].Items[$col] $list[$row + $col]}} |
             Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $outputSize3[$row].Items[$col] $list[$row + $col]}} |
             Out-Null
@@ -790,11 +785,36 @@ if ($Silent) {
             Assert-PipelineAll {param($row) $outputSize4[$row].Items -is $expectedType} |
             Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 4} |
             Assert-PipelineAll {param($row) $outputSize4[$row].Items.Length -eq 4} |
-            Assert-PipelineAll {param($row) areEqual $outputSize_[$row].Items[0] $list[$row + 0]} |
-            Assert-PipelineAll {param($row) areEqual $outputSize4[$row].Items[0] $list[$row + 0]} |
             Assert-PipelineAll {param($row) Test-All @(0, 1, 2, 3) {param($col) areEqual $outputSize_[$row].Items[$col] $list[$row + $col]}} |
             Assert-PipelineAll {param($row) Test-All @(0, 1, 2, 3) {param($col) areEqual $outputSize4[$row].Items[$col] $list[$row + $col]}} |
             Out-Null
+    }
+
+    for ($len = 5; $len -lt 10; $len++) {
+        $list = [System.Int32[]]@(1..$len)
+        $expectedType = [System.Int32[]]
+
+        Group-ListItem -Window $list -Size -1 | Assert-PipelineEmpty
+        Group-ListItem -Window $list -Size ($len + 1) | Assert-PipelineEmpty
+        Group-ListItem -Window $list -Size 0 |
+            Assert-PipelineAll {param($window) $window -isnot [System.Collections.IEnumerable]} |
+            Assert-PipelineAll {param($window) $window.Items -is $expectedType} |
+            Assert-PipelineAll {param($window) $window.Items.Length -eq 0} |
+            Assert-PipelineSingle |
+            Out-Null
+
+        for ($size = 1; $size -le $len; $size++) {
+            $outputSizeN = New-Object -TypeName 'System.Collections.ArrayList'
+            Group-ListItem -Window $list -Size $size -OutVariable outputSizeN | Out-Null
+            
+            Assert-True ($outputSizeN.Count -eq ($len - $size + 1))
+            @(0..$($outputSizeN.Count - 1)) |
+                Assert-PipelineAll {param($row) $outputSizeN[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $outputSizeN[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) $outputSizeN[$row].Items.Length -eq $size} |
+                Assert-PipelineAll {param($row) Test-All @(0..$($size - 1)) {param($col) areEqual $outputSizeN[$row].Items[$col] $list[$row + $col]}} |
+                Out-Null
+        }
     }
 }
 
