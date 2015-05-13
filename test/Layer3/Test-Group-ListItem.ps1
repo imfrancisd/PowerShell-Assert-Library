@@ -1875,25 +1875,15 @@ if ($Silent) {
     $er3 = try {Group-ListItem -Zip (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList (,@(@(1,2,3), $null))) -OutVariable out3 | Out-Null} catch {$_}
     $er4 = try {Group-ListItem -Zip (New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList (,@($null, @(4,5,6)))) -OutVariable out4 | Out-Null} catch {$_}
 
-    Assert-True ($out1.Count -eq 0)
-    Assert-True ($out2.Count -eq 0)
-    Assert-True ($out3.Count -eq 0)
-    Assert-True ($out4.Count -eq 0)
+    @($out1, $out2, $out3, $out4) |
+        Assert-PipelineAll {param($out) $out.Count -eq 0} |
+        Out-Null
 
-    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
-
-    Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er2.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er4.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-
-    Assert-True $er1.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $er2.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $er3.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
-    Assert-True $er4.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)
+    @($er1, $er2, $er3, $er4) |
+        Assert-PipelineAll {param($er) $er -is [System.Management.Automation.ErrorRecord]} |
+        Assert-PipelineAll {param($er) $er.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)} |
+        Assert-PipelineAll {param($er) $er.Exception.ParameterName.Equals('Zip', [System.StringComparison]::OrdinalIgnoreCase)} |
+        Out-Null
 }
 
 & {
@@ -1936,6 +1926,14 @@ if ($Silent) {
     $list4 = [System.Double[]]@(100, 200, 300, 400)
     $list5 = New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@(@($null), @(), 'hi', $null, 5))
     $list6 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('hello', 'world', 'how', 'are', 'you', 'today'))
+    $lists = @(
+        @(,$list1),
+        @(,$list2),
+        @(,$list3),
+        @(,$list4),
+        @(,$list5),
+        @(,$list6)
+    )
 
     function oracleType($list)
     {
@@ -1956,28 +1954,32 @@ if ($Silent) {
         }
     }
     
-    foreach ($list in @(@(,$list1), @(,$list2), @(,$list3), @(,$list4), @(,$list5), @(,$list6))) {
+    function areEqual($a, $b)
+    {
+        if ($null -eq $a) {
+            $null -eq $b
+        } else {
+            $a.Equals($b)
+        }
+    }
+
+    foreach ($list in $lists) {
         $expectedType = oracleType $list
         $expectedOutput = @(oracleOutput $list)
-        $outputCount = $expectedOutput.Length
+        $actualOutput = New-Object -TypeName 'System.Collections.ArrayList'
 
-        $i = 0
-        Group-ListItem -Zip $list | Assert-PipelineCount $outputCount | ForEach-Object {
-            Assert-True ($_ -isnot [System.Collections.IEnumerable])
-            Assert-True ($_.Items -is $expectedType)
-            Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
+        Group-ListItem -Zip $list -OutVariable actualOutput | Out-Null
 
-            $itemCount = $_.Items.Length
-            for ($j = 0; $j -lt $itemCount; $j++) {
-                if ($null -eq $_.Items[$j]) {
-                    Assert-True ($_.Items[$j] -eq $expectedOutput[$i].Items[$j])
-                } else {
-                    Assert-True ($_.Items[$j].Equals($expectedOutput[$i].Items[$j]))
-                }
-            }
+        Assert-True ($actualOutput.Count -eq $expectedOutput.Count)
+        Assert-True ($actualOutput.Count -gt 0)
 
-            $i++
-        }
+        @(0..$($actualOutput.Count - 1)) |
+            Assert-PipelineAll {param($row) $actualOutput[$row] -isnot [System.Collections.IEnumerable]} |
+            Assert-PipelineAll {param($row) $actualOutput[$row].Items -is $expectedType} |
+            Assert-PipelineAll {param($row) $actualOutput[$row].Items.Length -eq 1} |
+            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $actualOutput[$row].Items[$col] $expectedOutput[$row].Items[$col]}} |
+            Assert-PipelineAny |
+            Out-Null
     }
 }
 
@@ -1990,6 +1992,14 @@ if ($Silent) {
     $list4 = [System.Double[]]@(100, 200, 300, 400)
     $list5 = New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@(@($null), @(), 'hi', $null, 5))
     $list6 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('hello', 'world', 'how', 'are', 'you', 'today'))
+    $lists = @(
+        @($list1, $list1), @($list1, $list2), @($list1, $list3), @($list1, $list4), @($list1, $list5), @($list1, $list6),
+        @($list2, $list1), @($list2, $list2), @($list2, $list3), @($list2, $list4), @($list2, $list5), @($list2, $list6),
+        @($list3, $list1), @($list3, $list2), @($list3, $list3), @($list3, $list4), @($list3, $list5), @($list3, $list6),
+        @($list4, $list1), @($list4, $list2), @($list4, $list3), @($list4, $list4), @($list4, $list5), @($list4, $list6),
+        @($list5, $list1), @($list5, $list2), @($list5, $list3), @($list5, $list4), @($list5, $list5), @($list5, $list6),
+        @($list6, $list1), @($list6, $list2), @($list6, $list3), @($list6, $list4), @($list6, $list5), @($list6, $list6)
+    )
 
     function oracleType($list)
     {
@@ -2022,37 +2032,32 @@ if ($Silent) {
         }
     }
     
-    $lists = @(
-        @($list1, $list1), @($list1, $list2), @($list1, $list3), @($list1, $list4), @($list1, $list5), @($list1, $list6),
-        @($list2, $list1), @($list2, $list2), @($list2, $list3), @($list2, $list4), @($list2, $list5), @($list2, $list6),
-        @($list3, $list1), @($list3, $list2), @($list3, $list3), @($list3, $list4), @($list3, $list5), @($list3, $list6),
-        @($list4, $list1), @($list4, $list2), @($list4, $list3), @($list4, $list4), @($list4, $list5), @($list4, $list6),
-        @($list5, $list1), @($list5, $list2), @($list5, $list3), @($list5, $list4), @($list5, $list5), @($list5, $list6),
-        @($list6, $list1), @($list6, $list2), @($list6, $list3), @($list6, $list4), @($list6, $list5), @($list6, $list6)
-    )
+    function areEqual($a, $b)
+    {
+        if ($null -eq $a) {
+            $null -eq $b
+        } else {
+            $a.Equals($b)
+        }
+    }
 
     foreach ($list in $lists) {
         $expectedType = oracleType $list
         $expectedOutput = @(oracleOutput $list)
-        $outputCount = $expectedOutput.Length
+        $actualOutput = New-Object -TypeName 'System.Collections.ArrayList'
 
-        $i = 0
-        Group-ListItem -Zip $list | Assert-PipelineCount $outputCount | ForEach-Object {
-            Assert-True ($_ -isnot [System.Collections.IEnumerable])
-            Assert-True ($_.Items -is $expectedType)
-            Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
+        Group-ListItem -Zip $list -OutVariable actualOutput | Out-Null
 
-            $itemCount = $_.Items.Length
-            for ($j = 0; $j -lt $itemCount; $j++) {
-                if ($null -eq $_.Items[$j]) {
-                    Assert-True ($_.Items[$j] -eq $expectedOutput[$i].Items[$j])
-                } else {
-                    Assert-True ($_.Items[$j].Equals($expectedOutput[$i].Items[$j]))
-                }
-            }
+        Assert-True ($actualOutput.Count -eq $expectedOutput.Count)
+        Assert-True ($actualOutput.Count -gt 0)
 
-            $i++
-        }
+        @(0..$($actualOutput.Count - 1)) |
+            Assert-PipelineAll {param($row) $actualOutput[$row] -isnot [System.Collections.IEnumerable]} |
+            Assert-PipelineAll {param($row) $actualOutput[$row].Items -is $expectedType} |
+            Assert-PipelineAll {param($row) $actualOutput[$row].Items.Length -eq 2} |
+            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $actualOutput[$row].Items[$col] $expectedOutput[$row].Items[$col]}} |
+            Assert-PipelineAny |
+            Out-Null
     }
 }
 
@@ -2065,6 +2070,8 @@ if ($Silent) {
     $list4 = [System.String[]]@('100', '200', '300', '400')
     $list5 = New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@(@($null), @(), 'hi', $null, 5))
     $list6 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('hello', 'world', 'how', 'are', 'you', 'today'))
+
+    $lists = Group-ListItem -Permute @($list1, $list2, $list3, $list4, $list5, $list6) -Size 3
 
     function oracleType($list)
     {
@@ -2089,61 +2096,32 @@ if ($Silent) {
         }
     }
     
-    $lists = @(
-        @($list1, $list2, $list3), @($list1, $list2, $list4), @($list1, $list2, $list5), @($list1, $list2, $list6),
-        @($list1, $list3, $list2), @($list1, $list3, $list4), @($list1, $list3, $list5), @($list1, $list3, $list6),
-        @($list1, $list4, $list2), @($list1, $list4, $list3), @($list1, $list4, $list5), @($list1, $list4, $list6),
-        @($list1, $list5, $list2), @($list1, $list5, $list3), @($list1, $list5, $list4), @($list1, $list5, $list6),
-        @($list1, $list6, $list2), @($list1, $list6, $list3), @($list1, $list6, $list4), @($list1, $list6, $list5),
-        @($list2, $list1, $list3), @($list2, $list1, $list4), @($list2, $list1, $list5), @($list2, $list1, $list6),
-        @($list2, $list3, $list1), @($list2, $list3, $list4), @($list2, $list3, $list5), @($list2, $list3, $list6),
-        @($list2, $list4, $list1), @($list2, $list4, $list3), @($list2, $list4, $list5), @($list2, $list4, $list6),
-        @($list2, $list5, $list1), @($list2, $list5, $list3), @($list2, $list5, $list4), @($list2, $list5, $list6),
-        @($list2, $list6, $list1), @($list2, $list6, $list3), @($list2, $list6, $list4), @($list2, $list6, $list5),
-        @($list3, $list1, $list2), @($list3, $list1, $list4), @($list3, $list1, $list5), @($list3, $list1, $list6),
-        @($list3, $list2, $list1), @($list3, $list2, $list4), @($list3, $list2, $list5), @($list3, $list2, $list6),
-        @($list3, $list4, $list1), @($list3, $list4, $list2), @($list3, $list4, $list5), @($list3, $list4, $list6),
-        @($list3, $list5, $list1), @($list3, $list5, $list2), @($list3, $list5, $list4), @($list3, $list5, $list6),
-        @($list3, $list6, $list1), @($list3, $list6, $list2), @($list3, $list6, $list4), @($list3, $list6, $list5),
-        @($list4, $list1, $list2), @($list4, $list1, $list3), @($list4, $list1, $list5), @($list4, $list1, $list6),
-        @($list4, $list2, $list1), @($list4, $list2, $list3), @($list4, $list2, $list5), @($list4, $list2, $list6),
-        @($list4, $list3, $list1), @($list4, $list3, $list2), @($list4, $list3, $list5), @($list4, $list3, $list6),
-        @($list4, $list5, $list1), @($list4, $list5, $list2), @($list4, $list5, $list3), @($list4, $list5, $list6),
-        @($list4, $list6, $list1), @($list4, $list6, $list2), @($list4, $list6, $list3), @($list4, $list6, $list5),
-        @($list5, $list1, $list2), @($list5, $list1, $list3), @($list5, $list1, $list4), @($list5, $list1, $list6),
-        @($list5, $list2, $list1), @($list5, $list2, $list3), @($list5, $list2, $list4), @($list5, $list2, $list6),
-        @($list5, $list3, $list1), @($list5, $list3, $list2), @($list5, $list3, $list4), @($list5, $list3, $list6),
-        @($list5, $list4, $list1), @($list5, $list4, $list2), @($list5, $list4, $list3), @($list5, $list4, $list6),
-        @($list5, $list6, $list1), @($list5, $list6, $list2), @($list5, $list6, $list3), @($list5, $list6, $list4),
-        @($list6, $list1, $list2), @($list6, $list1, $list3), @($list6, $list1, $list4), @($list6, $list1, $list5),
-        @($list6, $list2, $list1), @($list6, $list2, $list3), @($list6, $list2, $list4), @($list6, $list2, $list5),
-        @($list6, $list3, $list1), @($list6, $list3, $list2), @($list6, $list3, $list4), @($list6, $list3, $list5),
-        @($list6, $list4, $list1), @($list6, $list4, $list2), @($list6, $list4, $list3), @($list6, $list4, $list5),
-        @($list6, $list5, $list1), @($list6, $list5, $list2), @($list6, $list5, $list3), @($list6, $list5, $list4)
-    )
+    function areEqual($a, $b)
+    {
+        if ($null -eq $a) {
+            $null -eq $b
+        } else {
+            $a.Equals($b)
+        }
+    }
 
     foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $expectedOutput = @(oracleOutput $list)
-        $outputCount = $expectedOutput.Length
+        $expectedType = oracleType $list.Items
+        $expectedOutput = @(oracleOutput $list.Items)
+        $actualOutput = New-Object -TypeName 'System.Collections.ArrayList'
 
-        $i = 0
-        Group-ListItem -Zip $list | Assert-PipelineCount $outputCount | ForEach-Object {
-            Assert-True ($_ -isnot [System.Collections.IEnumerable])
-            Assert-True ($_.Items -is $expectedType)
-            Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
+        Group-ListItem -Zip $list.Items -OutVariable actualOutput | Out-Null
 
-            $itemCount = $_.Items.Length
-            for ($j = 0; $j -lt $itemCount; $j++) {
-                if ($null -eq $_.Items[$j]) {
-                    Assert-True ($_.Items[$j] -eq $expectedOutput[$i].Items[$j])
-                } else {
-                    Assert-True ($_.Items[$j].Equals($expectedOutput[$i].Items[$j]))
-                }
-            }
+        Assert-True ($actualOutput.Count -eq $expectedOutput.Count)
+        Assert-True ($actualOutput.Count -gt 0)
 
-            $i++
-        }
+        @(0..$($actualOutput.Count - 1)) |
+            Assert-PipelineAll {param($row) $actualOutput[$row] -isnot [System.Collections.IEnumerable]} |
+            Assert-PipelineAll {param($row) $actualOutput[$row].Items -is $expectedType} |
+            Assert-PipelineAll {param($row) $actualOutput[$row].Items.Length -eq 3} |
+            Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $actualOutput[$row].Items[$col] $expectedOutput[$row].Items[$col]}} |
+            Assert-PipelineAny |
+            Out-Null
     }
 }
 
@@ -2156,6 +2134,8 @@ if ($Silent) {
     $list4 = [System.String[]]@('100', '200', '300', '400')
     $list5 = New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@(@($null), @(), 'hi', $null, 5))
     $list6 = New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@('hello', 'world', 'how', 'are', 'you', 'today'))
+
+    $lists = Group-ListItem -Permute @($list1, $list2, $list3, $list4, $list5, $list6) -Size 4
 
     function oracleType($list)
     {
@@ -2180,151 +2160,32 @@ if ($Silent) {
         }
     }
     
-    $lists = @(
-        @($list1, $list2, $list3, $list4), @($list1, $list2, $list3, $list5), @($list1, $list2, $list3, $list6),
-        @($list1, $list2, $list4, $list3), @($list1, $list2, $list4, $list5), @($list1, $list2, $list4, $list6),
-        @($list1, $list2, $list5, $list3), @($list1, $list2, $list5, $list4), @($list1, $list2, $list5, $list6),
-        @($list1, $list2, $list6, $list3), @($list1, $list2, $list6, $list4), @($list1, $list2, $list6, $list5),
-        @($list1, $list3, $list2, $list4), @($list1, $list3, $list2, $list5), @($list1, $list3, $list2, $list6),
-        @($list1, $list3, $list4, $list2), @($list1, $list3, $list4, $list5), @($list1, $list3, $list4, $list6),
-        @($list1, $list3, $list5, $list2), @($list1, $list3, $list5, $list4), @($list1, $list3, $list5, $list6),
-        @($list1, $list3, $list6, $list2), @($list1, $list3, $list6, $list4), @($list1, $list3, $list6, $list5),
-        @($list1, $list4, $list2, $list3), @($list1, $list4, $list2, $list5), @($list1, $list4, $list2, $list6),
-        @($list1, $list4, $list3, $list2), @($list1, $list4, $list3, $list5), @($list1, $list4, $list3, $list6),
-        @($list1, $list4, $list5, $list2), @($list1, $list4, $list5, $list3), @($list1, $list4, $list5, $list6),
-        @($list1, $list4, $list6, $list2), @($list1, $list4, $list6, $list3), @($list1, $list4, $list6, $list5),
-        @($list1, $list5, $list2, $list3), @($list1, $list5, $list2, $list4), @($list1, $list5, $list2, $list6),
-        @($list1, $list5, $list3, $list2), @($list1, $list5, $list3, $list4), @($list1, $list5, $list3, $list6),
-        @($list1, $list5, $list4, $list2), @($list1, $list5, $list4, $list3), @($list1, $list5, $list4, $list6),
-        @($list1, $list5, $list6, $list2), @($list1, $list5, $list6, $list3), @($list1, $list5, $list6, $list4),
-        @($list1, $list6, $list2, $list3), @($list1, $list6, $list2, $list4), @($list1, $list6, $list2, $list5),
-        @($list1, $list6, $list3, $list2), @($list1, $list6, $list3, $list4), @($list1, $list6, $list3, $list5),
-        @($list1, $list6, $list4, $list2), @($list1, $list6, $list4, $list3), @($list1, $list6, $list4, $list5),
-        @($list1, $list6, $list5, $list2), @($list1, $list6, $list5, $list3), @($list1, $list6, $list5, $list4),
-        @($list2, $list1, $list3, $list4), @($list2, $list1, $list3, $list5), @($list2, $list1, $list3, $list6),
-        @($list2, $list1, $list4, $list3), @($list2, $list1, $list4, $list5), @($list2, $list1, $list4, $list6),
-        @($list2, $list1, $list5, $list3), @($list2, $list1, $list5, $list4), @($list2, $list1, $list5, $list6),
-        @($list2, $list1, $list6, $list3), @($list2, $list1, $list6, $list4), @($list2, $list1, $list6, $list5),
-        @($list2, $list3, $list1, $list4), @($list2, $list3, $list1, $list5), @($list2, $list3, $list1, $list6),
-        @($list2, $list3, $list4, $list1), @($list2, $list3, $list4, $list5), @($list2, $list3, $list4, $list6),
-        @($list2, $list3, $list5, $list1), @($list2, $list3, $list5, $list4), @($list2, $list3, $list5, $list6),
-        @($list2, $list3, $list6, $list1), @($list2, $list3, $list6, $list4), @($list2, $list3, $list6, $list5),
-        @($list2, $list4, $list1, $list3), @($list2, $list4, $list1, $list5), @($list2, $list4, $list1, $list6),
-        @($list2, $list4, $list3, $list1), @($list2, $list4, $list3, $list5), @($list2, $list4, $list3, $list6),
-        @($list2, $list4, $list5, $list1), @($list2, $list4, $list5, $list3), @($list2, $list4, $list5, $list6),
-        @($list2, $list4, $list6, $list1), @($list2, $list4, $list6, $list3), @($list2, $list4, $list6, $list5),
-        @($list2, $list5, $list1, $list3), @($list2, $list5, $list1, $list4), @($list2, $list5, $list1, $list6),
-        @($list2, $list5, $list3, $list1), @($list2, $list5, $list3, $list4), @($list2, $list5, $list3, $list6),
-        @($list2, $list5, $list4, $list1), @($list2, $list5, $list4, $list3), @($list2, $list5, $list4, $list6),
-        @($list2, $list5, $list6, $list1), @($list2, $list5, $list6, $list3), @($list2, $list5, $list6, $list4),
-        @($list2, $list6, $list1, $list3), @($list2, $list6, $list1, $list4), @($list2, $list6, $list1, $list5),
-        @($list2, $list6, $list3, $list1), @($list2, $list6, $list3, $list4), @($list2, $list6, $list3, $list5),
-        @($list2, $list6, $list4, $list1), @($list2, $list6, $list4, $list3), @($list2, $list6, $list4, $list5),
-        @($list2, $list6, $list5, $list1), @($list2, $list6, $list5, $list3), @($list2, $list6, $list5, $list4),
-        @($list3, $list1, $list2, $list4), @($list3, $list1, $list2, $list5), @($list3, $list1, $list2, $list6),
-        @($list3, $list1, $list4, $list2), @($list3, $list1, $list4, $list5), @($list3, $list1, $list4, $list6),
-        @($list3, $list1, $list5, $list2), @($list3, $list1, $list5, $list4), @($list3, $list1, $list5, $list6),
-        @($list3, $list1, $list6, $list2), @($list3, $list1, $list6, $list4), @($list3, $list1, $list6, $list5),
-        @($list3, $list2, $list1, $list4), @($list3, $list2, $list1, $list5), @($list3, $list2, $list1, $list6),
-        @($list3, $list2, $list4, $list1), @($list3, $list2, $list4, $list5), @($list3, $list2, $list4, $list6),
-        @($list3, $list2, $list5, $list1), @($list3, $list2, $list5, $list4), @($list3, $list2, $list5, $list6),
-        @($list3, $list2, $list6, $list1), @($list3, $list2, $list6, $list4), @($list3, $list2, $list6, $list5),
-        @($list3, $list4, $list1, $list2), @($list3, $list4, $list1, $list5), @($list3, $list4, $list1, $list6),
-        @($list3, $list4, $list2, $list1), @($list3, $list4, $list2, $list5), @($list3, $list4, $list2, $list6),
-        @($list3, $list4, $list5, $list1), @($list3, $list4, $list5, $list2), @($list3, $list4, $list5, $list6),
-        @($list3, $list4, $list6, $list1), @($list3, $list4, $list6, $list2), @($list3, $list4, $list6, $list5),
-        @($list3, $list5, $list1, $list2), @($list3, $list5, $list1, $list4), @($list3, $list5, $list1, $list6),
-        @($list3, $list5, $list2, $list1), @($list3, $list5, $list2, $list4), @($list3, $list5, $list2, $list6),
-        @($list3, $list5, $list4, $list1), @($list3, $list5, $list4, $list2), @($list3, $list5, $list4, $list6),
-        @($list3, $list5, $list6, $list1), @($list3, $list5, $list6, $list2), @($list3, $list5, $list6, $list4),
-        @($list3, $list6, $list1, $list2), @($list3, $list6, $list1, $list4), @($list3, $list6, $list1, $list5),
-        @($list3, $list6, $list2, $list1), @($list3, $list6, $list2, $list4), @($list3, $list6, $list2, $list5),
-        @($list3, $list6, $list4, $list1), @($list3, $list6, $list4, $list2), @($list3, $list6, $list4, $list5),
-        @($list3, $list6, $list5, $list1), @($list3, $list6, $list5, $list2), @($list3, $list6, $list5, $list4),
-        @($list4, $list1, $list2, $list3), @($list4, $list1, $list2, $list5), @($list4, $list1, $list2, $list6),
-        @($list4, $list1, $list3, $list2), @($list4, $list1, $list3, $list5), @($list4, $list1, $list3, $list6),
-        @($list4, $list1, $list5, $list2), @($list4, $list1, $list5, $list3), @($list4, $list1, $list5, $list6),
-        @($list4, $list1, $list6, $list2), @($list4, $list1, $list6, $list3), @($list4, $list1, $list6, $list5),
-        @($list4, $list2, $list1, $list3), @($list4, $list2, $list1, $list5), @($list4, $list2, $list1, $list6),
-        @($list4, $list2, $list3, $list1), @($list4, $list2, $list3, $list5), @($list4, $list2, $list3, $list6),
-        @($list4, $list2, $list5, $list1), @($list4, $list2, $list5, $list3), @($list4, $list2, $list5, $list6),
-        @($list4, $list2, $list6, $list1), @($list4, $list2, $list6, $list3), @($list4, $list2, $list6, $list5),
-        @($list4, $list3, $list1, $list2), @($list4, $list3, $list1, $list5), @($list4, $list3, $list1, $list6),
-        @($list4, $list3, $list2, $list1), @($list4, $list3, $list2, $list5), @($list4, $list3, $list2, $list6),
-        @($list4, $list3, $list5, $list1), @($list4, $list3, $list5, $list2), @($list4, $list3, $list5, $list6),
-        @($list4, $list3, $list6, $list1), @($list4, $list3, $list6, $list2), @($list4, $list3, $list6, $list5),
-        @($list4, $list5, $list1, $list2), @($list4, $list5, $list1, $list3), @($list4, $list5, $list1, $list6),
-        @($list4, $list5, $list2, $list1), @($list4, $list5, $list2, $list3), @($list4, $list5, $list2, $list6),
-        @($list4, $list5, $list3, $list1), @($list4, $list5, $list3, $list2), @($list4, $list5, $list3, $list6),
-        @($list4, $list5, $list6, $list1), @($list4, $list5, $list6, $list2), @($list4, $list5, $list6, $list3),
-        @($list4, $list6, $list1, $list2), @($list4, $list6, $list1, $list3), @($list4, $list6, $list1, $list5),
-        @($list4, $list6, $list2, $list1), @($list4, $list6, $list2, $list3), @($list4, $list6, $list2, $list5),
-        @($list4, $list6, $list3, $list1), @($list4, $list6, $list3, $list2), @($list4, $list6, $list3, $list5),
-        @($list4, $list6, $list5, $list1), @($list4, $list6, $list5, $list2), @($list4, $list6, $list5, $list3),
-        @($list5, $list1, $list2, $list3), @($list5, $list1, $list2, $list4), @($list5, $list1, $list2, $list6),
-        @($list5, $list1, $list3, $list2), @($list5, $list1, $list3, $list4), @($list5, $list1, $list3, $list6),
-        @($list5, $list1, $list4, $list2), @($list5, $list1, $list4, $list3), @($list5, $list1, $list4, $list6),
-        @($list5, $list1, $list6, $list2), @($list5, $list1, $list6, $list3), @($list5, $list1, $list6, $list4),
-        @($list5, $list2, $list1, $list3), @($list5, $list2, $list1, $list4), @($list5, $list2, $list1, $list6),
-        @($list5, $list2, $list3, $list1), @($list5, $list2, $list3, $list4), @($list5, $list2, $list3, $list6),
-        @($list5, $list2, $list4, $list1), @($list5, $list2, $list4, $list3), @($list5, $list2, $list4, $list6),
-        @($list5, $list2, $list6, $list1), @($list5, $list2, $list6, $list3), @($list5, $list2, $list6, $list4),
-        @($list5, $list3, $list1, $list2), @($list5, $list3, $list1, $list4), @($list5, $list3, $list1, $list6),
-        @($list5, $list3, $list2, $list1), @($list5, $list3, $list2, $list4), @($list5, $list3, $list2, $list6),
-        @($list5, $list3, $list4, $list1), @($list5, $list3, $list4, $list2), @($list5, $list3, $list4, $list6),
-        @($list5, $list3, $list6, $list1), @($list5, $list3, $list6, $list2), @($list5, $list3, $list6, $list4),
-        @($list5, $list4, $list1, $list2), @($list5, $list4, $list1, $list3), @($list5, $list4, $list1, $list6),
-        @($list5, $list4, $list2, $list1), @($list5, $list4, $list2, $list3), @($list5, $list4, $list2, $list6),
-        @($list5, $list4, $list3, $list1), @($list5, $list4, $list3, $list2), @($list5, $list4, $list3, $list6),
-        @($list5, $list4, $list6, $list1), @($list5, $list4, $list6, $list2), @($list5, $list4, $list6, $list3),
-        @($list5, $list6, $list1, $list2), @($list5, $list6, $list1, $list3), @($list5, $list6, $list1, $list4),
-        @($list5, $list6, $list2, $list1), @($list5, $list6, $list2, $list3), @($list5, $list6, $list2, $list4),
-        @($list5, $list6, $list3, $list1), @($list5, $list6, $list3, $list2), @($list5, $list6, $list3, $list4),
-        @($list5, $list6, $list4, $list1), @($list5, $list6, $list4, $list2), @($list5, $list6, $list4, $list3),
-        @($list6, $list1, $list2, $list3), @($list6, $list1, $list2, $list4), @($list6, $list1, $list2, $list5),
-        @($list6, $list1, $list3, $list2), @($list6, $list1, $list3, $list4), @($list6, $list1, $list3, $list5),
-        @($list6, $list1, $list4, $list2), @($list6, $list1, $list4, $list3), @($list6, $list1, $list4, $list5),
-        @($list6, $list1, $list5, $list2), @($list6, $list1, $list5, $list3), @($list6, $list1, $list5, $list4),
-        @($list6, $list2, $list1, $list3), @($list6, $list2, $list1, $list4), @($list6, $list2, $list1, $list5),
-        @($list6, $list2, $list3, $list1), @($list6, $list2, $list3, $list4), @($list6, $list2, $list3, $list5),
-        @($list6, $list2, $list4, $list1), @($list6, $list2, $list4, $list3), @($list6, $list2, $list4, $list5),
-        @($list6, $list2, $list5, $list1), @($list6, $list2, $list5, $list3), @($list6, $list2, $list5, $list4),
-        @($list6, $list3, $list1, $list2), @($list6, $list3, $list1, $list4), @($list6, $list3, $list1, $list5),
-        @($list6, $list3, $list2, $list1), @($list6, $list3, $list2, $list4), @($list6, $list3, $list2, $list5),
-        @($list6, $list3, $list4, $list1), @($list6, $list3, $list4, $list2), @($list6, $list3, $list4, $list5),
-        @($list6, $list3, $list5, $list1), @($list6, $list3, $list5, $list2), @($list6, $list3, $list5, $list4),
-        @($list6, $list4, $list1, $list2), @($list6, $list4, $list1, $list3), @($list6, $list4, $list1, $list5),
-        @($list6, $list4, $list2, $list1), @($list6, $list4, $list2, $list3), @($list6, $list4, $list2, $list5),
-        @($list6, $list4, $list3, $list1), @($list6, $list4, $list3, $list2), @($list6, $list4, $list3, $list5),
-        @($list6, $list4, $list5, $list1), @($list6, $list4, $list5, $list2), @($list6, $list4, $list5, $list3),
-        @($list6, $list5, $list1, $list2), @($list6, $list5, $list1, $list3), @($list6, $list5, $list1, $list4),
-        @($list6, $list5, $list2, $list1), @($list6, $list5, $list2, $list3), @($list6, $list5, $list2, $list4),
-        @($list6, $list5, $list3, $list1), @($list6, $list5, $list3, $list2), @($list6, $list5, $list3, $list4),
-        @($list6, $list5, $list4, $list1), @($list6, $list5, $list4, $list2), @($list6, $list5, $list4, $list3)
-    )
+    function areEqual($a, $b)
+    {
+        if ($null -eq $a) {
+            $null -eq $b
+        } else {
+            $a.Equals($b)
+        }
+    }
 
     foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $expectedOutput = @(oracleOutput $list)
-        $outputCount = $expectedOutput.Length
+        $expectedType = oracleType $list.Items
+        $expectedOutput = @(oracleOutput $list.Items)
+        $actualOutput = New-Object -TypeName 'System.Collections.ArrayList'
 
-        $i = 0
-        Group-ListItem -Zip $list | Assert-PipelineCount $outputCount | ForEach-Object {
-            Assert-True ($_ -isnot [System.Collections.IEnumerable])
-            Assert-True ($_.Items -is $expectedType)
-            Assert-True ($_.Items.Length -eq $expectedOutput[$i].Items.Length)
+        Group-ListItem -Zip $list.Items -OutVariable actualOutput | Out-Null
 
-            $itemCount = $_.Items.Length
-            for ($j = 0; $j -lt $itemCount; $j++) {
-                if ($null -eq $_.Items[$j]) {
-                    Assert-True ($_.Items[$j] -eq $expectedOutput[$i].Items[$j])
-                } else {
-                    Assert-True ($_.Items[$j].Equals($expectedOutput[$i].Items[$j]))
-                }
-            }
+        Assert-True ($actualOutput.Count -eq $expectedOutput.Count)
+        Assert-True ($actualOutput.Count -gt 0)
 
-            $i++
-        }
+        @(0..$($actualOutput.Count - 1)) |
+            Assert-PipelineAll {param($row) $actualOutput[$row] -isnot [System.Collections.IEnumerable]} |
+            Assert-PipelineAll {param($row) $actualOutput[$row].Items -is $expectedType} |
+            Assert-PipelineAll {param($row) $actualOutput[$row].Items.Length -eq 4} |
+            Assert-PipelineAll {param($row) Test-All @(0, 1, 2, 4) {param($col) areEqual $actualOutput[$row].Items[$col] $expectedOutput[$row].Items[$col]}} |
+            Assert-PipelineAny |
+            Out-Null
     }
 }
 
