@@ -2183,7 +2183,7 @@ if ($Silent) {
             Assert-PipelineAll {param($row) $actualOutput[$row] -isnot [System.Collections.IEnumerable]} |
             Assert-PipelineAll {param($row) $actualOutput[$row].Items -is $expectedType} |
             Assert-PipelineAll {param($row) $actualOutput[$row].Items.Length -eq 4} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2, 4) {param($col) areEqual $actualOutput[$row].Items[$col] $expectedOutput[$row].Items[$col]}} |
+            Assert-PipelineAll {param($row) Test-All @(0, 1, 2, 3) {param($col) areEqual $actualOutput[$row].Items[$col] $expectedOutput[$row].Items[$col]}} |
             Assert-PipelineAny |
             Out-Null
     }
