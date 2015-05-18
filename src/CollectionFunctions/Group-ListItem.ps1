@@ -62,58 +62,10 @@ function Group-ListItem
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
-    function getListLength($list)
-    {
-        if ($list -is [System.Array]) {
-            return $list.psbase.Length
-        }
-        if ($list -is [System.Collections.IList]) {
-            return $list.psbase.Count
-        }
-        return 0
-    }
-
-    function getElementType($list)
-    {
-        #NOTE about compatibility
-        #
-        #In PowerShell, it is possible to override properties and methods of an object.
-        #
-        #The psbase property in all objects allows access to the real properties and methods.
-        #
-        #In PowerShell 4 (and possibly PowerShell 3) however, the psbase property does not
-        #allow access to the "real" GetType method of the object. Instead, .psbase.GetType()
-        #returns the type of the psbase object instead of the type of the object that psbase
-        #represents.
-        #
-        #Explicit .NET reflection must be used if you want to make sure that you are calling
-        #the "real" GetType method in PowerShell 4 (and possibly PowerShell 3).
-
-        $objectGetType = [System.Object].GetMethod('GetType', [System.Type]::EmptyTypes)
-        $genericIList = [System.Type]::GetType('System.Collections.Generic.IList`1')
-
-        if ($list -is [System.Array]) {
-            return $objectGetType.Invoke($list, $null).GetElementType()
-        }
-        if ($list -is [System.Collections.IList]) {
-            $IListGenericTypes = @(
-                $objectGetType.Invoke($list, $null).GetInterfaces() |
-                Where-Object -FilterScript {
-                    $_.IsGenericType -and ($_.GetGenericTypeDefinition() -eq $genericIList)
-                }
-            )
-
-            if ($IListGenericTypes.Length -eq 1) {
-                return $IListGenericTypes[0].GetGenericArguments()[0]
-            }
-        }
-        return [System.Object]
-    }
-
     switch ($PSCmdlet.ParameterSetName) {
         'Pair' {
-            $listLength = getListLength $Pair
-            $outputElementType = getElementType $Pair
+            $listLength = _7ddd17460d1743b2b6e683ef649e01b7_getListLength $Pair
+            $outputElementType = _7ddd17460d1743b2b6e683ef649e01b7_getElementType $Pair
 
             $count = $listLength - 1
 
@@ -132,8 +84,8 @@ function Group-ListItem
             return
         }
         'Window' {
-            $listLength = getListLength $Window
-            $outputElementType = getElementType $Window
+            $listLength = _7ddd17460d1743b2b6e683ef649e01b7_getListLength $Window
+            $outputElementType = _7ddd17460d1743b2b6e683ef649e01b7_getElementType $Window
 
             if (-not $PSBoundParameters.ContainsKey('Size')) {
                 $Size = $listLength
@@ -167,8 +119,8 @@ function Group-ListItem
             return
         }
         'Combine' {
-            $listLength = getListLength $Combine
-            $outputElementType = getElementType $Combine
+            $listLength = _7ddd17460d1743b2b6e683ef649e01b7_getListLength $Combine
+            $outputElementType = _7ddd17460d1743b2b6e683ef649e01b7_getElementType $Combine
 
             if (-not $PSBoundParameters.ContainsKey('Size')) {
                 $Size = $listLength
@@ -225,8 +177,8 @@ function Group-ListItem
             return
         }
         'Permute' {
-            $listLength = getListLength $Permute
-            $outputElementType = getElementType $Permute
+            $listLength = _7ddd17460d1743b2b6e683ef649e01b7_getListLength $Permute
+            $outputElementType = _7ddd17460d1743b2b6e683ef649e01b7_getElementType $Permute
 
             if (-not $PSBoundParameters.ContainsKey('Size')) {
                 $Size = $listLength
@@ -298,7 +250,7 @@ function Group-ListItem
             return
         }
         'CartesianProduct' {
-            $listCount = getListLength $CartesianProduct
+            $listCount = _7ddd17460d1743b2b6e683ef649e01b7_getListLength $CartesianProduct
 
             if ($listCount -lt 1) {
                 return
@@ -311,8 +263,8 @@ function Group-ListItem
             $elementTypes = [System.Array]::CreateInstance([System.Type], $listCount)
 
             for ($i = 0; $i -lt $listCount; $i++) {
-                $listLengths[$i] = getListLength $CartesianProduct[$i]
-                $elementTypes[$i] = getElementType $CartesianProduct[$i]
+                $listLengths[$i] = _7ddd17460d1743b2b6e683ef649e01b7_getListLength $CartesianProduct[$i]
+                $elementTypes[$i] = _7ddd17460d1743b2b6e683ef649e01b7_getElementType $CartesianProduct[$i]
             }
 
             if (@($listLengths | Sort-Object)[0] -lt 1) {
@@ -360,7 +312,7 @@ function Group-ListItem
             return
         }
         'Zip' {
-            $listCount = getListLength $Zip
+            $listCount = _7ddd17460d1743b2b6e683ef649e01b7_getListLength $Zip
 
             if ($listCount -lt 1) {
                 return
@@ -373,8 +325,8 @@ function Group-ListItem
             $elementTypes = [System.Array]::CreateInstance([System.Type], $listCount)
 
             for ($i = 0; $i -lt $listCount; $i++) {
-                $listLengths[$i] = getListLength $Zip[$i]
-                $elementTypes[$i] = getElementType $Zip[$i]
+                $listLengths[$i] = _7ddd17460d1743b2b6e683ef649e01b7_getListLength $Zip[$i]
+                $elementTypes[$i] = _7ddd17460d1743b2b6e683ef649e01b7_getElementType $Zip[$i]
             }
 
             $minlistlength = @($listLengths | Sort-Object)[0]
@@ -404,7 +356,7 @@ function Group-ListItem
             return
         }
         'CoveringArray' {
-            $listCount = getListLength $CoveringArray
+            $listCount = _7ddd17460d1743b2b6e683ef649e01b7_getListLength $CoveringArray
 
             if ($listCount -lt 1) {
                 return
@@ -430,8 +382,8 @@ function Group-ListItem
             $elementTypes = [System.Array]::CreateInstance([System.Type], $listCount)
 
             for ($i = 0; $i -lt $listCount; $i++) {
-                $listLengths[$i] = getListLength $CoveringArray[$i]
-                $elementTypes[$i] = getElementType $CoveringArray[$i]
+                $listLengths[$i] = _7ddd17460d1743b2b6e683ef649e01b7_getListLength $CoveringArray[$i]
+                $elementTypes[$i] = _7ddd17460d1743b2b6e683ef649e01b7_getElementType $CoveringArray[$i]
             }
 
             if (@($listLengths | Sort-Object)[0] -lt 1) {
