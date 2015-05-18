@@ -1,6 +1,7 @@
 function Test-TimeSpan
 {
     [CmdletBinding(DefaultParameterSetName='IsTimeSpan')]
+    [OutputType([System.Boolean], [System.Object])]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]

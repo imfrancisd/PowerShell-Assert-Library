@@ -1,6 +1,7 @@
 function Test-False
 {
     [CmdletBinding()]
+    [OutputType([System.Boolean])]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]

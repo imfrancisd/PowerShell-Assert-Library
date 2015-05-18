@@ -1,6 +1,7 @@
 function Test-NotExists
 {
     [CmdletBinding()]
+    [OutputType([System.Boolean], [System.Object])]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]

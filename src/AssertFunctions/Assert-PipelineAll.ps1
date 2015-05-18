@@ -1,6 +1,7 @@
 function Assert-PipelineAll
 {
     [CmdletBinding()]
+    [OutputType([System.Object])]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [AllowNull()]

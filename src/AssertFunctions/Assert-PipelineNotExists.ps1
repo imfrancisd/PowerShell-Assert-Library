@@ -1,6 +1,7 @@
 function Assert-PipelineNotExists
 {
     [CmdletBinding()]
+    [OutputType([System.Object])]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [AllowNull()]

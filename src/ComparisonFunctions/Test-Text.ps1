@@ -1,6 +1,7 @@
 function Test-Text
 {
     [CmdletBinding(DefaultParameterSetName='IsText')]
+    [OutputType([System.Boolean], [System.Object])]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]

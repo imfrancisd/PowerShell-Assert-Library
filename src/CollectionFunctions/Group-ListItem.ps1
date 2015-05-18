@@ -1,6 +1,7 @@
 function Group-ListItem
 {
     [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Pair')]
         [AllowEmptyCollection()]

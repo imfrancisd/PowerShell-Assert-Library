@@ -1,6 +1,7 @@
 function Test-Guid
 {
     [CmdletBinding(DefaultParameterSetName='IsGuid')]
+    [OutputType([System.Boolean], [System.Object])]
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
