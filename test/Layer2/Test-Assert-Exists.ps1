@@ -328,3 +328,37 @@ $emptyCollections = @(
         Assert-True ($i -eq $numPredicateCalls)
     }
 }
+
+& {
+    Write-Verbose -Message 'Test Assert-Exists with a predicate that contains a "break" outside of a loop' -Verbose:$headerVerbosity
+
+    $dictionary = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary'
+    $dictionary.Add('a', 1)
+    $dictionary.Add('b', 2)
+    $dictionary.Add('c', 3)
+    $dictionary.Add('d', 4)
+    $dictionary.Add('e', 5)
+
+    $numPredicateCalls = 0
+    $predicate = {
+        param($entry)
+
+        $numPredicateCalls = Get-Variable -Name 'numPredicateCalls' -Scope 1
+        $numPredicateCalls.Value = $numPredicateCalls.Value + 1
+
+        $false
+
+        break
+    }
+
+    do {
+        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er1 = try {Assert-Exists $dictionary $predicate -OutVariable out1 | Out-Null} catch {$_}
+    } while ($false)
+
+    Assert-True ($out1.Count -eq 0)
+    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
+    Assert-True ($er1.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-Exists', [System.StringComparison]::OrdinalIgnoreCase))
+
+    Assert-True (5 -eq $numPredicateCalls)
+}
