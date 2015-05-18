@@ -11,7 +11,7 @@ function Test-Number
 
         [Parameter(Mandatory=$false, ParameterSetName='IsNumber')]
         [System.Management.Automation.SwitchParameter]
-        $IsNumber = $true,
+        $IsNumber,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
@@ -119,7 +119,11 @@ function Test-Number
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsNumber' {
-            return (isNumber $Value) -xor (-not $IsNumber)
+            $result = isNumber $Value
+            if ($PSBoundParameters.ContainsKey('IsNumber')) {
+                return ($result) -xor (-not $IsNumber)
+            }
+            return $result
         }
         'OpEquals' {
             if ((canCompareNumbers $Value $Equals)) {

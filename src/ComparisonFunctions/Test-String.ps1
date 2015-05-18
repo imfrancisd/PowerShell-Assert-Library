@@ -11,7 +11,7 @@ function Test-String
 
         [Parameter(Mandatory=$false, ParameterSetName='IsString')]
         [System.Management.Automation.SwitchParameter]
-        $IsString = $true,
+        $IsString,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpContains')]
         [AllowNull()]
@@ -181,7 +181,11 @@ function Test-String
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsString' {
-            return (isString $Value) -xor (-not $IsString)
+            $result = isString $Value
+            if ($PSBoundParameters.ContainsKey('IsString')) {
+                return ($result) -xor (-not $IsString)
+            }
+            return $result
         }
         'OpContains' {
             if ((canCompareStrings $Value $Contains)) {

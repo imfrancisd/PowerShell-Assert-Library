@@ -10,7 +10,7 @@ function Test-Version
 
         [Parameter(Mandatory=$false, ParameterSetName='IsVersion')]
         [System.Management.Automation.SwitchParameter]
-        $IsVersion = $true,
+        $IsVersion,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
@@ -109,7 +109,11 @@ function Test-Version
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsVersion' {
-            return ($Value -is [System.Version]) -xor (-not $IsVersion)
+            $result = $Value -is [System.Version]
+            if ($PSBoundParameters.ContainsKey('IsVersion')) {
+                return ($result) -xor (-not $IsVersion)
+            }
+            return $result
         }
         'OpEquals' {
             $result = compareVersion $Value $Equals

@@ -11,7 +11,7 @@ function Test-DateTime
 
         [Parameter(Mandatory=$false, ParameterSetName='IsDateTime')]
         [System.Management.Automation.SwitchParameter]
-        $IsDateTime = $true,
+        $IsDateTime,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
@@ -142,7 +142,11 @@ function Test-DateTime
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsDateTime' {
-            return (isDateTime $Value) -xor (-not $IsDateTime)
+            $result = isDateTime $Value
+            if ($PSBoundParameters.ContainsKey('IsDateTime')) {
+                return ($result) -xor (-not $IsDateTime)
+            }
+            return $result
         }
         'OpEquals' {
             $result = compareDateTime $Value $Equals

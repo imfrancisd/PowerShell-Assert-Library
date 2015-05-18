@@ -10,7 +10,7 @@ function Test-Guid
 
         [Parameter(Mandatory=$false, ParameterSetName='IsGuid')]
         [System.Management.Automation.SwitchParameter]
-        $IsGuid = $true,
+        $IsGuid,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
@@ -188,7 +188,11 @@ function Test-Guid
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsGuid' {
-            return (isGuid $Value) -xor (-not $IsGuid)
+            $result = isGuid $Value
+            if ($PSBoundParameters.ContainsKey('IsGuid')) {
+                return ($result) -xor (-not $IsGuid)
+            }
+            return $result
         }
         'OpEquals' {
             $result = compareGuid $Value $Equals

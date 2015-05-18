@@ -10,7 +10,7 @@ function Test-TimeSpan
 
         [Parameter(Mandatory=$false, ParameterSetName='IsTimeSpan')]
         [System.Management.Automation.SwitchParameter]
-        $IsTimeSpan = $true,
+        $IsTimeSpan,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
@@ -110,7 +110,11 @@ function Test-TimeSpan
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsTimeSpan' {
-            return ($Value -is [System.TimeSpan]) -xor (-not $IsTimeSpan)
+            $result = $Value -is [System.TimeSpan]
+            if ($PSBoundParameters.ContainsKey('IsTimeSpan')) {
+                return ($result) -xor (-not $IsTimeSpan)
+            }
+            return $result
         }
         'OpEquals' {
             $result = compareTimeSpan $Value $Equals

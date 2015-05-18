@@ -11,7 +11,7 @@ function Test-Text
 
         [Parameter(Mandatory=$false, ParameterSetName='IsText')]
         [System.Management.Automation.SwitchParameter]
-        $IsText = $true,
+        $IsText,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpMatch')]
         [AllowNull()]
@@ -162,7 +162,11 @@ function Test-Text
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsText' {
-            return ($Value -is [System.String]) -xor (-not $IsText)
+            $result = $Value -is [System.String]
+            if ($PSBoundParameters.ContainsKey('IsText')) {
+                return ($result) -xor (-not $IsText)
+            }
+            return $result
         }
         'OpMatch' {
             if (($Value -is [System.String]) -and ($Match -is [System.String])) {
