@@ -23,13 +23,13 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.6.0.1
+#Assert Library version 1.6.1.0
 #
 #PowerShell requirements
 #requires -version 2.0
 
 
-New-Module -Name 'AssertLibrary_en-US_v1.6.0.1' -ScriptBlock {
+New-Module -Name 'AssertLibrary_en-US_v1.6.1.0' -ScriptBlock {
 
 function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError
 {
@@ -225,7 +225,7 @@ function Assert-All
         $fail = $false
 
         foreach ($item in $Collection.psbase.GetEnumerator()) {
-            try   {$result = & $Predicate $item}
+            try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (-not (($result -is [System.Boolean]) -and $result)) {
@@ -360,7 +360,7 @@ function Assert-Exists
     $fail = $true
     if ($Collection -is [System.Collections.ICollection]) {
         foreach ($item in $Collection.psbase.GetEnumerator()) {
-            try   {$result = & $Predicate $item}
+            try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (($result -is [System.Boolean]) -and $result) {
@@ -599,7 +599,7 @@ function Assert-NotExists
         $fail = $false
 
         foreach ($item in $Collection.psbase.GetEnumerator()) {
-            try   {$result = & $Predicate $item}
+            try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (($result -is [System.Boolean]) -and $result) {
@@ -1149,7 +1149,7 @@ function Assert-PipelineAll
 
     Process
     {
-        try   {$result = & $Predicate $InputObject}
+        try   {$result = do {& $Predicate $InputObject} while ($false)}
         catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
         if (-not (($result -is [System.Boolean]) -and $result)) {
@@ -1738,7 +1738,7 @@ function Assert-PipelineExists
     Process
     {
         if ($fail) {
-            try   {$result = & $Predicate $InputObject}
+            try   {$result = do {& $Predicate $InputObject} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (($result -is [System.Boolean]) -and $result) {
@@ -1890,7 +1890,7 @@ function Assert-PipelineNotExists
 
     Process
     {
-        try   {$result = & $Predicate $InputObject}
+        try   {$result = do {& $Predicate $InputObject} while ($false)}
         catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
         if (($result -is [System.Boolean]) -and $result) {
@@ -3282,7 +3282,7 @@ function Test-All
 
     if ($Collection -is [System.Collections.ICollection]) {
         foreach ($item in $Collection.psbase.GetEnumerator()) {
-            try   {$result = & $Predicate $item}
+            try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (-not (($result -is [System.Boolean]) -and $result)) {
@@ -3849,7 +3849,7 @@ function Test-Exists
 
     if ($Collection -is [System.Collections.ICollection]) {
         foreach ($item in $Collection.psbase.GetEnumerator()) {
-            try   {$result = & $Predicate $item}
+            try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (($result -is [System.Boolean]) -and $result) {
@@ -4480,7 +4480,7 @@ function Test-NotExists
 
     if ($Collection -is [System.Collections.ICollection]) {
         foreach ($item in $Collection.psbase.GetEnumerator()) {
-            try   {$result = & $Predicate $item}
+            try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (($result -is [System.Boolean]) -and $result) {
