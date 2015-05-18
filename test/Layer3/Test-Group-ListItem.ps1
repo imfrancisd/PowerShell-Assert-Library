@@ -2527,98 +2527,83 @@ if ($Silent) {
 & {
     Write-Verbose -Message 'Test Group-ListItem -CoveringArray with nulls' -Verbose:$headerVerbosity
 
-    $noarg = New-Object 'System.Object'
+    $lists = @(
+        $null
+        @($null)
+        New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList (,@(@(1,2,3), $null))
+        New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList (,@($null, @(4,5,6)))
+    )
 
-    foreach ($strength in @($noarg, -1, 0, 1, 2, 3)) {
-        $gliArgs = @{
-            'Strength' = $strength
-        }
-        if ($noarg.Equals($strength)) {
-            $gliArgs.Remove('Strength')
-        }
+    foreach ($list in $lists) {
+        $outputSize_  = New-Object -TypeName 'System.Collections.ArrayList'
+        $outputSize0  = New-Object -TypeName 'System.Collections.ArrayList'
+        $outputSize1  = New-Object -TypeName 'System.Collections.ArrayList'
+        $outputSize1m = New-Object -TypeName 'System.Collections.ArrayList'
 
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out4 = New-Object -TypeName 'System.Collections.ArrayList'
+        $er_  = try {Group-ListItem -CoveringArray $null          -OutVariable outputSize_ | Out-Null} catch {$_}
+        $er0  = try {Group-ListItem -CoveringArray $null -Size  0 -OutVariable outputSize0 | Out-Null} catch {$_}
+        $er1  = try {Group-ListItem -CoveringArray $null -Size  1 -OutVariable outputSize1 | Out-Null} catch {$_}
+        $er1m = try {Group-ListItem -CoveringArray $null -Size -1 -OutVariable outputSize1m | Out-Null} catch {$_}
 
-        $er1 = try {Group-ListItem @gliArgs -CoveringArray $null -OutVariable out1 | Out-Null} catch {$_}
-        $er2 = try {Group-ListItem @gliArgs -CoveringArray @($null) -OutVariable out2 | Out-Null} catch {$_}
-        $er3 = try {Group-ListItem @gliArgs -CoveringArray (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList (,@(@(1,2,3), $null))) -OutVariable out3 | Out-Null} catch {$_}
-        $er4 = try {Group-ListItem @gliArgs -CoveringArray (New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList (,@($null, @(4,5,6)))) -OutVariable out4 | Out-Null} catch {$_}
+        @($outputSize_, $outputSize0, $outputSize1, $outputSize1m) |
+            Assert-PipelineAll {param($output) $output.Count -eq 0} |
+            Out-Null
 
-        Assert-True ($out1.Count -eq 0)
-        Assert-True ($out2.Count -eq 0)
-        Assert-True ($out3.Count -eq 0)
-        Assert-True ($out4.Count -eq 0)
-
-        Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
-
-        Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($er2.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($er3.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($er4.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-
-        Assert-True $er1.Exception.ParameterName.Equals('CoveringArray', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-True $er2.Exception.ParameterName.Equals('CoveringArray', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-True $er3.Exception.ParameterName.Equals('CoveringArray', [System.StringComparison]::OrdinalIgnoreCase)
-        Assert-True $er4.Exception.ParameterName.Equals('CoveringArray', [System.StringComparison]::OrdinalIgnoreCase)
+        @($er_, $er0, $er1, $er1m) |
+            Assert-PipelineAll {param($er) $er -is [System.Management.Automation.ErrorRecord]} |
+            Assert-PipelineAll {param($er) $er.FullyQualifiedErrorId.Equals('ParameterArgumentValidationError,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)} |
+            Assert-PipelineAll {param($er) $er.Exception.ParameterName.Equals('CoveringArray', [System.StringComparison]::OrdinalIgnoreCase)} |
+            Out-Null
     }
 }
 
 & {
     Write-Verbose -Message 'Test Group-ListItem -CoveringArray with lists of length 0' -Verbose:$headerVerbosity
 
-    $noarg = New-Object 'System.Object'
+    $lists = @(
+        @(,@()),
+        @(@(), (New-Object -TypeName 'System.Collections.Generic.List[System.String]')),
+        @(@(), @($null)),
+        @(@($null), @()),
+        @(@(1,2), (New-Object -TypeName 'System.Collections.ArrayList')),
+        @(@(), (New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@(1,2)))),
+        @(@(), @(), @()),
+        @(@(), @($null), @(1,2)),
+        @(@(1,2), @(), @($null)),
+        @(@($null), @(1,2), @()),
+        @(@(), @(), @(), @()),
+        @(@(), @($null), @(1,2), @('a','b','c')),
+        @(@($null), @(), @(1,2), @('a','b','c')),
+        @(@($null), @(1,2), @(), @('a','b','c')),
+        @(@($null), @(1,2), @('a','b','c'), @())
+    )
 
-    foreach ($strength in @($noarg, -1, 0, 1, 2, 3, 4, 5)) {
-        $gliArgs = @{
-            'Strength' = $strength
-        }
-        if ($noarg.Equals($strength)) {
-            $gliArgs.Remove('Strength')
-        }
-
-        Group-ListItem @gliArgs -CoveringArray @(,@()) | Assert-PipelineEmpty
-
-        Group-ListItem @gliArgs -CoveringArray @(@(), (New-Object -TypeName 'System.Collections.Generic.List[System.String]')) | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray @(@(), @($null)) | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray @(@($null), @()) | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray @(@(1,2), (New-Object -TypeName 'System.Collections.ArrayList')) | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray @(@(), (New-Object -TypeName 'System.Collections.Generic.List[System.String]' -ArgumentList @(,[System.String[]]@(1,2)))) | Assert-PipelineEmpty
-
-        Group-ListItem @gliArgs -CoveringArray @(@(), @(), @()) | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray @(@(), @($null), @(1,2)) | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray @(@(1,2), @(), @($null)) | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray @(@($null), @(1,2), @()) | Assert-PipelineEmpty
-
-        Group-ListItem @gliArgs -CoveringArray @(@(), @(), @(), @()) | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray @(@(), @($null), @(1,2), @('a','b','c')) | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray @(@($null), @(), @(1,2), @('a','b','c')) | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray @(@($null), @(1,2), @(), @('a','b','c')) | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray @(@($null), @(1,2), @('a','b','c'), @()) | Assert-PipelineEmpty
+    foreach ($list in $lists) {
+        Group-ListItem -CoveringArray $list              | Assert-PipelineEmpty
+        Group-ListItem -CoveringArray $list -Strength  0 | Assert-PipelineEmpty
+        Group-ListItem -CoveringArray $list -Strength  1 | Assert-PipelineEmpty
+        Group-ListItem -CoveringArray $list -Strength  2 | Assert-PipelineEmpty
+        Group-ListItem -CoveringArray $list -Strength  3 | Assert-PipelineEmpty
+        Group-ListItem -CoveringArray $list -Strength  4 | Assert-PipelineEmpty
+        Group-ListItem -CoveringArray $list -Strength  5 | Assert-PipelineEmpty
+        Group-ListItem -CoveringArray $list -Strength -1 | Assert-PipelineEmpty
     }
 }
 
 & {
     Write-Verbose -Message 'Test Group-ListItem -CoveringArray with no lists' -Verbose:$headerVerbosity
 
-    $noarg = New-Object 'System.Object'
+    $lists = @(
+        @(),
+        (New-Object -TypeName 'System.Collections.ArrayList'),
+        (New-Object -TypeName 'System.Collections.Generic.List[System.Byte[]]')
+    )
 
-    foreach ($strength in @($noarg, -1, 0, 1)) {
-        $gliArgs = @{
-            'Strength' = $strength
-        }
-        if ($noarg.Equals($strength)) {
-            $gliArgs.Remove('Strength')
-        }
-
-        Group-ListItem @gliArgs -CoveringArray @() | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray (New-Object -TypeName 'System.Collections.ArrayList') | Assert-PipelineEmpty
-        Group-ListItem @gliArgs -CoveringArray (New-Object -TypeName 'System.Collections.Generic.List[System.Byte[]]') | Assert-PipelineEmpty
+    foreach ($list in $lists) {
+        Group-ListItem -CoveringArray $list              | Assert-PipelineEmpty
+        Group-ListItem -CoveringArray $list -Strength  0 | Assert-PipelineEmpty
+        Group-ListItem -CoveringArray $list -Strength  1 | Assert-PipelineEmpty
+        Group-ListItem -CoveringArray $list -Strength -1 | Assert-PipelineEmpty
     }
 }
 
