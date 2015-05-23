@@ -1,9 +1,11 @@
-﻿function _7ddd17460d1743b2b6e683ef649e01b7_getElementType
+﻿function _7ddd17460d1743b2b6e683ef649e01b7_getListElementType
 {
+    [CmdletBinding()]
+    [OutputType([System.Type])]
     Param(
-        [Parameter(Mandatory=$true, Position=0)]
+        [Parameter(Mandatory=$true)]
         [System.Collections.IList]
-        $list
+        $List
     )
 
     #NOTE about compatibility
@@ -23,13 +25,13 @@
     $objectGetType = [System.Object].GetMethod('GetType', [System.Type]::EmptyTypes)
     $genericIList = [System.Type]::GetType('System.Collections.Generic.IList`1')
 
-    if ($list -is [System.Array]) {
-        return $objectGetType.Invoke($list, $null).GetElementType()
+    if ($List -is [System.Array]) {
+        return $objectGetType.Invoke($List, $null).GetElementType()
     }
 
-    if ($list -is [System.Collections.IList]) {
+    if ($List -is [System.Collections.IList]) {
         $IListGenericTypes = @(
-            $objectGetType.Invoke($list, $null).GetInterfaces() |
+            $objectGetType.Invoke($List, $null).GetInterfaces() |
             Where-Object -FilterScript {
                 $_.IsGenericType -and ($_.GetGenericTypeDefinition() -eq $genericIList)
             }
