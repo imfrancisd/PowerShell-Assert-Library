@@ -5,7 +5,6 @@ function Test-Text
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
@@ -15,90 +14,76 @@ function Test-Text
 
         [Parameter(Mandatory=$true, ParameterSetName='OpMatch')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $Match,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpNotMatch')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $NotMatch,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpContains')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $Contains,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpNotContains')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $NotContains,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpStartsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $StartsWith,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpNotStartsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $NotStartsWith,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpEndsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $EndsWith,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEndsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $NotEndsWith,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,

@@ -5,7 +5,6 @@ function Test-Number
     Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
@@ -15,42 +14,36 @@ function Test-Number
 
         [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
         
         [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
         [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
