@@ -176,11 +176,11 @@ function buildScript
         })
 
         $ps1 = Join-Path -Path $buildScriptDir -ChildPath ('AssertLibrary_{0}.ps1' -f $dir.BaseName)
-        $lines | Out-File -FilePath $ps1 -Encoding ascii -Verbose:$VerbosePreference
+        $lines | Out-File -FilePath $ps1 -Encoding utf8 -Verbose:$VerbosePreference
 
         if ($dir.BaseName.Equals('en-US', [System.StringComparison]::OrdinalIgnoreCase)) {
             $ps1 = Join-Path -Path $buildScriptDir -ChildPath 'AssertLibrary.ps1'
-            $lines | Out-File -FilePath $ps1 -Encoding ascii -Verbose:$VerbosePreference
+            $lines | Out-File -FilePath $ps1 -Encoding utf8 -Verbose:$VerbosePreference
         }
     }
 }
@@ -203,7 +203,7 @@ function buildModule
             ''
         }
         "Export-ModuleMember -Function '*-*'"
-    }) | Out-File -FilePath $psm1 -Encoding ascii -Verbose:$VerbosePreference
+    }) | Out-File -FilePath $psm1 -Encoding utf8 -Verbose:$VerbosePreference
 
     @(
         "@{"
@@ -230,7 +230,7 @@ function buildModule
         "PowerShellVersion = '$($PowerShellVersion.ToString(2))'"
         ""
         "}"
-    ) | Out-File -FilePath $psd1 -Encoding ascii -Verbose:$VerbosePreference
+    ) | Out-File -FilePath $psd1 -Encoding utf8 -Verbose:$VerbosePreference
 
     foreach ($item in (Get-ChildItem -LiteralPath $moduleHelpDir)) {
         if ($item.PSIsContainer) {

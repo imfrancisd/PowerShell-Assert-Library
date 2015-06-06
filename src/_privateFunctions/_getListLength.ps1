@@ -1,4 +1,4 @@
-﻿function _7ddd17460d1743b2b6e683ef649e01b7_getListLength
+function _7ddd17460d1743b2b6e683ef649e01b7_getListLength
 {
     [CmdletBinding()]
     [OutputType([System.Int32])]

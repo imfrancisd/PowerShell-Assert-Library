@@ -1,4 +1,4 @@
-﻿function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine
+function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine
 {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
