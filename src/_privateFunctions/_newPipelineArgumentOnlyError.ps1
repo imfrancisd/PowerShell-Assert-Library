@@ -1,6 +1,6 @@
 ﻿function _7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError
 {
-    Param(
+    param(
         [Parameter(Mandatory = $true)]
         [System.String]
         $functionName,

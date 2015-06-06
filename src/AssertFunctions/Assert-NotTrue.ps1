@@ -1,7 +1,7 @@
 function Assert-NotTrue
 {
     [CmdletBinding()]
-    Param(
+    param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]

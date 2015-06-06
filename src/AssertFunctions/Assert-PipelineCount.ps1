@@ -2,7 +2,7 @@ function Assert-PipelineCount
 {
     [CmdletBinding(DefaultParameterSetName = 'Equals')]
     [OutputType([System.Object])]
-    Param(
+    param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
@@ -21,7 +21,7 @@ function Assert-PipelineCount
         $Maximum
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -47,7 +47,7 @@ function Assert-PipelineCount
         }
     }
 
-    Process
+    process
     {
         $inputCount++
 
@@ -69,7 +69,7 @@ function Assert-PipelineCount
         ,$InputObject
     }
 
-    End
+    end
     {
         $fail = & $failAssert
 

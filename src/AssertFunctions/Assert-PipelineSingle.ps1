@@ -2,14 +2,14 @@ function Assert-PipelineSingle
 {
     [CmdletBinding()]
     [OutputType([System.Object])]
-    Param(
+    param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -23,7 +23,7 @@ function Assert-PipelineSingle
         $anyItems = $false
     }
 
-    Process
+    process
     {
         if ($anyItems) {
             #fail immediately
@@ -44,7 +44,7 @@ function Assert-PipelineSingle
         ,$InputObject
     }
 
-    End
+    end
     {
         $fail = -not $anyItems
 

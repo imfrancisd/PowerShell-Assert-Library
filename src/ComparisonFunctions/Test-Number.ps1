@@ -2,7 +2,7 @@ function Test-Number
 {
     [CmdletBinding(DefaultParameterSetName = 'IsNumber')]
     [OutputType([System.Boolean], [System.Object])]
-    Param(
+    param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]

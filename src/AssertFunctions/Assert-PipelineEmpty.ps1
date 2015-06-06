@@ -1,14 +1,14 @@
 function Assert-PipelineEmpty
 {
     [CmdletBinding()]
-    Param(
+    param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -20,7 +20,7 @@ function Assert-PipelineEmpty
         }
     }
 
-    Process
+    process
     {
         #fail immediately
         #do not wait for all pipeline objects
@@ -36,7 +36,7 @@ function Assert-PipelineEmpty
         $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
     }
 
-    End
+    end
     {
         if (([System.Int32]$VerbosePreference)) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation

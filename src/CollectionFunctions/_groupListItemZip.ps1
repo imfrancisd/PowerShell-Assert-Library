@@ -2,7 +2,7 @@
 {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
-    Param(
+    param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
         [AllowEmptyCollection()]
         [ValidateNotNull()]

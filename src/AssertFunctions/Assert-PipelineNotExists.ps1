@@ -2,7 +2,7 @@ function Assert-PipelineNotExists
 {
     [CmdletBinding()]
     [OutputType([System.Object])]
-    Param(
+    param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
@@ -13,7 +13,7 @@ function Assert-PipelineNotExists
         $Predicate
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -25,7 +25,7 @@ function Assert-PipelineNotExists
         }
     }
 
-    Process
+    process
     {
         $result = $null
         try   {$result = do {& $Predicate $InputObject} while ($false)}
@@ -46,7 +46,7 @@ function Assert-PipelineNotExists
         ,$InputObject
     }
 
-    End
+    end
     {
         if (([System.Int32]$VerbosePreference)) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation

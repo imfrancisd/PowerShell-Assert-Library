@@ -2,7 +2,7 @@
 {
     [CmdletBinding()]
     [OutputType([System.Type])]
-    Param(
+    param(
         [Parameter(Mandatory = $true)]
         [System.Collections.IList]
         $List

@@ -2,14 +2,14 @@ function Assert-PipelineAny
 {
     [CmdletBinding()]
     [OutputType([System.Object])]
-    Param(
+    param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -23,13 +23,13 @@ function Assert-PipelineAny
         $fail = $true
     }
 
-    Process
+    process
     {
         $fail = $false
         ,$InputObject
     }
 
-    End
+    end
     {
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
