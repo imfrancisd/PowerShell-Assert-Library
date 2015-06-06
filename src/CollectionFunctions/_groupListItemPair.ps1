@@ -3,7 +3,7 @@
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Pair

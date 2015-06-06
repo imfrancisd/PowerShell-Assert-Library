@@ -3,12 +3,12 @@ function Assert-PipelineNotExists
     [CmdletBinding()]
     [OutputType([System.Object])]
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [System.Management.Automation.ScriptBlock]
         $Predicate
     )

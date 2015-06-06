@@ -1,16 +1,16 @@
 ﻿function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError
 {
     Param(
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $message,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [AllowNull()]
         [System.Exception]
         $innerException,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [AllowNull()]
         [System.Object]
         $value

@@ -3,13 +3,13 @@
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
         [AllowEmptyCollection()]
         [ValidateNotNull()]
         [System.Collections.IList[]]
         $CoveringArray,
 
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [System.Int32]
         $Strength
     )

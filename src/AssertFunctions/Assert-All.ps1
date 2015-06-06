@@ -2,12 +2,12 @@ function Assert-All
 {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Collection,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
         $Predicate
     )

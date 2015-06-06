@@ -2,7 +2,7 @@ function Assert-NotNull
 {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value

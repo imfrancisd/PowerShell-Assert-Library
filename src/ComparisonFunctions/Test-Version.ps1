@@ -1,59 +1,59 @@
 function Test-Version
 {
-    [CmdletBinding(DefaultParameterSetName='IsVersion')]
+    [CmdletBinding(DefaultParameterSetName = 'IsVersion')]
     [OutputType([System.Boolean], [System.Object])]
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value,
 
-        [Parameter(Mandatory=$false, ParameterSetName='IsVersion')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'IsVersion')]
         [System.Management.Automation.SwitchParameter]
         $IsVersion,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEquals')]
         [AllowNull()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEquals')]
         [AllowNull()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThan')]
         [AllowNull()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThanOrEqualTo')]
         [AllowNull()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThan')]
         [AllowNull()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.String[]]

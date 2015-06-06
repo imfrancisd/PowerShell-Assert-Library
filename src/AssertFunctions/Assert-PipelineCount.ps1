@@ -1,22 +1,22 @@
 function Assert-PipelineCount
 {
-    [CmdletBinding(DefaultParameterSetName='Equals')]
+    [CmdletBinding(DefaultParameterSetName = 'Equals')]
     [OutputType([System.Object])]
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject,
 
-        [Parameter(Mandatory=$true, ParameterSetName='Equals', Position=0)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Equals', Position = 0)]
         [System.Int64]
         $Equals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='Minimum')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Minimum')]
         [System.Int64]
         $Minimum,
 
-        [Parameter(Mandatory=$true, ParameterSetName='Maximum')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Maximum')]
         [System.Int64]
         $Maximum
     )

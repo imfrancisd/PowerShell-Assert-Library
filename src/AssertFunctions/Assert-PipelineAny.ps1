@@ -3,7 +3,7 @@ function Assert-PipelineAny
     [CmdletBinding()]
     [OutputType([System.Object])]
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject

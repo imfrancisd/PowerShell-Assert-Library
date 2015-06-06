@@ -1,124 +1,124 @@
 function Test-Text
 {
-    [CmdletBinding(DefaultParameterSetName='IsText')]
+    [CmdletBinding(DefaultParameterSetName = 'IsText')]
     [OutputType([System.Boolean], [System.Object])]
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value,
 
-        [Parameter(Mandatory=$false, ParameterSetName='IsText')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'IsText')]
         [System.Management.Automation.SwitchParameter]
         $IsText,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpMatch')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpMatch')]
         [AllowNull()]
         [System.Object]
         $Match,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotMatch')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotMatch')]
         [AllowNull()]
         [System.Object]
         $NotMatch,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpContains')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpContains')]
         [AllowNull()]
         [System.Object]
         $Contains,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotContains')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotContains')]
         [AllowNull()]
         [System.Object]
         $NotContains,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpStartsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpStartsWith')]
         [AllowNull()]
         [System.Object]
         $StartsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotStartsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotStartsWith')]
         [AllowNull()]
         [System.Object]
         $NotStartsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEndsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEndsWith')]
         [AllowNull()]
         [System.Object]
         $EndsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEndsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEndsWith')]
         [AllowNull()]
         [System.Object]
         $NotEndsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEquals')]
         [AllowNull()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEquals')]
         [AllowNull()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThan')]
         [AllowNull()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThanOrEqualTo')]
         [AllowNull()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThan')]
         [AllowNull()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpMatch')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotMatch')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpMatch')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotMatch')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [System.Management.Automation.SwitchParameter]
         $CaseSensitive,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpMatch')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotMatch')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpMatch')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotMatch')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [System.Management.Automation.SwitchParameter]
         $UseCurrentCulture
     )
