@@ -212,8 +212,7 @@ Note:
 This function does not return any groups if:
     *no lists are specified
     *any of the specified lists are empty
-    *the value of the -Strength parameter is negative
-    *the value of the -Strength parameter is 0 (this may change)
+    *the value of the -Strength parameter is negative or 0
 
 This function will return the cartesian product if:
     *the -Strength parameter is not specified

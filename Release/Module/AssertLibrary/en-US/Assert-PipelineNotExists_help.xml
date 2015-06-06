@@ -142,7 +142,7 @@ This assertion will always pass because the array is empty.</maml:para>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Verbose</dev:code>
+        <dev:code>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Verbose</dev:code>
         <dev:remarks>
           <maml:para>Assert that no entry in the hashtable has a value less than 0, and outputs each entry one at a time.
 The -Verbose switch will output the result of the assertion to the Verbose stream.
@@ -164,7 +164,7 @@ The GetEnumerator() method must be used in order to pipe the entries of a hashta
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Debug</dev:code>
+        <dev:code>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Debug</dev:code>
         <dev:remarks>
           <maml:para>Assert that no entry in the hashtable has a value less than 0, and outputs each entry one at a time.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.

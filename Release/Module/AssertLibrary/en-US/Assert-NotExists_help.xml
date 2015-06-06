@@ -140,7 +140,7 @@ This assertion will always pass because the array is empty.</maml:para>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Assert-NotExists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -lt 0} -Verbose</dev:code>
+        <dev:code>Assert-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0} -Verbose</dev:code>
         <dev:remarks>
           <maml:para>Assert that no entry in the hashtable has a value less than 0.
 The -Verbose switch will output the result of the assertion to the Verbose stream.</maml:para>
@@ -159,7 +159,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Assert-NotExists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -lt 0} -Debug</dev:code>
+        <dev:code>Assert-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0} -Debug</dev:code>
         <dev:remarks>
           <maml:para>Assert that no entry in the hashtable has a value less than 0.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.</maml:para>

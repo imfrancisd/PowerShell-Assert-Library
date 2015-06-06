@@ -149,7 +149,7 @@ $true          value is a Version object</maml:para>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
         </dev:type>
-        <dev:defaultValue>True</dev:defaultValue>
+        <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
       <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
         <maml:name>Equals</maml:name>

@@ -1,4 +1,4 @@
-<#
+﻿<#
 The MIT License (MIT)
 
 Copyright (c) 2015 Francis de la Cerna
@@ -23,20 +23,620 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.6.1.0
+#Assert Library version 1.7.0.0
 #
 #PowerShell requirements
 #requires -version 2.0
 
-function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError
-{
-    Param(
+
+$_7ddd17460d1743b2b6e683ef649e01b7_getListElementType = {
+    [CmdletBinding()]
+    [OutputType([System.Type])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.Collections.IList]
+        $List
+    )
+
+    #NOTE about compatibility
+    #
+    #In PowerShell, it is possible to override properties and methods of an object.
+    #
+    #The psbase property in all objects allows access to the real properties and methods.
+    #
+    #In PowerShell 4 (and possibly PowerShell 3) however, the psbase property does not
+    #allow access to the "real" GetType method of the object. Instead, .psbase.GetType()
+    #returns the type of the psbase object instead of the type of the object that psbase
+    #represents.
+    #
+    #Explicit .NET reflection must be used if you want to make sure that you are calling
+    #the "real" GetType method in PowerShell 4 (and possibly PowerShell 3).
+
+    $objectGetType = [System.Object].GetMethod('GetType', [System.Type]::EmptyTypes)
+    $genericIList = [System.Type]::GetType('System.Collections.Generic.IList`1')
+
+    if ($List -is [System.Array]) {
+        return $objectGetType.Invoke($List, $null).GetElementType()
+    }
+
+    if ($List -is [System.Collections.IList]) {
+        $IListGenericTypes = @(
+            $objectGetType.Invoke($List, $null).GetInterfaces() |
+            Where-Object -FilterScript {
+                $_.IsGenericType -and ($_.GetGenericTypeDefinition() -eq $genericIList)
+            }
+        )
+
+        if ($IListGenericTypes.Length -eq 1) {
+            return $IListGenericTypes[0].GetGenericArguments()[0]
+        }
+    }
+
+    return [System.Object]
+}
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_getListLength = {
+    [CmdletBinding()]
+    [OutputType([System.Int32])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.Collections.IList]
+        $List
+    )
+
+    #NOTE
+    #
+    #In PowerShell, it is possible to override properties and methods of an object.
+    #
+    #The psbase property in all objects allows access to the real properties and methods.
+
+    if ($List -is [System.Array]) {
+        return $List.psbase.Length
+    }
+
+    return $List.psbase.Count
+}
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct = {
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
+        [AllowEmptyCollection()]
+        [ValidateNotNull()]
+        [System.Collections.IList[]]
+        $CartesianProduct
+    )
+
+    $listCount = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $CartesianProduct -ErrorAction $ErrorActionPreference
+
+    if ($listCount -lt 1) {
+        return
+    }
+
+    #Get all the lengths of the list and
+    #determine the type to use to constrain the output array.
+
+    $listLengths = [System.Array]::CreateInstance([System.Int32], $listCount)
+    $elementTypes = [System.Array]::CreateInstance([System.Type], $listCount)
+
+    for ($i = 0; $i -lt $listCount; $i++) {
+        $listLengths[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $CartesianProduct[$i] -ErrorAction $ErrorActionPreference
+        $elementTypes[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $CartesianProduct[$i] -ErrorAction $ErrorActionPreference
+    }
+
+    if (@($listLengths | Sort-Object)[0] -lt 1) {
+        return
+    }
+
+    if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
+        $outputElementType = $elementTypes[0]
+    }
+    else {
+        $outputElementType = [System.Object]
+    }
+
+    #Generate the cartesian products of the lists.
+    #Store an index for each list in an array, and increment those
+    #indices in way that generates the cartesian products.
+    #
+    #The array of indices is conceptually a counter with special rules:
+    #  *indices are in range [0..length of list associated with index]
+
+    $counter = [System.Array]::CreateInstance([System.Int32], $listCount)
+
+    while ($counter[0] -lt $listLengths[0]) {
+        $i = $listCount - 1
+
+        for (; $counter[$i] -lt $listLengths[$i]; $counter[$i]++) {
+            #generate cartesian product
+            $items = [System.Array]::CreateInstance($outputElementType, $listCount)
+            for ($j = 0; $j -lt $listCount; $j++) {
+                $items[$j] = $CartesianProduct[$j][$counter[$j]]
+            }
+
+            #output cartesian product
+            New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+                'Items' = $items
+            }
+        }
+
+        #update counter
+        for (; ($i -gt 0) -and ($counter[$i] -ge $listLengths[$i]); $i--) {
+            $counter[$i] = 0
+            $counter[$i - 1]++
+        }
+    }
+}
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine = {
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $Combine,
+
+        [Parameter(Mandatory = $false)]
+        [System.Int32]
+        $Size
+    )
+
+    $listLength = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Combine -ErrorAction $ErrorActionPreference
+    $outputElementType = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Combine -ErrorAction $ErrorActionPreference
+
+    if (-not $PSBoundParameters.ContainsKey('Size')) {
+        $Size = $listLength
+    }
+
+    if ($Size -eq 0) {
+        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = [System.Array]::CreateInstance($outputElementType, 0)
+        }
+        return
+    }
+    if (($Size -lt 0) -or ($listLength -lt $Size)) {
+        return
+    }
+
+    #Generate the combinations.
+    #Store $Size amount of indices in an array, and increment those indices
+    #in way that generates the combinations.
+    #
+    #The array of indices is conceptually a counter with special rules:
+    #  *indices in counter are in range [0..length of list]
+    #  *indices in counter are strictly increasing
+
+    #initialize counter
+    $counter = [System.Array]::CreateInstance([System.Int32], $Size)
+    for ($i = 0; $i -lt $Size; $i++) {
+        $counter[$i] = $i
+    }
+
+    while ($counter[-1] -lt $listLength) {
+        #generate combination
+        $items = [System.Array]::CreateInstance($outputElementType, $Size)
+        for ($i = 0; $i -lt $Size; $i++) {
+            $items[$i] = $Combine[$counter[$i]]
+        }
+
+        #output combination
+        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = $items
+        }
+
+        #increment counter
+        for ($i = $Size - 1; $i -ge 0; $i--) {
+            $counter[$i]++
+            if ($counter[$i] -le ($listLength - $Size + $i)) {
+                for ($i++; $i -lt $Size; $i++) {
+                    $counter[$i] = $counter[$i - 1] + 1
+                }
+                break
+            }
+        }
+    }
+}
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
+        [AllowEmptyCollection()]
+        [ValidateNotNull()]
+        [System.Collections.IList[]]
+        $CoveringArray,
+
+        [Parameter(Mandatory = $false)]
+        [System.Int32]
+        $Strength
+    )
+
+    $listCount = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $CoveringArray -ErrorAction $ErrorActionPreference
+
+    if ($listCount -lt 1) {
+        return
+    }
+
+    if (-not $PSBoundParameters.ContainsKey('Strength')) {
+        $Strength = $listCount
+    }
+    if ($Strength -lt 1) {
+        return
+    }
+
+    #A Covering array with the highest strength possible is the Cartesian product
+    if ($Strength -ge $listCount) {
+        & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct -CartesianProduct $CoveringArray -ErrorAction $ErrorActionPreference
+        return
+    }
+
+    #Get all the lengths of the list and
+    #determine the type to use to constrain the output array.
+
+    $listLengths = [System.Array]::CreateInstance([System.Int32], $listCount)
+    $elementTypes = [System.Array]::CreateInstance([System.Type], $listCount)
+
+    for ($i = 0; $i -lt $listCount; $i++) {
+        $listLengths[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $CoveringArray[$i] -ErrorAction $ErrorActionPreference
+        $elementTypes[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $CoveringArray[$i] -ErrorAction $ErrorActionPreference
+    }
+
+    if (@($listLengths | Sort-Object)[0] -lt 1) {
+        return
+    }
+
+    if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
+        $outputElementType = $elementTypes[0]
+    }
+    else {
+        $outputElementType = [System.Object]
+    }
+
+    #If -Strength is 1, then the covering array is a modified version of -Zip.
+    #The important thing is all values in the lists are used 1 or more times.
+
+    if ($Strength -eq 1) {
+        $maxListLength = @($listLengths | Sort-Object -Descending)[0]
+
+        for ($i = 0; $i -lt $maxListLength; $i++) {
+            #generate a row in the covering array
+            $items = [System.Array]::CreateInstance($outputElementType, $listCount)
+            for ($j = 0; $j -lt $listCount; $j++) {
+                $items[$j] = $CoveringArray[$j][$i % $listLengths[$j]]
+            }
+
+            #output the row
+            New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+                'Items' = $items
+            }
+        }
+
+        return
+    }
+
+    #=======================================================
+    #At this stage, the following must be true:
+    #    0 < $Strength < $listCount
+    #    all lists have at least one item
+    #=======================================================
+
+    #Generate the covering array by filtering the Cartesian product of the lists.
+    #
+    #Store an index for each list in an array, and increment those
+    #indices in way that generates the cartesian product.
+    #
+    #The array of indices is conceptually a counter with special rules:
+    #  *indices are in range [0..length of list associated with index]
+    #
+    #Filter the Cartesian product by removing any row that does not have at least
+    #one unused column combination.
+
+    $counter = [System.Array]::CreateInstance([System.Int32], $listCount)
+
+    $usedCombinations = @{}
+
+    #Generate a row if the value of counter has at least one new column combination.
+    #
+    #If $counter is {10, 20, 30, 40} and strength is 2, then the combinations are:
+    #
+    #    {10, 20} {10, 30} {10, 40} {20, 30} {20, 40} {30, 40}
+    #
+    #and they'll be converted into the following strings:
+    #
+    #    "0 10 20 " "1 10 30 " "2 10 40 " "3 20 30 " "4 20 40 " "5 30 40 "
+    #
+    #with the first number in the string being the index of the combination.
+
+    $f = '{0:D} '
+    $s = New-Object -TypeName 'System.Text.StringBuilder'
+
+    while ($counter[0] -lt $listLengths[0]) {
+        $i = $listCount - 1
+
+        for (; $counter[$i] -lt $listLengths[$i]; $counter[$i]++) {
+            $hasNewCombination = $false
+
+            $combinations = @(& $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine -Combine $counter -Size $Strength -ErrorAction $ErrorActionPreference)
+            for ($j = $combinations.Length - 1; $j -ge 0; $j--) {
+                $s.Length = 0
+                [System.Void]$s.AppendFormat($f, $j)
+                foreach ($item in $combinations[$j].Items) {
+                    [System.Void]$s.AppendFormat($f, $item)
+                }
+
+                $combinations[$j] = $s.ToString()
+
+                $hasNewCombination =
+                    ($hasNewCombination) -or
+                    (-not $usedCombinations.Contains($combinations[$j]))
+            }
+
+            if ($hasNewCombination) {
+                #add column combinations to $usedCombinations
+                foreach ($item in $combinations) {
+                    $usedCombinations[$item] = $null
+                }
+
+                #generate cartesian product
+                $items = [System.Array]::CreateInstance($outputElementType, $listCount)
+                for ($j = 0; $j -lt $listCount; $j++) {
+                    $items[$j] = $CoveringArray[$j][$counter[$j]]
+                }
+
+                #output cartesian product
+                New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+                    'Items' = $items
+                }
+            }
+        }
+
+        #update counter
+        for (; ($i -gt 0) -and ($counter[$i] -ge $listLengths[$i]); $i--) {
+            $counter[$i] = 0
+            $counter[$i - 1]++
+        }
+    }
+}
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPair = {
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $Pair
+    )
+
+    $listLength = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Pair -ErrorAction $ErrorActionPreference
+    $outputElementType = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Pair -ErrorAction $ErrorActionPreference
+
+    $count = $listLength - 1
+
+    for ($i = 0; $i -lt $count; $i++) {
+        #generate pair
+        $items = [System.Array]::CreateInstance($outputElementType, 2)
+        $items[0] = $Pair[$i]
+        $items[1] = $Pair[$i + 1]
+
+        #output pair
+        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = $items
+        }
+    }
+}
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute = {
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $Permute,
+
+        [Parameter(Mandatory = $false)]
+        [System.Int32]
+        $Size
+    )
+
+    $listLength = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Permute -ErrorAction $ErrorActionPreference
+    $outputElementType = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Permute -ErrorAction $ErrorActionPreference
+
+    if (-not $PSBoundParameters.ContainsKey('Size')) {
+        $Size = $listLength
+    }
+
+    if ($Size -eq 0) {
+        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = [System.Array]::CreateInstance($outputElementType, 0)
+        }
+        return
+    }
+    if (($Size -lt 0) -or ($listLength -lt $Size)) {
+        return
+    }
+
+    #Generate the permutations.
+    #Store $Size amount of indices in an array, and increment those indices
+    #in way that generates the permutations.
+    #
+    #The array of indices is conceptually a counter with special rules:
+    #  *indices in counter are in range [0..length of list]
+    #  *indices in counter that are less than length of list are unique
+
+    $counter = [System.Array]::CreateInstance([System.Int32], $Size)
+    $usedIndices = @{}
+
+    #initialize counter
+    for ($i = 0; $i -lt $Size; $i++) {
+        $counter[$i] = $i
+        $usedIndices.Add($i, $null)
+    }
+
+    while ($counter[0] -lt $listLength) {
+        #generate permutation
+        $items = [System.Array]::CreateInstance($outputElementType, $Size)
+        for ($i = 0; $i -lt $Size; $i++) {
+            $items[$i] = $Permute[$counter[$i]]
+        }
+
+        #output permutation
+        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = $items
+        }
+
+        #increment counter
+        for ($i = $Size - 1; $i -ge 0; $i--) {
+            $usedIndices.Remove($counter[$i])
+            for ($counter[$i]++; $counter[$i] -lt $listLength; $counter[$i]++) {
+                if (-not $usedIndices.ContainsKey($counter[$i])) {
+                    $usedIndices.Add($counter[$i], $null)
+                    break
+                }
+            }
+
+            if ($counter[$i] -lt $listLength) {
+                for ($i++; $i -lt $Size; $i++) {
+                    for ($counter[$i] = 0; $counter[$i] -lt $listLength; $counter[$i]++) {
+                        if (-not $usedIndices.ContainsKey($counter[$i])) {
+                            $usedIndices.Add($counter[$i], $null)
+                            break
+                        }
+                    }
+                }
+                break
+            }
+        }
+    }
+}
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemWindow = {
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $Window,
+
+        [Parameter(Mandatory = $false)]
+        [System.Int32]
+        $Size
+    )
+
+    $listLength = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Window -ErrorAction $ErrorActionPreference
+    $outputElementType = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Window -ErrorAction $ErrorActionPreference
+
+    if (-not $PSBoundParameters.ContainsKey('Size')) {
+        $Size = $listLength
+    }
+
+    if ($Size -eq 0) {
+        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = [System.Array]::CreateInstance($outputElementType, 0)
+        }
+        return
+    }
+    if (($Size -lt 0) -or ($listLength -lt $Size)) {
+        return
+    }
+
+    $count = $listLength - $Size + 1
+
+    for ($i = 0; $i -lt $count; $i++) {
+        #generate window
+        $items = [System.Array]::CreateInstance($outputElementType, $Size)
+        for ($j = 0; $j -lt $Size; $j++) {
+            $items[$j] = $Window[$j + $i]
+        }
+
+        #output window
+        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = $items
+        }
+    }
+}
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip = {
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
+        [AllowEmptyCollection()]
+        [ValidateNotNull()]
+        [System.Collections.IList[]]
+        $Zip
+    )
+
+    $listCount = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Zip -ErrorAction $ErrorActionPreference
+
+    if ($listCount -lt 1) {
+        return
+    }
+
+    #Get all the lengths of the list and
+    #determine the type to use to constrain the output array.
+
+    $listLengths = [System.Array]::CreateInstance([System.Int32], $listCount)
+    $elementTypes = [System.Array]::CreateInstance([System.Type], $listCount)
+
+    for ($i = 0; $i -lt $listCount; $i++) {
+        $listLengths[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Zip[$i] -ErrorAction $ErrorActionPreference
+        $elementTypes[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Zip[$i] -ErrorAction $ErrorActionPreference
+    }
+
+    $minlistlength = @($listLengths | Sort-Object)[0]
+
+    if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
+        $outputElementType = $elementTypes[0]
+    }
+    else {
+        $outputElementType = [System.Object]
+    }
+
+    #Generate the "Zip" of the lists by
+    #grouping the items in each list with the same index.
+
+    for ($i = 0; $i -lt $minListLength; $i++) {
+        #generate the "Zip"
+        $items = [System.Array]::CreateInstance($outputElementType, $listCount)
+        for ($j = 0; $j -lt $listCount; $j++) {
+            $items[$j] = $Zip[$j][$i]
+        }
+
+        #output the "Zip"
+        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = $items
+        }
+    }
+}
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError = {
+    param(
+        [Parameter(Mandatory = $true)]
         [System.String]
         $message,
 
+        [Parameter(Mandatory = $true)]
+        [AllowNull()]
         [System.Exception]
         $innerException,
 
+        [Parameter(Mandatory = $true)]
+        [AllowNull()]
         [System.Object]
         $value
     )
@@ -49,9 +649,10 @@ function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError
     )
 }
 
-function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus
-{
-    Param(
+
+$_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus = {
+    param(
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.InvocationInfo]
         $invocation,
 
@@ -67,15 +668,19 @@ function _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus
     )
 }
 
-function _7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError
-{
-    Param(
+
+$_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError = {
+    param(
+        [Parameter(Mandatory = $true)]
         [System.String]
         $functionName,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
         $argumentName,
 
+        [Parameter(Mandatory = $true)]
+        [AllowNull()]
         [System.Object]
         $argumentValue
     )
@@ -91,12 +696,15 @@ function _7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError
     )
 }
 
-function _7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError
-{
-    Param(
+
+$_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError = {
+    param(
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.ErrorRecord]
         $errorRecord,
 
+        [Parameter(Mandatory = $true)]
+        [AllowNull()]
         [System.Management.Automation.ScriptBlock]
         $predicate
     )
@@ -109,17 +717,18 @@ function _7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError
     )
 }
 
+
 #.ExternalHelp Assert-All_help.xml
 function Assert-All
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Collection,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
         $Predicate
     )
@@ -134,8 +743,9 @@ function Assert-All
         $fail = $false
 
         foreach ($item in $Collection.psbase.GetEnumerator()) {
+            $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (-not (($result -is [System.Boolean]) -and $result)) {
                 $fail = $true
@@ -145,7 +755,7 @@ function Assert-All
     }
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
-        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+        $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
@@ -154,22 +764,23 @@ function Assert-All
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
         }
     }
 }
+
 
 #.ExternalHelp Assert-Exists_help.xml
 function Assert-Exists
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Collection,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
         $Predicate
     )
@@ -182,8 +793,9 @@ function Assert-Exists
     $fail = $true
     if ($Collection -is [System.Collections.ICollection]) {
         foreach ($item in $Collection.psbase.GetEnumerator()) {
+            $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (($result -is [System.Boolean]) -and $result) {
                 $fail = $false
@@ -193,7 +805,7 @@ function Assert-Exists
     }
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
-        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+        $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
@@ -202,17 +814,18 @@ function Assert-Exists
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
         }
     }
 }
+
 
 #.ExternalHelp Assert-False_help.xml
 function Assert-False
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -226,7 +839,7 @@ function Assert-False
     $fail = -not (($Value -is [System.Boolean]) -and (-not $Value))
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
-        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+        $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
@@ -235,22 +848,23 @@ function Assert-False
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }
+
 
 #.ExternalHelp Assert-NotExists_help.xml
 function Assert-NotExists
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Collection,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
         $Predicate
     )
@@ -265,8 +879,9 @@ function Assert-NotExists
         $fail = $false
 
         foreach ($item in $Collection.psbase.GetEnumerator()) {
+            $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (($result -is [System.Boolean]) -and $result) {
                 $fail = $true
@@ -276,7 +891,7 @@ function Assert-NotExists
     }
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
-        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+        $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
@@ -285,17 +900,18 @@ function Assert-NotExists
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
         }
     }
 }
+
 
 #.ExternalHelp Assert-NotFalse_help.xml
 function Assert-NotFalse
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -309,7 +925,7 @@ function Assert-NotFalse
     $fail = ($Value -is [System.Boolean]) -and (-not $Value)
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
-        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+        $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
@@ -318,17 +934,18 @@ function Assert-NotFalse
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }
+
 
 #.ExternalHelp Assert-NotNull_help.xml
 function Assert-NotNull
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -342,7 +959,7 @@ function Assert-NotNull
     $fail = $null -eq $Value
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
-        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+        $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
@@ -351,17 +968,18 @@ function Assert-NotNull
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }
+
 
 #.ExternalHelp Assert-NotTrue_help.xml
 function Assert-NotTrue
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -375,7 +993,7 @@ function Assert-NotTrue
     $fail = ($Value -is [System.Boolean]) -and $Value
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
-        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+        $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
@@ -384,17 +1002,18 @@ function Assert-NotTrue
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }
+
 
 #.ExternalHelp Assert-Null_help.xml
 function Assert-Null
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -408,7 +1027,7 @@ function Assert-Null
     $fail = $null -ne $Value
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
-        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+        $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
@@ -417,27 +1036,29 @@ function Assert-Null
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }
+
 
 #.ExternalHelp Assert-PipelineAll_help.xml
 function Assert-PipelineAll
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+    [OutputType([System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [System.Management.Automation.ScriptBlock]
         $Predicate
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -445,17 +1066,18 @@ function Assert-PipelineAll
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
         }
     }
 
-    Process
+    process
     {
+        $result = $null
         try   {$result = do {& $Predicate $InputObject} while ($false)}
-        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
         if (-not (($result -is [System.Boolean]) -and $result)) {
-            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
             Write-Verbose -Message $message
 
@@ -463,33 +1085,35 @@ function Assert-PipelineAll
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
         ,$InputObject
     }
 
-    End
+    end
     {
         if (([System.Int32]$VerbosePreference)) {
-            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
             Write-Verbose -Message $message
         }
     }
 }
 
+
 #.ExternalHelp Assert-PipelineAny_help.xml
 function Assert-PipelineAny
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+    [OutputType([System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -497,22 +1121,22 @@ function Assert-PipelineAny
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineAny' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineAny' -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         $fail = $true
     }
 
-    Process
+    process
     {
         $fail = $false
         ,$InputObject
     }
 
-    End
+    end
     {
         if ($fail -or ([System.Int32]$VerbosePreference)) {
-            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
 
@@ -521,36 +1145,38 @@ function Assert-PipelineAny
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
                 Write-Debug -Message $message
-                $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+                $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
     }
 }
 
+
 #.ExternalHelp Assert-PipelineCount_help.xml
 function Assert-PipelineCount
 {
-    [CmdletBinding(DefaultParameterSetName='Equals')]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+    [CmdletBinding(DefaultParameterSetName = 'Equals')]
+    [OutputType([System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject,
 
-        [Parameter(Mandatory=$true, ParameterSetName='Equals', Position=0)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Equals', Position = 0)]
         [System.Int64]
         $Equals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='Minimum')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Minimum')]
         [System.Int64]
         $Minimum,
 
-        [Parameter(Mandatory=$true, ParameterSetName='Maximum')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Maximum')]
         [System.Int64]
         $Maximum
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -558,7 +1184,7 @@ function Assert-PipelineCount
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         #Make sure we can count higher than -Equals, -Minimum, and -Maximum.
@@ -567,16 +1193,18 @@ function Assert-PipelineCount
         if ($PSCmdlet.ParameterSetName -eq 'Equals') {
             $failEarly  = {$inputCount -gt $Equals}
             $failAssert = {$inputCount -ne $Equals}
-        } elseif ($PSCmdlet.ParameterSetName -eq 'Maximum') {
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq 'Maximum') {
             $failEarly  = {$inputCount -gt $Maximum}
             $failAssert = $failEarly
-        } else {
+        }
+        else {
             $failEarly  = {$false}
             $failAssert = {$inputCount -lt $Minimum}
         }
     }
 
-    Process
+    process
     {
         $inputCount++
 
@@ -584,7 +1212,7 @@ function Assert-PipelineCount
             #fail immediately
             #do not wait for all pipeline objects
 
-            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
             Write-Verbose -Message $message
 
@@ -592,18 +1220,18 @@ function Assert-PipelineCount
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
         ,$InputObject
     }
 
-    End
+    end
     {
         $fail = & $failAssert
 
         if ($fail -or ([System.Int32]$VerbosePreference)) {
-            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
 
@@ -612,24 +1240,25 @@ function Assert-PipelineCount
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
                 Write-Debug -Message $message
-                $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+                $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
     }
 }
 
+
 #.ExternalHelp Assert-PipelineEmpty_help.xml
 function Assert-PipelineEmpty
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -637,16 +1266,16 @@ function Assert-PipelineEmpty
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineEmpty' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineEmpty' -argumentName 'InputObject' -argumentValue $InputObject))
         }
     }
 
-    Process
+    process
     {
         #fail immediately
         #do not wait for all pipeline objects
 
-        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
+        $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
         Write-Verbose -Message $message
 
@@ -654,34 +1283,36 @@ function Assert-PipelineEmpty
             $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
         }
         Write-Debug -Message $message
-        $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+        $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
     }
 
-    End
+    end
     {
         if (([System.Int32]$VerbosePreference)) {
-            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
             Write-Verbose -Message $message
         }
     }
 }
 
+
 #.ExternalHelp Assert-PipelineExists_help.xml
 function Assert-PipelineExists
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+    [OutputType([System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [System.Management.Automation.ScriptBlock]
         $Predicate
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -689,17 +1320,18 @@ function Assert-PipelineExists
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         $fail = $true
     }
 
-    Process
+    process
     {
         if ($fail) {
+            $result = $null
             try   {$result = do {& $Predicate $InputObject} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (($result -is [System.Boolean]) -and $result) {
                 $fail = $false
@@ -708,10 +1340,10 @@ function Assert-PipelineExists
         ,$InputObject
     }
 
-    End
+    end
     {
         if ($fail -or ([System.Int32]$VerbosePreference)) {
-            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
 
@@ -720,28 +1352,30 @@ function Assert-PipelineExists
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
                 Write-Debug -Message $message
-                $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $null))
+                $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $null))
             }
         }
     }
 }
+
 
 #.ExternalHelp Assert-PipelineNotExists_help.xml
 function Assert-PipelineNotExists
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+    [OutputType([System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [System.Management.Automation.ScriptBlock]
         $Predicate
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -749,17 +1383,18 @@ function Assert-PipelineNotExists
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
         }
     }
 
-    Process
+    process
     {
+        $result = $null
         try   {$result = do {& $Predicate $InputObject} while ($false)}
-        catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
         if (($result -is [System.Boolean]) -and $result) {
-            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
             Write-Verbose -Message $message
 
@@ -767,33 +1402,35 @@ function Assert-PipelineNotExists
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
         ,$InputObject
     }
 
-    End
+    end
     {
         if (([System.Int32]$VerbosePreference)) {
-            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
             Write-Verbose -Message $message
         }
     }
 }
 
+
 #.ExternalHelp Assert-PipelineSingle_help.xml
 function Assert-PipelineSingle
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+    [OutputType([System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
         [System.Object]
         $InputObject
     )
 
-    Begin
+    begin
     {
         $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -801,19 +1438,19 @@ function Assert-PipelineSingle
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineSingle' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineSingle' -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         $anyItems = $false
     }
 
-    Process
+    process
     {
         if ($anyItems) {
             #fail immediately
             #do not wait for all pipeline objects
 
-            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
             Write-Verbose -Message $message
 
@@ -821,19 +1458,19 @@ function Assert-PipelineSingle
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
         $anyItems = $true
         ,$InputObject
     }
 
-    End
+    end
     {
         $fail = -not $anyItems
 
         if ($fail -or ([System.Int32]$VerbosePreference)) {
-            $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
             Write-Verbose -Message $message
 
@@ -842,18 +1479,19 @@ function Assert-PipelineSingle
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
                 Write-Debug -Message $message
-                $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+                $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
     }
 }
 
+
 #.ExternalHelp Assert-True_help.xml
 function Assert-True
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -867,7 +1505,7 @@ function Assert-True
     $fail = -not (($Value -is [System.Boolean]) -and $Value)
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
-        $message = _7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+        $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
         Write-Verbose -Message $message
 
@@ -876,59 +1514,61 @@ function Assert-True
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
             Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
 }
+
 
 #.ExternalHelp Group-ListItem_help.xml
 function Group-ListItem
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Pair')]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'Pair')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Pair,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Window')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'Window')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Window,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Combine')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'Combine')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Combine,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Permute')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'Permute')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Permute,
 
-        [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='Combine')]
-        [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='Permute')]
-        [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='Window')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Combine')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Permute')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Window')]
         [System.Int32]
         $Size,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='CoveringArray')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'CoveringArray')]
         [AllowEmptyCollection()]
         [ValidateNotNull()]
         [System.Collections.IList[]]
         $CoveringArray,
 
-        [Parameter(Mandatory=$false, ValueFromPipeline=$false, ParameterSetName='CoveringArray')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'CoveringArray')]
         [System.Int32]
         $Strength,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='CartesianProduct')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'CartesianProduct')]
         [AllowEmptyCollection()]
         [ValidateNotNull()]
         [System.Collections.IList[]]
         $CartesianProduct,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, ParameterSetName='Zip')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'Zip')]
         [AllowEmptyCollection()]
         [ValidateNotNull()]
         [System.Collections.IList[]]
@@ -941,497 +1581,38 @@ function Group-ListItem
     #The -Combine, -Permute, -Pair, and -Window parameters NOT having this attribute and
     #-CartesianProduct, -CoveringArray and -Zip having this attribute, is intentional.
     #
-    #Mandatory=$true will make sure -Combine, -Permute, -Pair, and -Window are not $null.
+    #Mandatory = $true will make sure -Combine, -Permute, -Pair, and -Window are not $null.
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
-
-    function getListLength($list)
-    {
-        if ($list -is [System.Array]) {
-            return $list.psbase.Length
-        }
-        if ($list -is [System.Collections.IList]) {
-            return $list.psbase.Count
-        }
-        return 0
-    }
-
-    function getElementType($list)
-    {
-        #NOTE about compatibility
-        #
-        #In PowerShell, it is possible to override properties and methods of an object.
-        #
-        #The psbase property in all objects allows access to the real properties and methods.
-        #
-        #In PowerShell 4 (and possibly PowerShell 3) however, the psbase property does not
-        #allow access to the "real" GetType method of the object. Instead, .psbase.GetType()
-        #returns the type of the psbase object instead of the type of the object that psbase
-        #represents.
-        #
-        #Explicit .NET reflection must be used if you want to make sure that you are calling
-        #the "real" GetType method in PowerShell 4 (and possibly PowerShell 3).
-
-        $objectGetType = [System.Object].GetMethod('GetType', [System.Type]::EmptyTypes)
-        $genericIList = [System.Type]::GetType('System.Collections.Generic.IList`1')
-
-        if ($list -is [System.Array]) {
-            return $objectGetType.Invoke($list, $null).GetElementType()
-        }
-        if ($list -is [System.Collections.IList]) {
-            $IListGenericTypes = @(
-                $objectGetType.Invoke($list, $null).GetInterfaces() |
-                Where-Object -FilterScript {
-                    $_.IsGenericType -and ($_.GetGenericTypeDefinition() -eq $genericIList)
-                }
-            )
-
-            if ($IListGenericTypes.Length -eq 1) {
-                return $IListGenericTypes[0].GetGenericArguments()[0]
-            }
-        }
-        return [System.Object]
-    }
+    $PSBoundParameters['ErrorAction'] = $ErrorActionPreference
 
     switch ($PSCmdlet.ParameterSetName) {
         'Pair' {
-            $listLength = getListLength $Pair
-            $outputElementType = getElementType $Pair
-
-            $count = $listLength - 1
-
-            for ($i = 0; $i -lt $count; $i++) {
-                #generate pair
-                $items = [System.Array]::CreateInstance($outputElementType, 2)
-                $items[0] = $Pair[$i]
-                $items[1] = $Pair[$i + 1]
-
-                #output pair
-                New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
-                    'Items' = $items
-                }
-            }
-
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPair @PSBoundParameters
             return
         }
         'Window' {
-            $listLength = getListLength $Window
-            $outputElementType = getElementType $Window
-
-            if (-not $PSBoundParameters.ContainsKey('Size')) {
-                $Size = $listLength
-            }
-
-            if ($Size -eq 0) {
-                New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
-                    'Items' = [System.Array]::CreateInstance($outputElementType, 0)
-                }
-                return
-            }
-            if (($Size -lt 0) -or ($listLength -lt $Size)) {
-                return
-            }
-
-            $count = $listLength - $Size + 1
-
-            for ($i = 0; $i -lt $count; $i++) {
-                #generate window
-                $items = [System.Array]::CreateInstance($outputElementType, $Size)
-                for ($j = 0; $j -lt $Size; $j++) {
-                    $items[$j] = $Window[$j + $i]
-                }
-
-                #output window
-                New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
-                    'Items' = $items
-                }
-            }
-
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemWindow @PSBoundParameters
             return
         }
         'Combine' {
-            $listLength = getListLength $Combine
-            $outputElementType = getElementType $Combine
-
-            if (-not $PSBoundParameters.ContainsKey('Size')) {
-                $Size = $listLength
-            }
-
-            if ($Size -eq 0) {
-                New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
-                    'Items' = [System.Array]::CreateInstance($outputElementType, 0)
-                }
-                return
-            }
-            if (($Size -lt 0) -or ($listLength -lt $Size)) {
-                return
-            }
-
-            #Generate the combinations.
-            #Store $Size amount of indices in an array, and increment those indices
-            #in way that generates the combinations.
-            #
-            #The array of indices is conceptually a counter with special rules:
-            #  *indices in counter are in range [0..length of list]
-            #  *indices in counter are strictly increasing
-
-            #initialize counter
-            $counter = [System.Array]::CreateInstance([System.Int32], $Size)
-            for ($i = 0; $i -lt $Size; $i++) {
-                $counter[$i] = $i
-            }
-
-            while ($counter[-1] -lt $listLength) {
-                #generate combination
-                $items = [System.Array]::CreateInstance($outputElementType, $Size)
-                for ($i = 0; $i -lt $Size; $i++) {
-                    $items[$i] = $Combine[$counter[$i]]
-                }
-
-                #output combination
-                New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
-                    'Items' = $items
-                }
-
-                #increment counter
-                for ($i = $Size - 1; $i -ge 0; $i--) {
-                    $counter[$i]++
-                    if ($counter[$i] -le ($listLength - $Size + $i)) {
-                        for ($i++; $i -lt $Size; $i++) {
-                            $counter[$i] = $counter[$i - 1] + 1
-                        }
-                        break
-                    }
-                }
-            }
-
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine @PSBoundParameters
             return
         }
         'Permute' {
-            $listLength = getListLength $Permute
-            $outputElementType = getElementType $Permute
-
-            if (-not $PSBoundParameters.ContainsKey('Size')) {
-                $Size = $listLength
-            }
-
-            if ($Size -eq 0) {
-                New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
-                    'Items' = [System.Array]::CreateInstance($outputElementType, 0)
-                }
-                return
-            }
-            if (($Size -lt 0) -or ($listLength -lt $Size)) {
-                return
-            }
-
-            #Generate the permutations.
-            #Store $Size amount of indices in an array, and increment those indices
-            #in way that generates the permutations.
-            #
-            #The array of indices is conceptually a counter with special rules:
-            #  *indices in counter are in range [0..length of list]
-            #  *indices in counter that are less than length of list are unique
-
-            $counter = [System.Array]::CreateInstance([System.Int32], $Size)
-            $usedIndices = @{}
-
-            #initialize counter
-            for ($i = 0; $i -lt $Size; $i++) {
-                $counter[$i] = $i
-                $usedIndices.Add($i, $null)
-            }
-
-            while ($counter[0] -lt $listLength) {
-                #generate permutation
-                $items = [System.Array]::CreateInstance($outputElementType, $Size)
-                for ($i = 0; $i -lt $Size; $i++) {
-                    $items[$i] = $Permute[$counter[$i]]
-                }
-
-                #output permutation
-                New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
-                    'Items' = $items
-                }
-
-                #increment counter
-                for ($i = $Size - 1; $i -ge 0; $i--) {
-                    $usedIndices.Remove($counter[$i])
-                    for ($counter[$i]++; $counter[$i] -lt $listLength; $counter[$i]++) {
-                        if (-not $usedIndices.ContainsKey($counter[$i])) {
-                            $usedIndices.Add($counter[$i], $null)
-                            break
-                        }
-                    }
-
-                    if ($counter[$i] -lt $listLength) {
-                        for ($i++; $i -lt $Size; $i++) {
-                            for ($counter[$i] = 0; $counter[$i] -lt $listLength; $counter[$i]++) {
-                                if (-not $usedIndices.ContainsKey($counter[$i])) {
-                                    $usedIndices.Add($counter[$i], $null)
-                                    break
-                                }
-                            }
-                        }
-                        break
-                    }
-                }
-            }
-
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute @PSBoundParameters
             return
         }
         'CartesianProduct' {
-            $listCount = getListLength $CartesianProduct
-
-            if ($listCount -lt 1) {
-                return
-            }
-
-            #Get all the lengths of the list and
-            #determine the type to use to constrain the output array.
-
-            $listLengths = [System.Array]::CreateInstance([System.Int32], $listCount)
-            $elementTypes = [System.Array]::CreateInstance([System.Type], $listCount)
-
-            for ($i = 0; $i -lt $listCount; $i++) {
-                $listLengths[$i] = getListLength $CartesianProduct[$i]
-                $elementTypes[$i] = getElementType $CartesianProduct[$i]
-            }
-
-            if (@($listLengths | Sort-Object)[0] -lt 1) {
-                return
-            }
-
-            if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
-                $outputElementType = $elementTypes[0]
-            } else {
-                $outputElementType = [System.Object]
-            }
-
-            #Generate the cartesian products of the lists.
-            #Store an index for each list in an array, and increment those
-            #indices in way that generates the cartesian products.
-            #
-            #The array of indices is conceptually a counter with special rules:
-            #  *indices are in range [0..length of list associated with index]
-
-            $counter = [System.Array]::CreateInstance([System.Int32], $listCount)
-
-            while ($counter[0] -lt $listLengths[0]) {
-                $i = $listCount - 1
-
-                for (; $counter[$i] -lt $listLengths[$i]; $counter[$i]++) {
-                    #generate cartesian product
-                    $items = [System.Array]::CreateInstance($outputElementType, $listCount)
-                    for ($j = 0; $j -lt $listCount; $j++) {
-                        $items[$j] = $CartesianProduct[$j][$counter[$j]]
-                    }
-
-                    #output cartesian product
-                    New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
-                        'Items' = $items
-                    }
-                }
-
-                #update counter
-                for (; ($i -gt 0) -and ($counter[$i] -ge $listLengths[$i]); $i--) {
-                    $counter[$i] = 0
-                    $counter[$i - 1]++
-                }
-            }
-
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct @PSBoundParameters
             return
         }
         'Zip' {
-            $listCount = getListLength $Zip
-
-            if ($listCount -lt 1) {
-                return
-            }
-
-            #Get all the lengths of the list and
-            #determine the type to use to constrain the output array.
-
-            $listLengths = [System.Array]::CreateInstance([System.Int32], $listCount)
-            $elementTypes = [System.Array]::CreateInstance([System.Type], $listCount)
-
-            for ($i = 0; $i -lt $listCount; $i++) {
-                $listLengths[$i] = getListLength $Zip[$i]
-                $elementTypes[$i] = getElementType $Zip[$i]
-            }
-
-            $minlistlength = @($listLengths | Sort-Object)[0]
-
-            if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
-                $outputElementType = $elementTypes[0]
-            } else {
-                $outputElementType = [System.Object]
-            }
-
-            #Generate the "Zip" of the lists by
-            #grouping the items in each list with the same index.
-
-            for ($i = 0; $i -lt $minListLength; $i++) {
-                #generate the "Zip"
-                $items = [System.Array]::CreateInstance($outputElementType, $listCount)
-                for ($j = 0; $j -lt $listCount; $j++) {
-                    $items[$j] = $Zip[$j][$i]
-                }
-
-                #output the "Zip"
-                New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
-                    'Items' = $items
-                }
-            }
-
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip @PSBoundParameters
             return
         }
         'CoveringArray' {
-            $listCount = getListLength $CoveringArray
-
-            if ($listCount -lt 1) {
-                return
-            }
-
-            if (-not $PSBoundParameters.ContainsKey('Strength')) {
-                $Strength = $listCount
-            }
-            if ($Strength -lt 1) {
-                return
-            }
-
-            #A Covering array with the highest strength possible is the Cartesian product
-            if ($Strength -ge $listCount) {
-                & $PSCmdlet.MyInvocation.MyCommand.ScriptBlock -CartesianProduct $CoveringArray
-                return
-            }
-
-            #Get all the lengths of the list and
-            #determine the type to use to constrain the output array.
-
-            $listLengths = [System.Array]::CreateInstance([System.Int32], $listCount)
-            $elementTypes = [System.Array]::CreateInstance([System.Type], $listCount)
-
-            for ($i = 0; $i -lt $listCount; $i++) {
-                $listLengths[$i] = getListLength $CoveringArray[$i]
-                $elementTypes[$i] = getElementType $CoveringArray[$i]
-            }
-
-            if (@($listLengths | Sort-Object)[0] -lt 1) {
-                return
-            }
-
-            if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
-                $outputElementType = $elementTypes[0]
-            } else {
-                $outputElementType = [System.Object]
-            }
-
-            #If -Strength is 1, then the covering array is a modified version of -Zip.
-            #The important thing is all values in the lists are used 1 or more times.
-
-            if ($Strength -eq 1) {
-                $maxListLength = @($listLengths | Sort-Object -Descending)[0]
-
-                for ($i = 0; $i -lt $maxListLength; $i++) {
-                    #generate a row in the covering array
-                    $items = [System.Array]::CreateInstance($outputElementType, $listCount)
-                    for ($j = 0; $j -lt $listCount; $j++) {
-                        $items[$j] = $CoveringArray[$j][$i % $listLengths[$j]]
-                    }
-
-                    #output the row
-                    New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
-                        'Items' = $items
-                    }
-                }
-
-                return
-            }
-
-            #=======================================================
-            #At this stage, the following must be true:
-            #    0 < $Strength < $listCount
-            #    all lists have at least one item
-            #=======================================================
-
-            #Generate the covering array by filtering the Cartesian product of the lists.
-            #
-            #Store an index for each list in an array, and increment those
-            #indices in way that generates the cartesian product.
-            #
-            #The array of indices is conceptually a counter with special rules:
-            #  *indices are in range [0..length of list associated with index]
-            #
-            #Filter the Cartesian product by removing any row that does not have at least
-            #one unused column combination.
-
-            $counter = [System.Array]::CreateInstance([System.Int32], $listCount)
-
-            $usedCombinations = @{}
-
-            #Generate a row if the value of counter has at least one new column combination.
-            #
-            #If $counter is {10, 20, 30, 40} and strength is 2, then the combinations are:
-            #
-            #    {10, 20} {10, 30} {10, 40} {20, 30} {20, 40} {30, 40}
-            #
-            #and they'll be converted into the following strings:
-            #
-            #    "0 10 20 " "1 10 30 " "2 10 40 " "3 20 30 " "4 20 40 " "5 30 40 "
-            #
-            #with the first number in the string being the index of the combination.
-
-            $f = '{0:D} '
-            $s = New-Object -TypeName 'System.Text.StringBuilder'
-
-            while ($counter[0] -lt $listLengths[0]) {
-                $i = $listCount - 1
-
-                for (; $counter[$i] -lt $listLengths[$i]; $counter[$i]++) {
-                    $hasNewCombination = $false
-
-                    $combinations = @(& $PSCmdlet.MyInvocation.MyCommand.ScriptBlock -Combine $counter -Size $Strength)
-                    for ($j = $combinations.Length - 1; $j -ge 0; $j--) {
-                        $s.Length = 0
-                        [System.Void]$s.AppendFormat($f, $j)
-                        foreach ($item in $combinations[$j].Items) {
-                            [System.Void]$s.AppendFormat($f, $item)
-                        }
-
-                        $combinations[$j] = $s.ToString()
-
-                        $hasNewCombination =
-                            ($hasNewCombination) -or
-                            (-not $usedCombinations.Contains($combinations[$j]))
-                    }
-
-                    if ($hasNewCombination) {
-                        #add column combinations to $usedCombinations
-                        foreach ($item in $combinations) {
-                            $usedCombinations[$item] = $null
-                        }
-
-                        #generate cartesian product
-                        $items = [System.Array]::CreateInstance($outputElementType, $listCount)
-                        for ($j = 0; $j -lt $listCount; $j++) {
-                            $items[$j] = $CoveringArray[$j][$counter[$j]]
-                        }
-
-                        #output cartesian product
-                        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
-                            'Items' = $items
-                        }
-                    }
-                }
-
-                #update counter
-                for (; ($i -gt 0) -and ($counter[$i] -ge $listLengths[$i]); $i--) {
-                    $counter[$i] = 0
-                    $counter[$i - 1]++
-                }
-            }
-
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray @PSBoundParameters
             return
         }
         default {
@@ -1446,17 +1627,19 @@ function Group-ListItem
     }
 }
 
+
 #.ExternalHelp Test-All_help.xml
 function Test-All
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [OutputType([System.Boolean], [System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Collection,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
         $Predicate
     )
@@ -1468,8 +1651,9 @@ function Test-All
 
     if ($Collection -is [System.Collections.ICollection]) {
         foreach ($item in $Collection.psbase.GetEnumerator()) {
+            $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (-not (($result -is [System.Boolean]) -and $result)) {
                 $false
@@ -1483,80 +1667,79 @@ function Test-All
     $null
 }
 
+
 #.ExternalHelp Test-DateTime_help.xml
 function Test-DateTime
 {
-    [CmdletBinding(DefaultParameterSetName='IsDateTime')]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [CmdletBinding(DefaultParameterSetName = 'IsDateTime')]
+    [OutputType([System.Boolean], [System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
-        [Parameter(Mandatory=$false, ParameterSetName='IsDateTime')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'IsDateTime')]
         [System.Management.Automation.SwitchParameter]
-        $IsDateTime = $true,
+        $IsDateTime,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('lt')]
+        [System.Object]
         $LessThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('le')]
+        [System.Object]
         $LessThanOrEqualTo,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('gt')]
+        [System.Object]
         $GreaterThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ge')]
+        [System.Object]
         $GreaterThanOrEqualTo,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [System.Management.Automation.SwitchParameter]
         $MatchKind,
 
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.DateTimeKind[]]
         $Kind,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.String[]]
@@ -1627,7 +1810,11 @@ function Test-DateTime
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsDateTime' {
-            return (isDateTime $Value) -xor (-not $IsDateTime)
+            $result = isDateTime $Value
+            if ($PSBoundParameters.ContainsKey('IsDateTime')) {
+                return ($result) -xor (-not $IsDateTime)
+            }
+            return $result
         }
         'OpEquals' {
             $result = compareDateTime $Value $Equals
@@ -1679,17 +1866,19 @@ function Test-DateTime
     }
 }
 
+
 #.ExternalHelp Test-Exists_help.xml
 function Test-Exists
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [OutputType([System.Boolean], [System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Collection,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
         $Predicate
     )
@@ -1701,8 +1890,9 @@ function Test-Exists
 
     if ($Collection -is [System.Collections.ICollection]) {
         foreach ($item in $Collection.psbase.GetEnumerator()) {
+            $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (($result -is [System.Boolean]) -and $result) {
                 $true
@@ -1716,12 +1906,14 @@ function Test-Exists
     $null
 }
 
+
 #.ExternalHelp Test-False_help.xml
 function Test-False
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [OutputType([System.Boolean])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -1735,93 +1927,95 @@ function Test-False
     ($Value -is [System.Boolean]) -and (-not $Value)
 }
 
+
 #.ExternalHelp Test-Guid_help.xml
 function Test-Guid
 {
-    [CmdletBinding(DefaultParameterSetName='IsGuid')]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [CmdletBinding(DefaultParameterSetName = 'IsGuid')]
+    [OutputType([System.Boolean], [System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value,
 
-        [Parameter(Mandatory=$false, ParameterSetName='IsGuid')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'IsGuid')]
         [System.Management.Automation.SwitchParameter]
-        $IsGuid = $true,
+        $IsGuid,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEquals')]
         [AllowNull()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEquals')]
         [AllowNull()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThan')]
         [AllowNull()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThanOrEqualTo')]
         [AllowNull()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThan')]
         [AllowNull()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [System.Management.Automation.SwitchParameter]
         $MatchVariant,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [System.Management.Automation.SwitchParameter]
         $MatchVersion,
 
-        [Parameter(Mandatory=$false, ParameterSetName='IsGuid')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'IsGuid')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.String[]]
         $Variant,
 
-        [Parameter(Mandatory=$false, ParameterSetName='IsGuid')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'IsGuid')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Int32[]]
@@ -1925,7 +2119,11 @@ function Test-Guid
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsGuid' {
-            return (isGuid $Value) -xor (-not $IsGuid)
+            $result = isGuid $Value
+            if ($PSBoundParameters.ContainsKey('IsGuid')) {
+                return ($result) -xor (-not $IsGuid)
+            }
+            return $result
         }
         'OpEquals' {
             $result = compareGuid $Value $Equals
@@ -1977,17 +2175,19 @@ function Test-Guid
     }
 }
 
+
 #.ExternalHelp Test-NotExists_help.xml
 function Test-NotExists
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [OutputType([System.Boolean], [System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Collection,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=1)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
         $Predicate
     )
@@ -1999,8 +2199,9 @@ function Test-NotExists
 
     if ($Collection -is [System.Collections.ICollection]) {
         foreach ($item in $Collection.psbase.GetEnumerator()) {
+            $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
         
             if (($result -is [System.Boolean]) -and $result) {
                 $false
@@ -2014,12 +2215,14 @@ function Test-NotExists
     $null
 }
 
+
 #.ExternalHelp Test-NotFalse_help.xml
 function Test-NotFalse
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [OutputType([System.Boolean])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -2033,12 +2236,14 @@ function Test-NotFalse
     ($Value -isnot [System.Boolean]) -or $Value
 }
 
+
 #.ExternalHelp Test-NotNull_help.xml
 function Test-NotNull
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [OutputType([System.Boolean])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -2052,12 +2257,14 @@ function Test-NotNull
     $null -ne $Value
 }
 
+
 #.ExternalHelp Test-NotTrue_help.xml
 function Test-NotTrue
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [OutputType([System.Boolean])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -2071,12 +2278,14 @@ function Test-NotTrue
     ($Value -isnot [System.Boolean]) -or (-not $Value)
 }
 
+
 #.ExternalHelp Test-Null_help.xml
 function Test-Null
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [OutputType([System.Boolean])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -2090,73 +2299,68 @@ function Test-Null
     $null -eq $Value
 }
 
+
 #.ExternalHelp Test-Number_help.xml
 function Test-Number
 {
-    [CmdletBinding(DefaultParameterSetName='IsNumber')]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [CmdletBinding(DefaultParameterSetName = 'IsNumber')]
+    [OutputType([System.Boolean], [System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
-        [Parameter(Mandatory=$false, ParameterSetName='IsNumber')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'IsNumber')]
         [System.Management.Automation.SwitchParameter]
-        $IsNumber = $true,
+        $IsNumber,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
         
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [System.Management.Automation.SwitchParameter]
         $MatchType,
 
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.String[]]
@@ -2172,10 +2376,11 @@ function Test-Number
     if ($PSBoundParameters.ContainsKey('Type')) {
         if ($null -eq $Type) {
             $allowedTypes = [System.String[]]@()
-        } else {
+        }
+        else {
             $allowedTypes = [System.String[]]@(
                 $allowedTypes |
-                    Where-Object {($Type -icontains $_) -or ($Type -icontains $_.Split('.')[-1])}
+                    Where-Object -FilterScript {($Type -icontains $_) -or ($Type -icontains $_.Split('.')[-1])}
             )
         }
     }
@@ -2211,7 +2416,11 @@ function Test-Number
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsNumber' {
-            return (isNumber $Value) -xor (-not $IsNumber)
+            $result = isNumber $Value
+            if ($PSBoundParameters.ContainsKey('IsNumber')) {
+                return ($result) -xor (-not $IsNumber)
+            }
+            return $result
         }
         'OpEquals' {
             if ((canCompareNumbers $Value $Equals)) {
@@ -2257,130 +2466,119 @@ function Test-Number
     }
 }
 
+
 #.ExternalHelp Test-String_help.xml
 function Test-String
 {
-    [CmdletBinding(DefaultParameterSetName='IsString')]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [CmdletBinding(DefaultParameterSetName = 'IsString')]
+    [OutputType([System.Boolean], [System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
-        [Parameter(Mandatory=$false, ParameterSetName='IsString')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'IsString')]
         [System.Management.Automation.SwitchParameter]
-        $IsString = $true,
+        $IsString,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpContains')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpContains')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $Contains,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotContains')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotContains')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $NotContains,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpStartsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpStartsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $StartsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotStartsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotStartsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $NotStartsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEndsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEndsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $EndsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEndsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEndsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $NotEndsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [System.Management.Automation.SwitchParameter]
         $CaseSensitive,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [System.Management.Automation.SwitchParameter]
         $FormCompatible,
 
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.Text.NormalizationForm[]]
@@ -2389,7 +2587,8 @@ function Test-String
 
     if ($CaseSensitive) {
         $comparisonType = [System.StringComparison]::Ordinal
-    } else {
+    }
+    else {
         $comparisonType = [System.StringComparison]::OrdinalIgnoreCase
     }
 
@@ -2399,12 +2598,14 @@ function Test-String
         $allowedNormalizations = [System.Text.NormalizationForm[]]@(
             [System.Enum]::GetValues([System.Text.NormalizationForm])
         )
-    } elseif (($null -eq $Normalization) -or ($Normalization.Length -eq 0)) {
+    }
+    elseif (($null -eq $Normalization) -or ($Normalization.Length -eq 0)) {
         $allowedNormalizations = [System.Text.NormalizationForm[]]@()
-    } else {
+    }
+    else {
         $allowedNormalizations = [System.Text.NormalizationForm[]]@(
             [System.Enum]::GetValues([System.Text.NormalizationForm]) |
-                Where-Object {$Normalization -contains $_}
+                Where-Object -FilterScript {$Normalization -contains $_}
         )
     }
 
@@ -2440,7 +2641,11 @@ function Test-String
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsString' {
-            return (isString $Value) -xor (-not $IsString)
+            $result = isString $Value
+            if ($PSBoundParameters.ContainsKey('IsString')) {
+                return ($result) -xor (-not $IsString)
+            }
+            return $result
         }
         'OpContains' {
             if ((canCompareStrings $Value $Contains)) {
@@ -2522,142 +2727,129 @@ function Test-String
     }
 }
 
+
 #.ExternalHelp Test-Text_help.xml
 function Test-Text
 {
-    [CmdletBinding(DefaultParameterSetName='IsText')]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [CmdletBinding(DefaultParameterSetName = 'IsText')]
+    [OutputType([System.Boolean], [System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $Value,
 
-        [Parameter(Mandatory=$false, ParameterSetName='IsText')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'IsText')]
         [System.Management.Automation.SwitchParameter]
-        $IsText = $true,
+        $IsText,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpMatch')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpMatch')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $Match,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotMatch')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotMatch')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $NotMatch,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpContains')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpContains')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $Contains,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotContains')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotContains')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $NotContains,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpStartsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpStartsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $StartsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotStartsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotStartsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $NotStartsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEndsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEndsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $EndsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEndsWith')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEndsWith')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [System.Object]
         $NotEndsWith,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEquals')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThan')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
-        [AllowEmptyCollection()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpMatch')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotMatch')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpMatch')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotMatch')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [System.Management.Automation.SwitchParameter]
         $CaseSensitive,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpMatch')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotMatch')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotContains')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEndsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotStartsWith')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpMatch')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotMatch')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotContains')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEndsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotStartsWith')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [System.Management.Automation.SwitchParameter]
         $UseCurrentCulture
     )
@@ -2670,23 +2862,31 @@ function Test-Text
         if (-not $CaseSensitive) {
             $options = [System.Text.RegularExpressions.RegexOptions]($options -bor [System.Text.RegularExpressions.Regexoptions]::IgnoreCase)
         }
-    } elseif ($UseCurrentCulture) {
+    }
+    elseif ($UseCurrentCulture) {
         if ($CaseSensitive) {
             $options = [System.StringComparison]::CurrentCulture
-        } else {
+        }
+        else {
             $options = [System.StringComparison]::CurrentCultureIgnoreCase
         }
-    } else {
+    }
+    else {
         if ($CaseSensitive) {
             $options = [System.StringComparison]::InvariantCulture
-        } else {
+        }
+        else {
             $options = [System.StringComparison]::InvariantCultureIgnoreCase
         }
     }
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsText' {
-            return ($Value -is [System.String]) -xor (-not $IsText)
+            $result = $Value -is [System.String]
+            if ($PSBoundParameters.ContainsKey('IsText')) {
+                return ($result) -xor (-not $IsText)
+            }
+            return $result
         }
         'OpMatch' {
             if (($Value -is [System.String]) -and ($Match -is [System.String])) {
@@ -2780,62 +2980,64 @@ function Test-Text
     }
 }
 
+
 #.ExternalHelp Test-TimeSpan_help.xml
 function Test-TimeSpan
 {
-    [CmdletBinding(DefaultParameterSetName='IsTimeSpan')]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [CmdletBinding(DefaultParameterSetName = 'IsTimeSpan')]
+    [OutputType([System.Boolean], [System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value,
 
-        [Parameter(Mandatory=$false, ParameterSetName='IsTimeSpan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'IsTimeSpan')]
         [System.Management.Automation.SwitchParameter]
-        $IsTimeSpan = $true,
+        $IsTimeSpan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEquals')]
         [AllowNull()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEquals')]
         [AllowNull()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThan')]
         [AllowNull()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThanOrEqualTo')]
         [AllowNull()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThan')]
         [AllowNull()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.String[]]
@@ -2892,7 +3094,11 @@ function Test-TimeSpan
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsTimeSpan' {
-            return ($Value -is [System.TimeSpan]) -xor (-not $IsTimeSpan)
+            $result = $Value -is [System.TimeSpan]
+            if ($PSBoundParameters.ContainsKey('IsTimeSpan')) {
+                return ($result) -xor (-not $IsTimeSpan)
+            }
+            return $result
         }
         'OpEquals' {
             $result = compareTimeSpan $Value $Equals
@@ -2944,12 +3150,14 @@ function Test-TimeSpan
     }
 }
 
+
 #.ExternalHelp Test-True_help.xml
 function Test-True
 {
     [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [OutputType([System.Boolean])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value
@@ -2963,62 +3171,64 @@ function Test-True
     ($Value -is [System.Boolean]) -and $Value
 }
 
+
 #.ExternalHelp Test-Version_help.xml
 function Test-Version
 {
-    [CmdletBinding(DefaultParameterSetName='IsVersion')]
-    Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$false, Position=0)]
+    [CmdletBinding(DefaultParameterSetName = 'IsVersion')]
+    [OutputType([System.Boolean], [System.Object])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [AllowNull()]
         [System.Object]
         $Value,
 
-        [Parameter(Mandatory=$false, ParameterSetName='IsVersion')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'IsVersion')]
         [System.Management.Automation.SwitchParameter]
-        $IsVersion = $true,
+        $IsVersion,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpEquals')]
         [AllowNull()]
         [Alias('eq')]
         [System.Object]
         $Equals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpNotEquals')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpNotEquals')]
         [AllowNull()]
         [Alias('ne')]
         [System.Object]
         $NotEquals,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThan')]
         [AllowNull()]
         [Alias('lt')]
         [System.Object]
         $LessThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThanOrEqualTo')]
         [AllowNull()]
         [Alias('le')]
         [System.Object]
         $LessThanOrEqualTo,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThan')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThan')]
         [AllowNull()]
         [Alias('gt')]
         [System.Object]
         $GreaterThan,
 
-        [Parameter(Mandatory=$true, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [Alias('ge')]
         [System.Object]
         $GreaterThanOrEqualTo,
 
-        [Parameter(Mandatory=$false, ParameterSetName='OpEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpNotEquals')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpLessThanOrEqualTo')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThan')]
-        [Parameter(Mandatory=$false, ParameterSetName='OpGreaterThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpNotEquals')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpLessThanOrEqualTo')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThan')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'OpGreaterThanOrEqualTo')]
         [AllowNull()]
         [AllowEmptyCollection()]
         [System.String[]]
@@ -3074,7 +3284,11 @@ function Test-Version
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsVersion' {
-            return ($Value -is [System.Version]) -xor (-not $IsVersion)
+            $result = $Value -is [System.Version]
+            if ($PSBoundParameters.ContainsKey('IsVersion')) {
+                return ($result) -xor (-not $IsVersion)
+            }
+            return $result
         }
         'OpEquals' {
             $result = compareVersion $Value $Equals
@@ -3125,5 +3339,6 @@ function Test-Version
         }
     }
 }
+
 
 Export-ModuleMember -Function '*-*'

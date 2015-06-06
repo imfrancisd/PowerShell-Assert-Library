@@ -141,7 +141,7 @@ This is known as vacuous truth.</maml:para>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Assert-All @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 5} -Verbose</dev:code>
+        <dev:code>Assert-All @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 5} -Verbose</dev:code>
         <dev:remarks>
           <maml:para>Assert that all entries in the hashtable have a value greater than 5.
 The -Verbose switch will output the result of the assertion to the Verbose stream.</maml:para>
@@ -160,7 +160,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Assert-All @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 5} -Debug</dev:code>
+        <dev:code>Assert-All @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 5} -Debug</dev:code>
         <dev:remarks>
           <maml:para>Assert that all entries in the hashtable have a value greater than 5.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.</maml:para>
