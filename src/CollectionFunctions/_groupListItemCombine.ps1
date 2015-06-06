@@ -1,5 +1,4 @@
-function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine
-{
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine = {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param(
@@ -13,8 +12,8 @@ function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine
         $Size
     )
 
-    $listLength = _7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Combine -ErrorAction $ErrorActionPreference
-    $outputElementType = _7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Combine -ErrorAction $ErrorActionPreference
+    $listLength = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Combine -ErrorAction $ErrorActionPreference
+    $outputElementType = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Combine -ErrorAction $ErrorActionPreference
 
     if (-not $PSBoundParameters.ContainsKey('Size')) {
         $Size = $listLength

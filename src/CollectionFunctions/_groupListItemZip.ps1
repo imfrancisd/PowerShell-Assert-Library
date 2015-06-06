@@ -1,5 +1,4 @@
-function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip
-{
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip = {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param(
@@ -10,7 +9,7 @@ function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip
         $Zip
     )
 
-    $listCount = _7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Zip -ErrorAction $ErrorActionPreference
+    $listCount = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Zip -ErrorAction $ErrorActionPreference
 
     if ($listCount -lt 1) {
         return
@@ -23,8 +22,8 @@ function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip
     $elementTypes = [System.Array]::CreateInstance([System.Type], $listCount)
 
     for ($i = 0; $i -lt $listCount; $i++) {
-        $listLengths[$i] = _7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Zip[$i] -ErrorAction $ErrorActionPreference
-        $elementTypes[$i] = _7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Zip[$i] -ErrorAction $ErrorActionPreference
+        $listLengths[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Zip[$i] -ErrorAction $ErrorActionPreference
+        $elementTypes[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Zip[$i] -ErrorAction $ErrorActionPreference
     }
 
     $minlistlength = @($listLengths | Sort-Object)[0]

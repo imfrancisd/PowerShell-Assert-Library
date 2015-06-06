@@ -60,35 +60,36 @@ function Group-ListItem
     #
     #Mandatory = $true will make sure -Combine, -Permute, -Pair, and -Window are not $null.
 
-    $PSBoundParameters['ErrorAction'] = [System.Management.Automation.ActionPreference]::Stop
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+    $PSBoundParameters['ErrorAction'] = $ErrorActionPreference
 
     switch ($PSCmdlet.ParameterSetName) {
         'Pair' {
-            _7ddd17460d1743b2b6e683ef649e01b7_groupListItemPair @PSBoundParameters
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPair @PSBoundParameters
             return
         }
         'Window' {
-            _7ddd17460d1743b2b6e683ef649e01b7_groupListItemWindow @PSBoundParameters
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemWindow @PSBoundParameters
             return
         }
         'Combine' {
-            _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine @PSBoundParameters
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine @PSBoundParameters
             return
         }
         'Permute' {
-            _7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute @PSBoundParameters
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute @PSBoundParameters
             return
         }
         'CartesianProduct' {
-            _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct @PSBoundParameters
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct @PSBoundParameters
             return
         }
         'Zip' {
-            _7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip @PSBoundParameters
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip @PSBoundParameters
             return
         }
         'CoveringArray' {
-            _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray @PSBoundParameters
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray @PSBoundParameters
             return
         }
         default {

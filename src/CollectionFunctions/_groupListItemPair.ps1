@@ -1,5 +1,4 @@
-function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemPair
-{
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPair = {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param(
@@ -9,8 +8,8 @@ function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemPair
         $Pair
     )
 
-    $listLength = _7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Pair -ErrorAction $ErrorActionPreference
-    $outputElementType = _7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Pair -ErrorAction $ErrorActionPreference
+    $listLength = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Pair -ErrorAction $ErrorActionPreference
+    $outputElementType = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Pair -ErrorAction $ErrorActionPreference
 
     $count = $listLength - 1
 

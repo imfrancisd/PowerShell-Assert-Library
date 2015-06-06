@@ -1,5 +1,4 @@
-function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute
-{
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute = {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param(
@@ -13,8 +12,8 @@ function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute
         $Size
     )
 
-    $listLength = _7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Permute -ErrorAction $ErrorActionPreference
-    $outputElementType = _7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Permute -ErrorAction $ErrorActionPreference
+    $listLength = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $Permute -ErrorAction $ErrorActionPreference
+    $outputElementType = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Permute -ErrorAction $ErrorActionPreference
 
     if (-not $PSBoundParameters.ContainsKey('Size')) {
         $Size = $listLength

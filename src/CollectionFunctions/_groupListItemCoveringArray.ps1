@@ -1,5 +1,4 @@
-function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray
-{
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param(
@@ -14,7 +13,7 @@ function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray
         $Strength
     )
 
-    $listCount = _7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $CoveringArray -ErrorAction $ErrorActionPreference
+    $listCount = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $CoveringArray -ErrorAction $ErrorActionPreference
 
     if ($listCount -lt 1) {
         return
@@ -29,7 +28,7 @@ function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray
 
     #A Covering array with the highest strength possible is the Cartesian product
     if ($Strength -ge $listCount) {
-        _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct -CartesianProduct $CoveringArray -ErrorAction $ErrorActionPreference
+        & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct -CartesianProduct $CoveringArray -ErrorAction $ErrorActionPreference
         return
     }
 
@@ -40,8 +39,8 @@ function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray
     $elementTypes = [System.Array]::CreateInstance([System.Type], $listCount)
 
     for ($i = 0; $i -lt $listCount; $i++) {
-        $listLengths[$i] = _7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $CoveringArray[$i] -ErrorAction $ErrorActionPreference
-        $elementTypes[$i] = _7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $CoveringArray[$i] -ErrorAction $ErrorActionPreference
+        $listLengths[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $CoveringArray[$i] -ErrorAction $ErrorActionPreference
+        $elementTypes[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $CoveringArray[$i] -ErrorAction $ErrorActionPreference
     }
 
     if (@($listLengths | Sort-Object)[0] -lt 1) {
@@ -119,7 +118,7 @@ function _7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray
         for (; $counter[$i] -lt $listLengths[$i]; $counter[$i]++) {
             $hasNewCombination = $false
 
-            $combinations = @(_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine -Combine $counter -Size $Strength -ErrorAction $ErrorActionPreference)
+            $combinations = @(& $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine -Combine $counter -Size $Strength -ErrorAction $ErrorActionPreference)
             for ($j = $combinations.Length - 1; $j -ge 0; $j--) {
                 $s.Length = 0
                 [System.Void]$s.AppendFormat($f, $j)

@@ -1,5 +1,4 @@
-function _7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError
-{
+$_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError = {
     param(
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.ErrorRecord]
