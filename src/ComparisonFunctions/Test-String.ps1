@@ -135,7 +135,7 @@ function Test-String
     else {
         $allowedNormalizations = [System.Text.NormalizationForm[]]@(
             [System.Enum]::GetValues([System.Text.NormalizationForm]) |
-                Where-Object {$Normalization -contains $_}
+                Where-Object -FilterScript {$Normalization -contains $_}
         )
     }
 

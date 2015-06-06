@@ -77,7 +77,7 @@ function Test-Number
         else {
             $allowedTypes = [System.String[]]@(
                 $allowedTypes |
-                    Where-Object {($Type -icontains $_) -or ($Type -icontains $_.Split('.')[-1])}
+                    Where-Object -FilterScript {($Type -icontains $_) -or ($Type -icontains $_.Split('.')[-1])}
             )
         }
     }
