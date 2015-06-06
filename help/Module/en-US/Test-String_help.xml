@@ -326,6 +326,8 @@ For case-sensitive string comparisons, this function may give a different result
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -346,6 +348,8 @@ $true          the value is a string*
         <command:parameterValue required="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
@@ -367,6 +371,8 @@ $true          String method IndexOf(String, StringComparison) &gt;= 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -389,6 +395,8 @@ $true          String method IndexOf(String, StringComparison) &lt; 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -411,6 +419,8 @@ $true          String method StartsWith(String, StringComparison) returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -433,6 +443,8 @@ $true          String method StartsWith(String, StringComparison) returns $false
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -455,6 +467,8 @@ $true          String method EndsWith(String, StringComparison) returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -477,6 +491,8 @@ $true          String method EndsWith(String, StringComparison) returns $false
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -499,6 +515,8 @@ $true          String.Equals(String, String, StringComparison) returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -521,6 +539,8 @@ $true          String.Equals(String, String, StringComparison) returns $false
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -543,6 +563,8 @@ $true          String.Compare(String, String, StringComparison) &lt; 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -565,6 +587,8 @@ $true          String.Compare(String, String, StringComparison) &lt;= 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -587,6 +611,8 @@ $true          String.Compare(String, String, StringComparison) &gt; 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -609,6 +635,8 @@ $true          String.Compare(String, String, StringComparison) &gt;= 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -631,6 +659,8 @@ as the default.</maml:para>
         <command:parameterValue required="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
@@ -644,6 +674,8 @@ See the -Normalization parameter for more details.</maml:para>
         <command:parameterValue required="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
@@ -669,6 +701,8 @@ For more details, see the MSDN documentation for the System.String methods calle
         <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         <dev:type>
           <maml:name>NormalizationForm[]</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -680,6 +714,8 @@ For more details, see the MSDN documentation for the System.String methods calle
           <maml:name>None
 
 This function does not accept input from the pipeline.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:inputType>
     </command:inputTypes>
@@ -689,6 +725,8 @@ This function does not accept input from the pipeline.</maml:name>
           <maml:name>System.Boolean
 
 This function returns a Boolean if the test can be performed.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:returnValue>
       <command:returnValue>
@@ -696,6 +734,8 @@ This function returns a Boolean if the test can be performed.</maml:name>
           <maml:name>$null
 
 This function returns $null if the test cannot be performed.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:returnValue>
     </command:returnValues>
@@ -840,21 +880,33 @@ NOTE: See the -Normalization parameter for more details.</maml:para>
     <maml:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Test-DateTime</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Guid</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Number</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Text</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-TimeSpan</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Version</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
     </maml:relatedLinks>
   </command:command>

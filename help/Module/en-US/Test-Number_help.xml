@@ -157,6 +157,8 @@ NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by 
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -177,6 +179,8 @@ $true          value is a number*
         <command:parameterValue required="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
@@ -199,6 +203,8 @@ $true          PowerShell's -eq operator returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -222,6 +228,8 @@ $true          PowerShell's -ne operator returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -245,6 +253,8 @@ $true          PowerShell's -lt operator returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -268,6 +278,8 @@ $true          PowerShell's -le operator returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -291,6 +303,8 @@ $true          PowerShell's -gt operator returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -314,6 +328,8 @@ $true          PowerShell's -ge operator returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -326,6 +342,8 @@ $true          PowerShell's -ge operator returns $true
         <command:parameterValue required="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
@@ -376,6 +394,8 @@ For example:
         <command:parameterValue required="true">String[]</command:parameterValue>
         <dev:type>
           <maml:name>String[]</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -387,6 +407,8 @@ For example:
           <maml:name>None
 
 This function does not accept input from the pipeline.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:inputType>
     </command:inputTypes>
@@ -396,6 +418,8 @@ This function does not accept input from the pipeline.</maml:name>
           <maml:name>System.Boolean
 
 This function returns a Boolean if the test can be performed.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:returnValue>
       <command:returnValue>
@@ -403,6 +427,8 @@ This function returns a Boolean if the test can be performed.</maml:name>
           <maml:name>$null
 
 This function returns $null if the test cannot be performed.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:returnValue>
     </command:returnValues>
@@ -537,21 +563,33 @@ Returns $null if $x or $y is not of type Int32, Int64, or Double.</maml:para>
     <maml:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Test-DateTime</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Guid</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-String</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Text</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-TimeSpan</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Version</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
     </maml:relatedLinks>
   </command:command>

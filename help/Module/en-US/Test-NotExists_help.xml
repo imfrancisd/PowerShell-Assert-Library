@@ -45,6 +45,8 @@ The order in which the items in the collection are tested is determined by the c
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -63,6 +65,8 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
         <command:parameterValue required="true">ScriptBlock</command:parameterValue>
         <dev:type>
           <maml:name>ScriptBlock</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -74,6 +78,8 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
           <maml:name>None
 
 This function does not accept input from the pipeline.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:inputType>
     </command:inputTypes>
@@ -83,6 +89,8 @@ This function does not accept input from the pipeline.</maml:name>
           <maml:name>System.Boolean
 
 This function returns a Boolean if the test can be performed.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:returnValue>
       <command:returnValue>
@@ -90,6 +98,8 @@ This function returns a Boolean if the test can be performed.</maml:name>
           <maml:name>$null
 
 This function returns $null if the test cannot be performed.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:returnValue>
     </command:returnValues>
@@ -166,27 +176,43 @@ This test will always return $true because the array is empty.</maml:para>
     <maml:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Test-True</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-False</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Null</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-NotTrue</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-NotFalse</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-NotNull</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-All</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Exists</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
     </maml:relatedLinks>
   </command:command>

@@ -198,6 +198,8 @@ A return value of $null indicates an invalid test. See each parameter for specif
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -218,6 +220,8 @@ $true          value is a GUID*
         <command:parameterValue required="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
@@ -239,6 +243,8 @@ $true          System.Guid method CompareTo(Guid) == 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -261,6 +267,8 @@ $true          System.Guid method CompareTo(Guid) != 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -283,6 +291,8 @@ $true          System.Guid method CompareTo(Guid) &lt; 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -305,6 +315,8 @@ $true          System.Guid method CompareTo(Guid) &lt;= 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -327,6 +339,8 @@ $true          System.Guid method CompareTo(Guid) &gt; 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -349,6 +363,8 @@ $true          System.Guid method CompareTo(Guid) &gt;= 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -363,6 +379,8 @@ $true          System.Guid method CompareTo(Guid) &gt;= 0
         <command:parameterValue required="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
@@ -376,6 +394,8 @@ $true          System.Guid method CompareTo(Guid) &gt;= 0
         <command:parameterValue required="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
@@ -404,6 +424,8 @@ Specifying this parameter with a $null or an empty array will cause this functio
         <command:parameterValue required="true">String[]</command:parameterValue>
         <dev:type>
           <maml:name>String[]</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -428,6 +450,8 @@ Specifying this parameter with a $null or an empty array will cause this functio
         <command:parameterValue required="true">Int32[]</command:parameterValue>
         <dev:type>
           <maml:name>Int32[]</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -439,6 +463,8 @@ Specifying this parameter with a $null or an empty array will cause this functio
           <maml:name>None
 
 This function does not accept input from the pipeline.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:inputType>
     </command:inputTypes>
@@ -448,6 +474,8 @@ This function does not accept input from the pipeline.</maml:name>
           <maml:name>System.Boolean
 
 This function returns a Boolean if the test can be performed.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:returnValue>
       <command:returnValue>
@@ -455,6 +483,8 @@ This function returns a Boolean if the test can be performed.</maml:name>
           <maml:name>$null
 
 This function returns $null if the test cannot be performed.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:returnValue>
     </command:returnValues>
@@ -592,21 +622,33 @@ Returns $null if $a or $b is not a standard variant GUID, or $a and $b do not ha
     <maml:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Test-DateTime</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Number</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-String</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Text</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-TimeSpan</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Version</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
     </maml:relatedLinks>
   </command:command>

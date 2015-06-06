@@ -98,10 +98,12 @@ function Add-MamlHelpCommand
 
         if ($null -ne $fullHelp.description) {
             $cmdDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+            foreach ($description in $fullHelp.description) {
                 $para = $shared.xmlDoc.CreateElement('maml', 'para', $shared.mamlUri)
-                    $paraValue = $shared.xmlDoc.CreateTextNode($fullHelp.description[0].Text)
+                    $paraValue = $shared.xmlDoc.CreateTextNode($description.Text)
                     [System.Void]$para.AppendChild($paraValue)
                 [System.Void]$cmdDescription.AppendChild($para)
+            }
             [System.Void]$cmd.AppendChild($cmdDescription)
         }
 
@@ -181,10 +183,12 @@ function Add-MamlHelpCommand
 
                     if ($null -ne $parameter.description) {
                         $cmdParameterDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+                        foreach ($description in $parameter.description) {
                             $para = $shared.xmlDoc.CreateElement('maml', 'para', $shared.mamlUri)
-                                $paraValue = $shared.xmlDoc.CreateTextNode($parameter.description[0].Text)
+                                $paraValue = $shared.xmlDoc.CreateTextNode($description.Text)
                                 [System.Void]$para.AppendChild($paraValue)
                             [System.Void]$cmdParameterDescription.AppendChild($para)
+                        }
                         [System.Void]$cmdParameter.AppendChild($cmdParameterDescription)
                     }
 
@@ -206,6 +210,11 @@ function Add-MamlHelpCommand
                                 $cmdParameterTypeNameValue = $shared.xmlDoc.CreateTextNode($parameter.type.name)
                                 [System.Void]$cmdParameterTypeName.AppendChild($cmdParameterTypeNameValue)
                             [System.Void]$cmdParameterType.AppendChild($cmdParameterTypeName)
+                            
+                            $cmdParameterTypeUri = $shared.xmlDoc.CreateElement('maml', 'uri', $shared.mamlUri)
+                                $cmdParameterTypeUriValue = $shared.xmlDoc.CreateTextNode($parameter.type.uri)
+                                [System.Void]$cmdParameterTypeUri.AppendChild($cmdParameterTypeUriValue)
+                            [System.Void]$cmdParameterType.AppendChild($cmdParameterTypeUri)
                         [System.Void]$cmdParameter.AppendChild($cmdParameterType)
                     }
 
@@ -230,6 +239,11 @@ function Add-MamlHelpCommand
                             $cmdInputTypeNameValue = $shared.xmlDoc.CreateTextNode($inputType.type.name)
                             [System.Void]$cmdInputTypeName.AppendChild($cmdInputTypeNameValue)
                         [System.Void]$cmdInputType.AppendChild($cmdInputTypeName)
+
+                        $cmdInputTypeUri = $shared.xmlDoc.CreateElement('maml', 'uri', $shared.mamlUri)
+                            $cmdInputTypeUriValue = $shared.xmlDoc.CreateTextNode($inputType.type.uri)
+                            [System.Void]$cmdInputTypeUri.AppendChild($cmdInputTypeUriValue)
+                        [System.Void]$cmdInputType.AppendChild($cmdInputTypeUri)
                     [System.Void]$cmdInput.AppendChild($cmdInputType)
                 [System.Void]$cmdInputs.AppendChild($cmdInput)
             }
@@ -245,6 +259,11 @@ function Add-MamlHelpCommand
                             $cmdOutputTypeNameValue = $shared.xmlDoc.CreateTextNode($outputType.type.name)
                             [System.Void]$cmdOutputTypeName.AppendChild($cmdOutputTypeNameValue)
                         [System.Void]$cmdOutputType.AppendChild($cmdOutputTypeName)
+
+                        $cmdOutputTypeUri = $shared.xmlDoc.CreateElement('maml', 'uri', $shared.mamlUri)
+                            $cmdOutputTypeUriValue = $shared.xmlDoc.CreateTextNode($outputType.type.uri)
+                            [System.Void]$cmdOutputTypeUri.AppendChild($cmdOutputTypeUriValue)
+                        [System.Void]$cmdOutputType.AppendChild($cmdOutputTypeUri)
                     [System.Void]$cmdOutput.AppendChild($cmdOutputType)
                 [System.Void]$cmdOutputs.AppendChild($cmdOutput)
             }
@@ -253,12 +272,16 @@ function Add-MamlHelpCommand
 
         if (($null -ne $fullHelp.alertSet) -and ($null -ne $fullHelp.alertSet.alert)) {
             $cmdNotes = $shared.xmlDoc.CreateElement('maml', 'alertSet', $shared.mamlUri)
+            foreach ($note in $fullHelp.alertSet.alert) {
                 $cmdNote = $shared.xmlDoc.CreateElement('maml', 'alert', $shared.mamlUri)
+                foreach ($notePara in $note) {
                     $para = $shared.xmlDoc.CreateElement('maml', 'para', $shared.mamlUri)
-                        $paraValue = $shared.xmlDoc.CreateTextNode($fullHelp.alertSet.alert[0].Text)
+                        $paraValue = $shared.xmlDoc.CreateTextNode($notePara.Text)
                         [System.Void]$para.AppendChild($paraValue)
                     [System.Void]$cmdNote.AppendChild($para)
+                }
                 [System.Void]$cmdNotes.AppendChild($cmdNote)
+            }
             [System.Void]$cmd.AppendChild($cmdNotes)
         }
 
@@ -314,6 +337,11 @@ function Add-MamlHelpCommand
                         $cmdRelatedLinkTextValue = $shared.xmlDoc.CreateTextNode($navigationLink.linkText)
                         [System.Void]$cmdRelatedLinkText.AppendChild($cmdRelatedLinkTextValue)
                     [System.Void]$cmdRelatedLink.AppendChild($cmdRelatedLinkText)
+
+                    $cmdRelatedLinkUri = $shared.xmlDoc.CreateElement('maml', 'uri', $shared.mamlUri)
+                        $cmdRelatedLinkUriValue = $shared.xmlDoc.CreateTextNode($navigationLink.uri)
+                        [System.Void]$cmdRelatedLinkUri.AppendChild($cmdRelatedLinkUriValue)
+                    [System.Void]$cmdRelatedLink.AppendChild($cmdRelatedLinkUri)
                 [System.Void]$cmdRelatedLinks.AppendChild($cmdRelatedLink)
             }
             [System.Void]$cmd.AppendChild($cmdRelatedLinks)

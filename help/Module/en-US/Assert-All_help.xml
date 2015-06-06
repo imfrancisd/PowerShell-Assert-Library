@@ -42,6 +42,8 @@ The order in which the items in the collection are tested is determined by the c
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -60,6 +62,8 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
         <command:parameterValue required="true">ScriptBlock</command:parameterValue>
         <dev:type>
           <maml:name>ScriptBlock</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -71,6 +75,8 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
           <maml:name>None
 
 This function does not accept input from the pipeline.</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:inputType>
     </command:inputTypes>
@@ -78,6 +84,8 @@ This function does not accept input from the pipeline.</maml:name>
       <command:returnValue>
         <dev:type>
           <maml:name>None</maml:name>
+          <maml:uri>
+          </maml:uri>
         </dev:type>
       </command:returnValue>
     </command:returnValues>
@@ -178,48 +186,78 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
     <maml:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Assert-True</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-False</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-Null</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotTrue</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotFalse</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotNull</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-Exists</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotExists</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineAll</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineExists</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineNotExists</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineEmpty</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineAny</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineSingle</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineCount</maml:linkText>
+        <maml:uri>
+        </maml:uri>
       </maml:navigationLink>
     </maml:relatedLinks>
   </command:command>
