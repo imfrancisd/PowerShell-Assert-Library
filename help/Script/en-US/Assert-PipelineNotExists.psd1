@@ -29,14 +29,14 @@ Assert that no item in the array is greater than 10, and outputs each item one a
 Note:
 This assertion will always pass because the array is empty.
 .Example
-@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Verbose
+@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Verbose
 Assert that no entry in the hashtable has a value less than 0, and outputs each entry one at a time.
 The -Verbose switch will output the result of the assertion to the Verbose stream.
 
 Note:
 The GetEnumerator() method must be used in order to pipe the entries of a hashtable into a function.
 .Example
-@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Debug
+@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Debug
 Assert that no entry in the hashtable has a value less than 0, and outputs each entry one at a time.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 

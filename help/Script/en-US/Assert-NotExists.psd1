@@ -31,11 +31,11 @@ Assert that no item in the array is greater than 10.
 Note:
 This assertion will always pass because the array is empty.
 .Example
-Assert-NotExists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -lt 0} -Verbose
+Assert-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0} -Verbose
 Assert that no entry in the hashtable has a value less than 0.
 The -Verbose switch will output the result of the assertion to the Verbose stream.
 .Example
-Assert-NotExists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -lt 0} -Debug
+Assert-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0} -Debug
 Assert that no entry in the hashtable has a value less than 0.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs

@@ -150,7 +150,7 @@ This is known as vacuous truth.</maml:para>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Test-All @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 5}</dev:code>
+        <dev:code>Test-All @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 5}</dev:code>
         <dev:remarks>
           <maml:para>Test that all entries in the hashtable have a value greater than 5.</maml:para>
           <maml:para>

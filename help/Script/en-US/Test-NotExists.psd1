@@ -34,7 +34,7 @@ Test that no item in the array is greater than 10.
 Note:
 This test will always return $true because the array is empty.
 .Example
-Test-NotExists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -lt 0}
+Test-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0}
 Test that no entry in the hashtable has a value less than 0.
 .Inputs
 None

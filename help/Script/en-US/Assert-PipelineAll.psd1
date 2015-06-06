@@ -30,14 +30,14 @@ Note:
 This assertion will always pass because the array is empty.
 This is known as vacuous truth.
 .Example
-@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineAll {param($entry) $entry.Value -gt 5} -Verbose
+@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineAll {param($entry) $entry.Value -gt 5} -Verbose
 Assert that all entries in the hashtable have a value greater than 5, and outputs each entry one at a time.
 The -Verbose switch will output the result of the assertion to the Verbose stream.
 
 Note:
 The GetEnumerator() method must be used in order to pipe the entries of a hashtable into a function.
 .Example
-@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineAll {param($entry) $entry.Value -gt 5} -Debug
+@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineAll {param($entry) $entry.Value -gt 5} -Debug
 Assert that all entries in the hashtable have a value greater than 5, and outputs each entry one at a time.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 

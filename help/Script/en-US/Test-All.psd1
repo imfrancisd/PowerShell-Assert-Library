@@ -35,7 +35,7 @@ Note:
 This test will always return $true because the array is empty.
 This is known as vacuous truth.
 .Example
-Test-All @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 5}
+Test-All @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 5}
 Test that all entries in the hashtable have a value greater than 5.
 .Inputs
 None

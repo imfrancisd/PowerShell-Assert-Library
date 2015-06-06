@@ -149,7 +149,7 @@ This test will always return $true because the array is empty.</maml:para>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Test-NotExists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -lt 0}</dev:code>
+        <dev:code>Test-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0}</dev:code>
         <dev:remarks>
           <maml:para>Test that no entry in the hashtable has a value less than 0.</maml:para>
           <maml:para>

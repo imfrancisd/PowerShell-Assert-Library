@@ -29,14 +29,14 @@ Assert that at least one item in the array is greater than 3, and outputs each i
 Note:
 This assertion will always fail because the array is empty.
 .Example
-@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Verbose
+@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Verbose
 Assert that at least one entry in the hashtable has a value greater than 25, and outputs each entry one at a time.
 The -Verbose switch will output the result of the assertion to the Verbose stream.
 
 Note:
 The GetEnumerator() method must be used in order to pipe the entries of a hashtable into a function.
 .Example
-@{a0=10; a1=20; a2=30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Debug
+@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Debug
 Assert that at least one entry in the hashtable has a value greater than 25, and outputs each entry one at a time.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 

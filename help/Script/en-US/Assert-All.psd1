@@ -32,11 +32,11 @@ Note:
 This assertion will always pass because the array is empty.
 This is known as vacuous truth.
 .Example
-Assert-All @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 5} -Verbose
+Assert-All @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 5} -Verbose
 Assert that all entries in the hashtable have a value greater than 5.
 The -Verbose switch will output the result of the assertion to the Verbose stream.
 .Example
-Assert-All @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 5} -Debug
+Assert-All @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 5} -Debug
 Assert that all entries in the hashtable have a value greater than 5.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
 .Inputs

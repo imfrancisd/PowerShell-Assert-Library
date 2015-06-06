@@ -34,7 +34,7 @@ Test that at least one item in the array is greater than 3.
 Note:
 This test will always return $false because the array is empty.
 .Example
-Test-Exists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 25}
+Test-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25}
 Test that at least one entry in the hashtable has a value greater than 25.
 .Inputs
 None

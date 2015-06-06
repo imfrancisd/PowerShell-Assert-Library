@@ -149,7 +149,7 @@ This test will always return $false because the array is empty.</maml:para>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>Test-Exists @{a0=10; a1=20; a2=30} {param($entry) $entry.Value -gt 25}</dev:code>
+        <dev:code>Test-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25}</dev:code>
         <dev:remarks>
           <maml:para>Test that at least one entry in the hashtable has a value greater than 25.</maml:para>
           <maml:para>
