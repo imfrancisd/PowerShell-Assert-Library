@@ -73,7 +73,8 @@ function Test-Number
     if ($PSBoundParameters.ContainsKey('Type')) {
         if ($null -eq $Type) {
             $allowedTypes = [System.String[]]@()
-        } else {
+        }
+        else {
             $allowedTypes = [System.String[]]@(
                 $allowedTypes |
                     Where-Object {($Type -icontains $_) -or ($Type -icontains $_.Split('.')[-1])}

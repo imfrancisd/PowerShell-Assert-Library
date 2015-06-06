@@ -131,16 +131,20 @@ function Test-Text
         if (-not $CaseSensitive) {
             $options = [System.Text.RegularExpressions.RegexOptions]($options -bor [System.Text.RegularExpressions.Regexoptions]::IgnoreCase)
         }
-    } elseif ($UseCurrentCulture) {
+    }
+    elseif ($UseCurrentCulture) {
         if ($CaseSensitive) {
             $options = [System.StringComparison]::CurrentCulture
-        } else {
+        }
+        else {
             $options = [System.StringComparison]::CurrentCultureIgnoreCase
         }
-    } else {
+    }
+    else {
         if ($CaseSensitive) {
             $options = [System.StringComparison]::InvariantCulture
-        } else {
+        }
+        else {
             $options = [System.StringComparison]::InvariantCultureIgnoreCase
         }
     }

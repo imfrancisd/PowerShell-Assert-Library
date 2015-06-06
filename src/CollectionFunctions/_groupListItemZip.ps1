@@ -31,7 +31,8 @@
 
     if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
         $outputElementType = $elementTypes[0]
-    } else {
+    }
+    else {
         $outputElementType = [System.Object]
     }
 

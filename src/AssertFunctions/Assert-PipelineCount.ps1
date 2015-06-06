@@ -38,10 +38,12 @@ function Assert-PipelineCount
         if ($PSCmdlet.ParameterSetName -eq 'Equals') {
             $failEarly  = {$inputCount -gt $Equals}
             $failAssert = {$inputCount -ne $Equals}
-        } elseif ($PSCmdlet.ParameterSetName -eq 'Maximum') {
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq 'Maximum') {
             $failEarly  = {$inputCount -gt $Maximum}
             $failAssert = $failEarly
-        } else {
+        }
+        else {
             $failEarly  = {$false}
             $failAssert = {$inputCount -lt $Minimum}
         }

@@ -117,7 +117,8 @@ function Test-String
 
     if ($CaseSensitive) {
         $comparisonType = [System.StringComparison]::Ordinal
-    } else {
+    }
+    else {
         $comparisonType = [System.StringComparison]::OrdinalIgnoreCase
     }
 
@@ -127,9 +128,11 @@ function Test-String
         $allowedNormalizations = [System.Text.NormalizationForm[]]@(
             [System.Enum]::GetValues([System.Text.NormalizationForm])
         )
-    } elseif (($null -eq $Normalization) -or ($Normalization.Length -eq 0)) {
+    }
+    elseif (($null -eq $Normalization) -or ($Normalization.Length -eq 0)) {
         $allowedNormalizations = [System.Text.NormalizationForm[]]@()
-    } else {
+    }
+    else {
         $allowedNormalizations = [System.Text.NormalizationForm[]]@(
             [System.Enum]::GetValues([System.Text.NormalizationForm]) |
                 Where-Object {$Normalization -contains $_}
