@@ -161,6 +161,7 @@ function buildScript
             'New-Module -Name {0} -ScriptBlock {{' -f "'AssertLibrary_$($dir.BaseName)_v$LibraryVersion'"
             ''
             foreach ($item in $functionFiles) {
+                ''
                 if (-not $item.BaseName.StartsWith('_', [System.StringComparison]::OrdinalIgnoreCase)) {
                     $scriptHelpFile = Join-Path -Path $scriptLocalizedHelpDir -ChildPath ($item.BaseName + '.psd1')
                     if ((Test-Path -LiteralPath $scriptHelpFile)) {
@@ -172,6 +173,7 @@ function buildScript
                 Get-Content -LiteralPath $item.PSPath
                 ''
             }
+            ''
             "Export-ModuleMember -Function '*-*'} | Import-Module"
         })
 
@@ -196,12 +198,14 @@ function buildModule
     $(& {
         buildHeader
         foreach ($item in $functionFiles) {
+            ''
             if (-not $item.BaseName.StartsWith('_', [System.StringComparison]::OrdinalIgnoreCase)) {
                 "#.ExternalHelp $($item.BaseName)_help.xml"
             }
             Get-Content -LiteralPath $item.PSPath
             ''
         }
+        ''
         "Export-ModuleMember -Function '*-*'"
     }) | Out-File -FilePath $psm1 -Encoding utf8 -Verbose:$VerbosePreference
 
