@@ -23,7 +23,7 @@ function Assert-Exists
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-        
+
             if (($result -is [System.Boolean]) -and $result) {
                 $fail = $false
                 break

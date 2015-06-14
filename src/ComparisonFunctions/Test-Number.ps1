@@ -29,7 +29,7 @@ function Test-Number
         [Alias('lt')]
         [System.Object]
         $LessThan,
-        
+
         [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThanOrEqualTo')]
         [AllowNull()]
         [Alias('le')]

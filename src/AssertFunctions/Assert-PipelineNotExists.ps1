@@ -30,7 +30,7 @@ function Assert-PipelineNotExists
         $result = $null
         try   {$result = do {& $Predicate $InputObject} while ($false)}
         catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-        
+
         if (($result -is [System.Boolean]) -and $result) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
