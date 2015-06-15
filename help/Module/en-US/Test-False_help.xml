@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>Test that a value is the Boolean value $false.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Test</command:verb>
       <command:noun>False</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function tests if a value is $false without the implicit conversions or the filtering semantics from the PowerShell comparison operators.

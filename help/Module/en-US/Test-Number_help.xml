@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>An alternative to PowerShell's comparison operators when testing numbers in unit test scenarios.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Test</command:verb>
       <command:noun>Number</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function tests a number for type and equality without the filtering semantics of the PowerShell comparison operators.

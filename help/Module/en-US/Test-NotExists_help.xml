@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>Test that a predicate is never true for any item in a collection.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Test</command:verb>
       <command:noun>NotExists</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function tests if a predicate is never $true for any item in a collection.

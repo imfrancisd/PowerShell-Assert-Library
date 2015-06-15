@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>An alternative to PowerShell's comparison operators when testing GUIDs in unit test scenarios.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Test</command:verb>
       <command:noun>Guid</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function tests a GUID for type and equality without the implicit conversions or the filtering semantics from the PowerShell comparison operators.

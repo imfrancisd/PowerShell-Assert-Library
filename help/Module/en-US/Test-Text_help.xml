@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>An alternative to PowerShell's comparison operators when texts are being tested in unit test scenarios with operators that are sensitive to culture and language.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Test</command:verb>
       <command:noun>Text</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function contains text operators that are sensitive to language and culture. These operators are: Match, NotMatch, Contains, NotContains, StartsWith, NotStartsWith, EndsWith, NotEndsWith, Equals, NotEquals, LessThan, GreaterThan, LessThanOrEqualTo, and GreaterThanOrEqualTo.

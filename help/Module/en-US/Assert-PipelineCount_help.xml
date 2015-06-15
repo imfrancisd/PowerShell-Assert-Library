@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>Assert the number of objects in the pipeline.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Assert</command:verb>
       <command:noun>PipelineCount</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function is useful for asserting that a function outputs the correct number of objects.

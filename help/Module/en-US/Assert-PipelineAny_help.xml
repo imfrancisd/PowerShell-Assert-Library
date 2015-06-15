@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>Assert that the pipeline contains one or more objects.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Assert</command:verb>
       <command:noun>PipelineAny</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function is useful for asserting that a function returns one or more objects.

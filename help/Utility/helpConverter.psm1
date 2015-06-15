@@ -75,14 +75,33 @@ function Add-MamlHelpCommand
                 [System.Void]$cmdName.AppendChild($cmdNameValue)
             [System.Void]$cmdDetails.AppendChild($cmdName)
 
-            if (($null -ne $fullHelp.details) -and ($null -ne $fullHelp.details.description)) {
-                $cmdSynopsis = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
-                    $para = $shared.xmlDoc.CreateElement('maml', 'para', $shared.mamlUri)
-                        $paraValue = $shared.xmlDoc.CreateTextNode($fullHelp.details.description[0].Text)
-                        [System.Void]$para.AppendChild($paraValue)
-                    [System.Void]$cmdSynopsis.AppendChild($para)
-                [System.Void]$cmdDetails.AppendChild($cmdSynopsis)
-            }
+            $cmdSynopsis = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+                if (($null -ne $fullHelp.details) -and ($null -ne $fullHelp.details.description)) {
+                    foreach ($cmdSynopsisPara in $fullHelp.details.description) {
+                        $para = $shared.xmlDoc.CreateElement('maml', 'para', $shared.mamlUri)
+                            $paraValue = $shared.xmlDoc.CreateTextNode($cmdSynopsisPara.Text)
+                            [System.Void]$para.AppendChild($paraValue)
+                        [System.Void]$cmdSynopsis.AppendChild($para)
+                    }
+                }
+                if (-not $cmdSynopsis.HasChildNodes) {
+                    [System.Void]$cmdSynopsis.AppendChild($shared.xmlDoc.CreateElement('maml', 'para', $shared.mamlUri))
+                }
+            [System.Void]$cmdDetails.AppendChild($cmdSynopsis)
+
+            $cmdCopyright = $shared.xmlDoc.CreateElement('maml', 'copyright', $shared.mamlUri)
+                if (($null -ne $fullHelp.details) -and ($null -ne $fullHelp.details.copyright)) {
+                    foreach ($cmdCopyrightPara in $fullHelp.details.copyright) {
+                        $para = $shared.xmlDoc.CreateElement('maml', 'para', $shared.mamlUri)
+                            $paraValue = $shared.xmlDoc.CreateTextNode($cmdCopyrightPara.Text)
+                            [System.Void]$para.AppendChild($paraValue)
+                        [System.Void]$cmdCopyright.AppendChild($para)
+                    }
+                }
+                if (-not $cmdCopyright.HasChildNodes) {
+                    [System.Void]$cmdCopyright.AppendChild($shared.xmlDoc.CreateElement('maml', 'para', $shared.mamlUri))
+                }
+            [System.Void]$cmdDetails.AppendChild($cmdCopyright)
 
             $cmdVerb = $shared.xmlDoc.CreateElement('command', 'verb', $shared.cmdUri)
                 $cmdVerbValue = $shared.xmlDoc.CreateTextNode((Get-Command $CommandName).Verb)
@@ -93,6 +112,13 @@ function Add-MamlHelpCommand
                 $cmdNounValue = $shared.xmlDoc.CreateTextNode((Get-Command $CommandName).Noun)
                 [System.Void]$cmdNoun.AppendChild($cmdNounValue)
             [System.Void]$cmdDetails.AppendChild($cmdNoun)
+
+            $cmdVersion = $shared.xmlDoc.CreateElement('dev', 'version', $shared.devUri)
+                if (($null -ne $fullHelp.details) -and ($null -ne $fullHelp.details.version)) {
+                    $cmdVersionValue = $shared.xmlDoc.CreateTextNode($fullHelp.details.version)
+                    [System.Void]$cmdVersion.AppendChild($cmdVersionValue)
+                }
+            [System.Void]$cmdDetails.AppendChild($cmdVersion)
 
         [System.Void]$cmd.AppendChild($cmdDetails)
 

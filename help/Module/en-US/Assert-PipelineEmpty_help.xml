@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>Assert that the pipeline does not contain any objects.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Assert</command:verb>
       <command:noun>PipelineEmpty</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function is useful for asserting that a function does not output any objects.

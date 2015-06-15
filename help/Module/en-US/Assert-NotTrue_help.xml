@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>Assert that a value is not the Boolean value $true.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Assert</command:verb>
       <command:noun>NotTrue</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function throws an error if any of the following conditions are met:

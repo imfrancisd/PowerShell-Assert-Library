@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>Generates groups of items (such as combinations, permutations, and Cartesian products) from lists that make common testing tasks easy and simple.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Group</command:verb>
       <command:noun>ListItem</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>The following list processing functions can be used to generate test data, to run functions and scripts with different parameter values, or even to generate parts of test scripts.

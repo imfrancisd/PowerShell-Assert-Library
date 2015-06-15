@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>Assert that a predicate is true for some objects in the pipeline.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Assert</command:verb>
       <command:noun>PipelineExists</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function throws an error if any of the following conditions are met:

@@ -6,8 +6,12 @@
       <maml:description>
         <maml:para>An alternative to PowerShell's comparison functions when testing strings in unit test scenarios.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Test</command:verb>
       <command:noun>String</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function tests a string for type and equality without the implicit conversions and filtering semantics of the PowerShell comparison operators.
