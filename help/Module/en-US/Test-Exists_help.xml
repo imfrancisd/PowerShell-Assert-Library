@@ -28,25 +28,25 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-Exists</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Collection</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="2" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2" aliases="">
           <maml:name>Predicate</maml:name>
-          <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
         <maml:name>Collection</maml:name>
         <maml:description>
           <maml:para>The collection of items used to test the predicate.
 
 The order in which the items in the collection are tested is determined by the collection's GetEnumerator method.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -54,7 +54,7 @@ The order in which the items in the collection are tested is determined by the c
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="2" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2" aliases="">
         <maml:name>Predicate</maml:name>
         <maml:description>
           <maml:para>The script block that will be invoked on each item in the collection.
@@ -65,7 +65,7 @@ Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
         <dev:type>
           <maml:name>ScriptBlock</maml:name>
           <maml:uri />

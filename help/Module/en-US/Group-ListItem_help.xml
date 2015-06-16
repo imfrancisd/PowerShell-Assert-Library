@@ -45,72 +45,72 @@ Here is an example of testing multiple scripts using different PowerShell config
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Group-ListItem</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Pair</maml:name>
-          <command:parameterValue required="true">IList</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Group-ListItem</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Window</maml:name>
-          <command:parameterValue required="true">IList</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Size</maml:name>
-          <command:parameterValue required="true">Int32</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Group-ListItem</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Combine</maml:name>
-          <command:parameterValue required="true">IList</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Size</maml:name>
-          <command:parameterValue required="true">Int32</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Group-ListItem</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Permute</maml:name>
-          <command:parameterValue required="true">IList</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Size</maml:name>
-          <command:parameterValue required="true">Int32</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Group-ListItem</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CoveringArray</maml:name>
-          <command:parameterValue required="true">IList[]</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Strength</maml:name>
-          <command:parameterValue required="true">Int32</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Group-ListItem</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CartesianProduct</maml:name>
-          <command:parameterValue required="true">IList[]</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Group-ListItem</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Zip</maml:name>
-          <command:parameterValue required="true">IList[]</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Pair</maml:name>
         <maml:description>
           <maml:para>Groups adjacent items inside a list.
@@ -120,7 +120,7 @@ Note:
 This function does not return any groups if:
     *the length of the list is less than 2</maml:para>
         </maml:description>
-        <command:parameterValue required="true">IList</command:parameterValue>
+        <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         <dev:type>
           <maml:name>IList</maml:name>
           <maml:uri />
@@ -128,7 +128,7 @@ This function does not return any groups if:
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Window</maml:name>
         <maml:description>
           <maml:para>Groups adjacent items inside a list.
@@ -143,7 +143,7 @@ This function does not return any groups if:
 This function will return 1 group with 0 items if:
     *the value of the -Size parameter is 0</maml:para>
         </maml:description>
-        <command:parameterValue required="true">IList</command:parameterValue>
+        <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         <dev:type>
           <maml:name>IList</maml:name>
           <maml:uri />
@@ -151,7 +151,7 @@ This function will return 1 group with 0 items if:
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Combine</maml:name>
         <maml:description>
           <maml:para>Groups items inside a list into combinations.
@@ -166,7 +166,7 @@ This function does not return any groups if:
 This function will return 1 group with 0 items if:
     *the value of the -Size parameter is 0</maml:para>
         </maml:description>
-        <command:parameterValue required="true">IList</command:parameterValue>
+        <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         <dev:type>
           <maml:name>IList</maml:name>
           <maml:uri />
@@ -174,7 +174,7 @@ This function will return 1 group with 0 items if:
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Permute</maml:name>
         <maml:description>
           <maml:para>Groups items inside a list into permutations.
@@ -189,7 +189,7 @@ This function does not return any groups if:
 This function will return 1 group with 0 items if:
     *the value of the -Size parameter is 0</maml:para>
         </maml:description>
-        <command:parameterValue required="true">IList</command:parameterValue>
+        <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         <dev:type>
           <maml:name>IList</maml:name>
           <maml:uri />
@@ -197,19 +197,19 @@ This function will return 1 group with 0 items if:
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Size</maml:name>
         <maml:description>
           <maml:para>The number of items per group for combinations, permutations, and windows.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Int32</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
           <maml:name>Int32</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>CoveringArray</maml:name>
         <maml:description>
           <maml:para>Groups items from 0 or more lists into a filtered output of cartesian product for t-way testing.
@@ -246,7 +246,7 @@ See nist.gov for more details about covering arrays:
     http://math.nist.gov/coveringarrays/coveringarray.html
 =======================================================================</maml:para>
         </maml:description>
-        <command:parameterValue required="true">IList[]</command:parameterValue>
+        <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
         <dev:type>
           <maml:name>IList[]</maml:name>
           <maml:uri />
@@ -254,7 +254,7 @@ See nist.gov for more details about covering arrays:
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Strength</maml:name>
         <maml:description>
           <maml:para>The strength of the covering array.
@@ -317,14 +317,14 @@ See nist.gov for more details about covering arrays:
     http://math.nist.gov/coveringarrays/coveringarray.html
 =======================================================================</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Int32</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
           <maml:name>Int32</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>CartesianProduct</maml:name>
         <maml:description>
           <maml:para>Groups items from 0 or more lists into cartesian products.
@@ -337,7 +337,7 @@ This function does not return any groups if:
 
 The lists do not need to have the same number of items.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">IList[]</command:parameterValue>
+        <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
         <dev:type>
           <maml:name>IList[]</maml:name>
           <maml:uri />
@@ -345,7 +345,7 @@ The lists do not need to have the same number of items.</maml:para>
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Zip</maml:name>
         <maml:description>
           <maml:para>Groups items from 0 or more lists that have the same index.
@@ -358,7 +358,7 @@ This function does not return any groups if:
 
 If the lists do not have the same number of items, the number of groups in the output is equal to the number of items in the list with the fewest items.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">IList[]</command:parameterValue>
+        <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
         <dev:type>
           <maml:name>IList[]</maml:name>
           <maml:uri />

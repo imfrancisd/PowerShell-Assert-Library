@@ -52,6 +52,17 @@ function _addParaCollection
     }
 }
 
+function _isIList
+{
+    [CmdletBinding()]
+    Param($typeInfo)
+
+    $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+
+    ([System.Collections.IList] -eq $typeInfo) -or
+    (0 -lt @($typeInfo.GetInterfaces() | Where-Object {[System.Collections.IList] -eq $_}).Count)
+}
+
 function Clear-MamlHelp
 {
     [CmdletBinding()]
@@ -196,7 +207,19 @@ function Add-MamlHelpCommand
 
                         foreach ($syntaxItemParameter in $syntaxItem.parameter) {
                             $cmdSyntaxItemParameter = $shared.xmlDoc.CreateElement('command', 'parameter', $shared.cmdUri)
+                                #PSMaml Note
+                                #variableLength seems to mean IList (true for arrays and false for hashtables)
+                                #however, some switch parameters also have variableLength as true.
+                                #If the information is not available, just make it true for IList and nothing else.
+
+                                if (-not [System.String]::IsNullOrEmpty($syntaxItemParameter.variableLength)) {
+                                    $cmdSyntaxItemParameterVariableLength = $syntaxItemParameter.variableLength
+                                } else {
+                                    $cmdSyntaxItemParameterVariableLength = $(_isIList $fullCmd.Parameters[$syntaxItemParameter.name].ParameterType).ToString().ToLowerInvariant()
+                                }
+
                                 _addAttribute $cmdSyntaxItemParameter 'required' $syntaxItemParameter.required
+                                _addAttribute $cmdSyntaxItemParameter 'variableLength' $cmdSyntaxItemParameterVariableLength
                                 _addAttribute $cmdSyntaxItemParameter 'globbing' $syntaxItemParameter.globbing
                                 _addAttribute $cmdSyntaxItemParameter 'pipelineInput' $syntaxItemParameter.pipelineInput
                                 _addAttribute $cmdSyntaxItemParameter 'position' $syntaxItemParameter.position
@@ -210,6 +233,7 @@ function Add-MamlHelpCommand
                                 if ($null -ne $syntaxItemParameter.parameterValue) {
                                     $cmdSyntaxItemParameterValue = $shared.xmlDoc.CreateElement('command', 'parameterValue', $shared.cmdUri)
                                         _addAttribute $cmdSyntaxItemParameterValue 'required' $syntaxItemParameter.parameterValue.required
+                                        _addAttribute $cmdSyntaxItemParameterValue 'variableLength' $cmdSyntaxItemParameterVariableLength
                                         _addTextElement $cmdSyntaxItemParameterValue $syntaxItemParameter.parameterValue
                                     [System.Void]$cmdSyntaxItemParameter.AppendChild($cmdSyntaxItemParameterValue)
                                 }
@@ -232,7 +256,19 @@ function Add-MamlHelpCommand
                 foreach ($parameter in $fullHelp.parameters.parameter) {
                     $cmdParameter = $shared.xmlDoc.CreateElement('command', 'parameter', $shared.cmdUri)
 
+                        #PSMaml Note
+                        #variableLength seems to mean IList (true for arrays and false for hashtables)
+                        #however, some switch parameters also have variableLength as true.
+                        #If the information is not available, just make it true for IList and nothing else.
+
+                        if (-not [System.String]::IsNullOrEmpty($parameter.variableLength)) {
+                            $cmdParameterVariableLength = $parameter.variableLength
+                        } else {
+                            $cmdParameterVariableLength = $(_isIList $fullCmd.Parameters[$parameter.name].ParameterType).ToString().ToLowerInvariant()
+                        }
+
                         _addAttribute $cmdParameter 'required' $parameter.required
+                        _addAttribute $cmdParameter 'variableLength' $cmdParameterVariableLength
                         _addAttribute $cmdParameter 'globbing' $parameter.globbing
                         _addAttribute $cmdParameter 'pipelineInput' $parameter.pipelineInput
                         _addAttribute $cmdParameter 'position' $parameter.position
@@ -248,7 +284,7 @@ function Add-MamlHelpCommand
 
                         $cmdParameterValue = $shared.xmlDoc.CreateElement('command', 'parameterValue', $shared.cmdUri)
                             _addAttribute $cmdParameterValue 'required' $parameter.parameterValue.required
-
+                            _addAttribute $cmdParameterValue 'variableLength' $cmdParameterVariableLength
                             _addTextElement $cmdParameterValue $parameter.parameterValue
                         [System.Void]$cmdParameter.AppendChild($cmdParameterValue)
 

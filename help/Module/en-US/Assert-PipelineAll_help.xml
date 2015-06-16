@@ -25,23 +25,23 @@ The assertion will always pass if the pipeline is empty.
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Assert-PipelineAll</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
           <maml:name>InputObject</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Predicate</maml:name>
-          <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
         <maml:name>InputObject</maml:name>
         <maml:description>
           <maml:para>The object that is used to test the predicate.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -49,7 +49,7 @@ The assertion will always pass if the pipeline is empty.
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
         <maml:name>Predicate</maml:name>
         <maml:description>
           <maml:para>The script block that will be invoked for each object in the pipeline.
@@ -60,7 +60,7 @@ Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
         <dev:type>
           <maml:name>ScriptBlock</maml:name>
           <maml:uri />

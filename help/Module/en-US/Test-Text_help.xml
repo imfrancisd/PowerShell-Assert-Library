@@ -35,260 +35,260 @@ Use Test-String if you want text operators that are not affected by language and
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>IsText</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Match</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotMatch</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Contains</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotContains</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>StartsWith</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotStartsWith</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>EndsWith</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotEndsWith</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="eq">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="eq">
           <maml:name>Equals</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ne">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
           <maml:name>NotEquals</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="lt">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="lt">
           <maml:name>LessThan</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="le">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="le">
           <maml:name>LessThanOrEqualTo</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="gt">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="gt">
           <maml:name>GreaterThan</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ge">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ge">
           <maml:name>GreaterThanOrEqualTo</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
         <maml:name>Value</maml:name>
         <maml:description>
           <maml:para>The value to test.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -296,7 +296,7 @@ Use Test-String if you want text operators that are not affected by language and
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>IsText</maml:name>
         <maml:description>
           <maml:para>Tests if the value is text.
@@ -307,14 +307,14 @@ $null          never
 $false         value is not of type System.String
 $true          value is of type System.String</maml:para>
         </maml:description>
-        <command:parameterValue required="false">SwitchParameter</command:parameterValue>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Match</maml:name>
         <maml:description>
           <maml:para>Tests if the first value matches the regular expression pattern in the second.
@@ -327,7 +327,7 @@ $true          Regex.IsMatch(String, String, RegexOptions) returns $true
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -335,7 +335,7 @@ $true          Regex.IsMatch(String, String, RegexOptions) returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>NotMatch</maml:name>
         <maml:description>
           <maml:para>Tests if the first value does not match the regular expression pattern in the second.
@@ -348,7 +348,7 @@ $true          Regex.IsMatch(String, String, RegexOptions) returns $false
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -356,7 +356,7 @@ $true          Regex.IsMatch(String, String, RegexOptions) returns $false
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Contains</maml:name>
         <maml:description>
           <maml:para>Tests if the first value contains the second.
@@ -371,7 +371,7 @@ $true          String method IndexOf(String, StringComparison) &gt;= 0
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -379,7 +379,7 @@ $true          String method IndexOf(String, StringComparison) &gt;= 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>NotContains</maml:name>
         <maml:description>
           <maml:para>Tests if the first value does not contain the second.
@@ -394,7 +394,7 @@ $true          String method IndexOf(String, StringComparison) &lt; 0
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -402,7 +402,7 @@ $true          String method IndexOf(String, StringComparison) &lt; 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>StartsWith</maml:name>
         <maml:description>
           <maml:para>Tests if the first value starts with the second.
@@ -417,7 +417,7 @@ $true          String method StartsWith(String, StringComparison) returns $true
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -425,7 +425,7 @@ $true          String method StartsWith(String, StringComparison) returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>NotStartsWith</maml:name>
         <maml:description>
           <maml:para>Tests if the first value does not start with the second.
@@ -440,7 +440,7 @@ $true          String method StartsWith(String, StringComparison) returns $false
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -448,7 +448,7 @@ $true          String method StartsWith(String, StringComparison) returns $false
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>EndsWith</maml:name>
         <maml:description>
           <maml:para>Tests if the first value ends with the second.
@@ -463,7 +463,7 @@ $true          String method EndsWith(String, StringComparison) returns $true
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -471,7 +471,7 @@ $true          String method EndsWith(String, StringComparison) returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>NotEndsWith</maml:name>
         <maml:description>
           <maml:para>Tests if the first value does not end with the second.
@@ -486,7 +486,7 @@ $true          String method EndsWith(String, StringComparison) returns $false
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -494,7 +494,7 @@ $true          String method EndsWith(String, StringComparison) returns $false
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="eq">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="eq">
         <maml:name>Equals</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is equal to the second.
@@ -509,7 +509,7 @@ $true          String.Equals(String, String, StringComparison) returns $true
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -517,7 +517,7 @@ $true          String.Equals(String, String, StringComparison) returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ne">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
         <maml:name>NotEquals</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is not equal to the second.
@@ -532,7 +532,7 @@ $true          String.Equals(String, String, StringComparison) returns $false
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -540,7 +540,7 @@ $true          String.Equals(String, String, StringComparison) returns $false
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="lt">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="lt">
         <maml:name>LessThan</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is less than the second.
@@ -555,7 +555,7 @@ $true          String.Compare(String, String, StringComparison) &lt; 0
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -563,7 +563,7 @@ $true          String.Compare(String, String, StringComparison) &lt; 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="le">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="le">
         <maml:name>LessThanOrEqualTo</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is less than or equal to the second.
@@ -578,7 +578,7 @@ $true          String.Compare(String, String, StringComparison) &lt;= 0
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -586,7 +586,7 @@ $true          String.Compare(String, String, StringComparison) &lt;= 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="gt">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="gt">
         <maml:name>GreaterThan</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is greater than the second.
@@ -601,7 +601,7 @@ $true          String.Compare(String, String, StringComparison) &gt; 0
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -609,7 +609,7 @@ $true          String.Compare(String, String, StringComparison) &gt; 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ge">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ge">
         <maml:name>GreaterThanOrEqualTo</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is greater than or equal to the second.
@@ -624,7 +624,7 @@ $true          String.Compare(String, String, StringComparison) &gt;= 0
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -632,7 +632,7 @@ $true          String.Compare(String, String, StringComparison) &gt;= 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>CaseSensitive</maml:name>
         <maml:description>
           <maml:para>Makes the operators case-sensitive.
@@ -641,14 +641,14 @@ If this parameter is not specified, the operators will be case-insensitive.
 
 *See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
         </maml:description>
-        <command:parameterValue required="false">SwitchParameter</command:parameterValue>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>UseCurrentCulture</maml:name>
         <maml:description>
           <maml:para>Makes the operators use the language rules of the current culture.
@@ -659,7 +659,7 @@ Note that the culture (including InvariantCulture) defines rules such as the ord
 
 See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
         </maml:description>
-        <command:parameterValue required="false">SwitchParameter</command:parameterValue>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
           <maml:uri />

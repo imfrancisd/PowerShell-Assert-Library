@@ -26,19 +26,19 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-False</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
         <maml:name>Value</maml:name>
         <maml:description>
           <maml:para>The value to test.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />

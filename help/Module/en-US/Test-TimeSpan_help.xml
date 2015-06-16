@@ -26,112 +26,112 @@ A return value of $null indicates an invalid test. See each parameter for specif
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-TimeSpan</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>IsTimeSpan</maml:name>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-TimeSpan</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="eq">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="eq">
           <maml:name>Equals</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
-          <command:parameterValue required="true">String[]</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-TimeSpan</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ne">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
           <maml:name>NotEquals</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
-          <command:parameterValue required="true">String[]</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-TimeSpan</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="lt">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="lt">
           <maml:name>LessThan</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
-          <command:parameterValue required="true">String[]</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-TimeSpan</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="le">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="le">
           <maml:name>LessThanOrEqualTo</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
-          <command:parameterValue required="true">String[]</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-TimeSpan</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="gt">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="gt">
           <maml:name>GreaterThan</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
-          <command:parameterValue required="true">String[]</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-TimeSpan</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ge">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ge">
           <maml:name>GreaterThanOrEqualTo</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
-          <command:parameterValue required="true">String[]</command:parameterValue>
+          <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
         <maml:name>Value</maml:name>
         <maml:description>
           <maml:para>The value to test.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -139,7 +139,7 @@ A return value of $null indicates an invalid test. See each parameter for specif
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>IsTimeSpan</maml:name>
         <maml:description>
           <maml:para>Tests if the value is a TimeSpan value.
@@ -150,14 +150,14 @@ $null          never
 $false         value is not a TimeSpan
 $true          value is a TimeSpan</maml:para>
         </maml:description>
-        <command:parameterValue required="false">SwitchParameter</command:parameterValue>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="eq">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="eq">
         <maml:name>Equals</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is equal to the second.
@@ -172,7 +172,7 @@ $true          System.TimeSpan.Compare(TimeSpan, TimeSpan) == 0
 
 Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -180,7 +180,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ne">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
         <maml:name>NotEquals</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is not equal to the second.
@@ -195,7 +195,7 @@ $true          System.TimeSpan.Compare(TimeSpan, TimeSpan) != 0
 
 Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -203,7 +203,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="lt">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="lt">
         <maml:name>LessThan</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is less than the second.
@@ -218,7 +218,7 @@ $true          System.TimeSpan.Compare(TimeSpan, TimeSpan) &lt; 0
 
 Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -226,7 +226,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="le">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="le">
         <maml:name>LessThanOrEqualTo</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is less than or equal to the second.
@@ -241,7 +241,7 @@ $true          System.TimeSpan.Compare(TimeSpan, TimeSpan) &lt;= 0
 
 Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -249,7 +249,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="gt">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="gt">
         <maml:name>GreaterThan</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is greater than the second.
@@ -264,7 +264,7 @@ $true          System.TimeSpan.Compare(TimeSpan, TimeSpan) &gt; 0
 
 Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -272,7 +272,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ge">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ge">
         <maml:name>GreaterThanOrEqualTo</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is greater than or equal to the second.
@@ -287,7 +287,7 @@ $true          System.TimeSpan.Compare(TimeSpan, TimeSpan) &gt;= 0
 
 Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
           <maml:uri />
@@ -295,7 +295,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Property</maml:name>
         <maml:description>
           <maml:para>Compares the TimeSpan values using the specified properties.
@@ -321,7 +321,7 @@ PowerShell Note:
 Synthetic properties are not used in comparisons.
 For example, when the hours property is compared, an expression like $a.psbase.hours is used instead of $a.hours.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">String[]</command:parameterValue>
+        <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         <dev:type>
           <maml:name>String[]</maml:name>
           <maml:uri />
