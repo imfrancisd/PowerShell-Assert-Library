@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <helpItems schema="maml">
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10">
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
       <command:name>Test-String</command:name>
       <maml:description>
@@ -330,8 +330,7 @@ For case-sensitive string comparisons, this function may give a different result
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -352,8 +351,7 @@ $true          the value is a string*
         <command:parameterValue required="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
@@ -375,8 +373,7 @@ $true          String method IndexOf(String, StringComparison) &gt;= 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -399,8 +396,7 @@ $true          String method IndexOf(String, StringComparison) &lt; 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -423,8 +419,7 @@ $true          String method StartsWith(String, StringComparison) returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -447,8 +442,7 @@ $true          String method StartsWith(String, StringComparison) returns $false
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -471,8 +465,7 @@ $true          String method EndsWith(String, StringComparison) returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -495,8 +488,7 @@ $true          String method EndsWith(String, StringComparison) returns $false
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -519,8 +511,7 @@ $true          String.Equals(String, String, StringComparison) returns $true
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -543,8 +534,7 @@ $true          String.Equals(String, String, StringComparison) returns $false
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -567,8 +557,7 @@ $true          String.Compare(String, String, StringComparison) &lt; 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -591,8 +580,7 @@ $true          String.Compare(String, String, StringComparison) &lt;= 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -615,8 +603,7 @@ $true          String.Compare(String, String, StringComparison) &gt; 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -639,8 +626,7 @@ $true          String.Compare(String, String, StringComparison) &gt;= 0
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -663,8 +649,7 @@ as the default.</maml:para>
         <command:parameterValue required="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
@@ -678,8 +663,7 @@ See the -Normalization parameter for more details.</maml:para>
         <command:parameterValue required="false">SwitchParameter</command:parameterValue>
         <dev:type>
           <maml:name>SwitchParameter</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
@@ -705,8 +689,7 @@ For more details, see the MSDN documentation for the System.String methods calle
         <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         <dev:type>
           <maml:name>NormalizationForm[]</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -718,8 +701,7 @@ For more details, see the MSDN documentation for the System.String methods calle
           <maml:name>None
 
 This function does not accept input from the pipeline.</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
       </command:inputType>
     </command:inputTypes>
@@ -729,8 +711,7 @@ This function does not accept input from the pipeline.</maml:name>
           <maml:name>System.Boolean
 
 This function returns a Boolean if the test can be performed.</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
       </command:returnValue>
       <command:returnValue>
@@ -738,8 +719,7 @@ This function returns a Boolean if the test can be performed.</maml:name>
           <maml:name>$null
 
 This function returns $null if the test cannot be performed.</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
       </command:returnValue>
     </command:returnValues>
@@ -765,14 +745,10 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)</maml:para>
         <dev:code>Test-String $a</dev:code>
         <dev:remarks>
           <maml:para>Tests if $a is a string.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -786,14 +762,10 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)</maml:para>
 
 Returns the result of ([string]::Equals($a, $b, [stringcomparison]::ordinalignorecase)) if $a and $b are strings.
 Returns $null if $a or $b is not a string.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -807,14 +779,10 @@ Returns $null if $a or $b is not a string.</maml:para>
 
 Returns the result of ([string]::Equals($a, $b, [stringcomparison]::ordinal)) if $a and $b are strings.
 Returns $null if $a or $b is not a string.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -828,14 +796,10 @@ Returns $null if $a or $b is not a string.</maml:para>
 Returns $false if $a is not a string that is compatible with Normalization FormC.
 
 NOTE: See the -Normalization parameter for more details.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -849,14 +813,10 @@ NOTE: See the -Normalization parameter for more details.</maml:para>
 Returns $null if $a does not have a compatible Normalization with $b.
 
 NOTE: See the -Normalization parameter for more details.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -870,47 +830,37 @@ NOTE: See the -Normalization parameter for more details.</maml:para>
 Returns $null if $a or $b is not a string that is compatible with Normalization FormKC or Normalization FormKD.
 
 NOTE: See the -Normalization parameter for more details.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
     </command:examples>
     <maml:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Test-DateTime</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Guid</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Number</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Text</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-TimeSpan</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-Version</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
     </maml:relatedLinks>
   </command:command>

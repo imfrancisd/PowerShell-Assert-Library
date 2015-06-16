@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <helpItems schema="maml">
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10">
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
       <command:name>Assert-Exists</command:name>
       <maml:description>
@@ -46,8 +46,7 @@ The order in which the items in the collection are tested is determined by the c
         <command:parameterValue required="true">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -66,8 +65,7 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
         <command:parameterValue required="true">ScriptBlock</command:parameterValue>
         <dev:type>
           <maml:name>ScriptBlock</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>
         </dev:defaultValue>
@@ -79,8 +77,7 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
           <maml:name>None
 
 This function does not accept input from the pipeline.</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
       </command:inputType>
     </command:inputTypes>
@@ -88,8 +85,7 @@ This function does not accept input from the pipeline.</maml:name>
       <command:returnValue>
         <dev:type>
           <maml:name>None</maml:name>
-          <maml:uri>
-          </maml:uri>
+          <maml:uri />
         </dev:type>
       </command:returnValue>
     </command:returnValues>
@@ -116,14 +112,10 @@ Assert-Exists $numbers {param($n) $n % 2 -eq 0}</maml:para>
         <dev:code>Assert-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}</dev:code>
         <dev:remarks>
           <maml:para>Assert that at least one item in the array is greater than 3.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -137,14 +129,10 @@ Assert-Exists $numbers {param($n) $n % 2 -eq 0}</maml:para>
 
 Note:
 This assertion will always fail because the array is empty.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -156,14 +144,10 @@ This assertion will always fail because the array is empty.</maml:para>
         <dev:remarks>
           <maml:para>Assert that at least one entry in the hashtable has a value greater than 25.
 The -Verbose switch will output the result of the assertion to the Verbose stream.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -175,92 +159,73 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
         <dev:remarks>
           <maml:para>Assert that at least one entry in the hashtable has a value greater than 25.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
     </command:examples>
     <maml:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Assert-True</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-False</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-Null</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotTrue</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotFalse</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotNull</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-All</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotExists</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineAll</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineExists</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineNotExists</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineEmpty</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineAny</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineSingle</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineCount</maml:linkText>
-        <maml:uri>
-        </maml:uri>
+        <maml:uri />
       </maml:navigationLink>
     </maml:relatedLinks>
   </command:command>
