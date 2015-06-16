@@ -106,8 +106,7 @@ The argument for this parameter must come from the pipeline.</maml:para>
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
         <maml:name>Equals</maml:name>

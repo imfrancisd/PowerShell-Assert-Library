@@ -49,8 +49,7 @@ The argument for this parameter must come from the pipeline.</maml:para>
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
     </command:parameters>
     <command:inputTypes>

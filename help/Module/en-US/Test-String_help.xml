@@ -975,8 +975,7 @@ For more details, see the MSDN documentation for the System.String methods calle
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>IsString</maml:name>
@@ -1018,8 +1017,7 @@ $true          String method IndexOf(String, StringComparison) &gt;= 0
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>NotContains</maml:name>
@@ -1041,8 +1039,7 @@ $true          String method IndexOf(String, StringComparison) &lt; 0
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>StartsWith</maml:name>
@@ -1064,8 +1061,7 @@ $true          String method StartsWith(String, StringComparison) returns $true
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>NotStartsWith</maml:name>
@@ -1087,8 +1083,7 @@ $true          String method StartsWith(String, StringComparison) returns $false
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>EndsWith</maml:name>
@@ -1110,8 +1105,7 @@ $true          String method EndsWith(String, StringComparison) returns $true
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>NotEndsWith</maml:name>
@@ -1133,8 +1127,7 @@ $true          String method EndsWith(String, StringComparison) returns $false
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="eq">
         <maml:name>Equals</maml:name>
@@ -1156,8 +1149,7 @@ $true          String.Equals(String, String, StringComparison) returns $true
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
         <maml:name>NotEquals</maml:name>
@@ -1179,8 +1171,7 @@ $true          String.Equals(String, String, StringComparison) returns $false
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="lt">
         <maml:name>LessThan</maml:name>
@@ -1202,8 +1193,7 @@ $true          String.Compare(String, String, StringComparison) &lt; 0
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="le">
         <maml:name>LessThanOrEqualTo</maml:name>
@@ -1225,8 +1215,7 @@ $true          String.Compare(String, String, StringComparison) &lt;= 0
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="gt">
         <maml:name>GreaterThan</maml:name>
@@ -1248,8 +1237,7 @@ $true          String.Compare(String, String, StringComparison) &gt; 0
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ge">
         <maml:name>GreaterThanOrEqualTo</maml:name>
@@ -1271,8 +1259,7 @@ $true          String.Compare(String, String, StringComparison) &gt;= 0
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>CaseSensitive</maml:name>
@@ -1334,8 +1321,7 @@ For more details, see the MSDN documentation for the System.String methods calle
           <maml:name>NormalizationForm[]</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
     </command:parameters>
     <command:inputTypes>

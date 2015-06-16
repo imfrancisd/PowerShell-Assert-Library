@@ -388,8 +388,7 @@ For example, when the hours property is compared, an expression like $a.psbase.h
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>IsTimeSpan</maml:name>
@@ -429,8 +428,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
         <maml:name>NotEquals</maml:name>
@@ -452,8 +450,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="lt">
         <maml:name>LessThan</maml:name>
@@ -475,8 +472,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="le">
         <maml:name>LessThanOrEqualTo</maml:name>
@@ -498,8 +494,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="gt">
         <maml:name>GreaterThan</maml:name>
@@ -521,8 +516,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ge">
         <maml:name>GreaterThanOrEqualTo</maml:name>
@@ -544,8 +538,7 @@ Note: If the -Property parameter is specified, a different comparison method is 
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Property</maml:name>
@@ -578,8 +571,7 @@ For example, when the hours property is compared, an expression like $a.psbase.h
           <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
     </command:parameters>
     <command:inputTypes>

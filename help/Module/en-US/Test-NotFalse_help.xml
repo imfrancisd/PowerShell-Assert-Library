@@ -46,8 +46,7 @@
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
     </command:parameters>
     <command:inputTypes>

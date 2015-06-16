@@ -303,8 +303,7 @@ function Add-MamlHelpCommand
                         [System.Void]$cmdParameter.AppendChild($cmdParameterType)
 
                         $cmdParameterDefaultValue = $shared.xmlDoc.CreateElement('dev', 'defaultValue', $shared.devUri)
-                            $cmdParameterDefaultValueValue = $shared.xmlDoc.CreateTextNode($parameter.defaultValue)
-                            [System.Void]$cmdParameterDefaultValue.AppendChild($cmdParameterDefaultValueValue)
+                            _addTextElement $cmdParameterDefaultValue $parameter.defaultValue
                         [System.Void]$cmdParameter.AppendChild($cmdParameterDefaultValue)
 
                     [System.Void]$cmdParameters.AppendChild($cmdParameter)
@@ -427,6 +426,11 @@ function Add-MamlHelpCommand
                 }
             [System.Void]$cmd.AppendChild($cmdExamples)
         }
+
+        #===========
+        #PSMaml Note
+        #===========
+        #Related Links may be present?
 
         if ($fullHelpHasRelatedLinks) {
             $cmdRelatedLinks = $shared.xmlDoc.CreateElement('maml', 'relatedLinks', $shared.mamlUri)

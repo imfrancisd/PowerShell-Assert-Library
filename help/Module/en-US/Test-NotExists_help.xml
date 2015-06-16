@@ -65,8 +65,7 @@ The order in which the items in the collection are tested is determined by the c
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2" aliases="">
         <maml:name>Predicate</maml:name>
@@ -84,8 +83,7 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
           <maml:name>ScriptBlock</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
     </command:parameters>
     <command:inputTypes>

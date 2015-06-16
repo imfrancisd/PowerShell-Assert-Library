@@ -591,8 +591,7 @@ For example:
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>IsNumber</maml:name>
@@ -635,8 +634,7 @@ $true          PowerShell's -eq operator returns $true
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
         <maml:name>NotEquals</maml:name>
@@ -659,8 +657,7 @@ $true          PowerShell's -ne operator returns $true
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="lt">
         <maml:name>LessThan</maml:name>
@@ -683,8 +680,7 @@ $true          PowerShell's -lt operator returns $true
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="le">
         <maml:name>LessThanOrEqualTo</maml:name>
@@ -707,8 +703,7 @@ $true          PowerShell's -le operator returns $true
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="gt">
         <maml:name>GreaterThan</maml:name>
@@ -731,8 +726,7 @@ $true          PowerShell's -gt operator returns $true
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ge">
         <maml:name>GreaterThanOrEqualTo</maml:name>
@@ -755,8 +749,7 @@ $true          PowerShell's -ge operator returns $true
           <maml:name>Object</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>MatchType</maml:name>
@@ -819,8 +812,7 @@ For example:
           <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
