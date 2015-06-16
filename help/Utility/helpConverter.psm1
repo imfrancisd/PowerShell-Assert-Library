@@ -63,16 +63,13 @@ function Clear-MamlHelp
 
         $xmlDec = $xmlDoc.CreateXmlDeclaration('1.0', 'utf-8', '')
         [System.Void]$xmlDoc.AppendChild($xmlDec)
+        $shared.xmlDoc = $xmlDoc
 
-        $xmlRoot = $xmlDoc.CreateElement('helpItems')
-            $xmlAttr = $xmlDoc.CreateAttribute('schema')
-                $xmlAttrValue = $xmlDoc.CreateTextNode('maml')
-                [System.Void]$xmlAttr.AppendChild($xmlAttrValue)
-            [System.Void]$xmlRoot.Attributes.Append($xmlAttr)
+        $xmlRoot = $xmlDoc.CreateElement('helpItems', 'http://msh')
+            _addAttribute $xmlRoot 'xmlns' 'http://msh'
+            _addAttribute $xmlRoot 'schema' 'maml'
         [System.Void]$xmlDoc.AppendChild($xmlRoot)
-
-    $shared.xmlDoc = $xmlDoc
-    $shared.xmlRoot = $xmlRoot
+        $shared.xmlRoot = $xmlRoot
 }
 
 function Get-MamlHelp
