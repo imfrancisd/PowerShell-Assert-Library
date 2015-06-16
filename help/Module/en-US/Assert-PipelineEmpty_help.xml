@@ -53,7 +53,13 @@ The argument for this parameter must come from the pipeline.</maml:para>
 
 This function accepts any kind of object from the pipeline.</maml:name>
           <maml:uri />
+          <maml:description>
+            <maml:para />
+          </maml:description>
         </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
       </command:inputType>
     </command:inputTypes>
     <command:returnValues>
@@ -61,7 +67,13 @@ This function accepts any kind of object from the pipeline.</maml:name>
         <dev:type>
           <maml:name>None</maml:name>
           <maml:uri />
+          <maml:description>
+            <maml:para />
+          </maml:description>
         </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
       </command:returnValue>
     </command:returnValues>
     <maml:alertSet>

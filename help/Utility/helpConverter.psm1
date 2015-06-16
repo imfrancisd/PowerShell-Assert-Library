@@ -292,7 +292,15 @@ function Add-MamlHelpCommand
                                 _addTextElement $cmdInputTypeUri $inputType.type.uri
                             [System.Void]$cmdInputType.AppendChild($cmdInputTypeUri)
 
+                            $cmdInputTypeDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+                                _addParaCollection $cmdInputTypeDescription $inputType.type.description
+                            [System.Void]$cmdInputType.AppendChild($cmdInputTypeDescription)
+
                         [System.Void]$cmdInput.AppendChild($cmdInputType)
+
+                        $cmdInputDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+                            _addParaCollection $cmdInputDescription $inputType.description
+                        [System.Void]$cmdInput.AppendChild($cmdInputDescription)
 
                     [System.Void]$cmdInputs.AppendChild($cmdInput)
                 }
@@ -319,7 +327,15 @@ function Add-MamlHelpCommand
                                 _addTextElement $cmdOutputTypeUri $outputType.type.uri
                             [System.Void]$cmdOutputType.AppendChild($cmdOutputTypeUri)
 
+                            $cmdOutputTypeDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+                                _addParaCollection $cmdOutputTypeDescription $outputType.type.description
+                            [System.Void]$cmdOutputType.AppendChild($cmdOutputTypeDescription)
+
                         [System.Void]$cmdOutput.AppendChild($cmdOutputType)
+
+                        $cmdOutputDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+                            _addParaCollection $cmdOutputDescription $outputType.description
+                        [System.Void]$cmdOutput.AppendChild($cmdOutputDescription)
 
                     [System.Void]$cmdOutputs.AppendChild($cmdOutput)
                 }
@@ -329,7 +345,7 @@ function Add-MamlHelpCommand
         #===========
         #PSMaml Note
         #===========
-        #Outputs may be present?
+        #Notes may be present?
 
         if ($fullHelpHasNotes) {
             $cmdNotes = $shared.xmlDoc.CreateElement('maml', 'alertSet', $shared.mamlUri)

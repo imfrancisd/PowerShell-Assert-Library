@@ -126,7 +126,13 @@ A negative number will always cause this assertion to fail.</maml:para>
 
 This function accepts any kind of object from the pipeline.</maml:name>
           <maml:uri />
+          <maml:description>
+            <maml:para />
+          </maml:description>
         </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
       </command:inputType>
     </command:inputTypes>
     <command:returnValues>
@@ -136,7 +142,13 @@ This function accepts any kind of object from the pipeline.</maml:name>
 
 If the assertion passes, this function outputs the objects from the pipeline input.</maml:name>
           <maml:uri />
+          <maml:description>
+            <maml:para />
+          </maml:description>
         </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
       </command:returnValue>
     </command:returnValues>
     <maml:alertSet>
