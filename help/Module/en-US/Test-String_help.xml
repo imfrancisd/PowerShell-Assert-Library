@@ -56,273 +56,273 @@ For case-sensitive string comparisons, this function may give a different result
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>IsString</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Contains</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotContains</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>StartsWith</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotStartsWith</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>EndsWith</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotEndsWith</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="eq">
           <maml:name>Equals</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ne">
           <maml:name>NotEquals</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="lt">
           <maml:name>LessThan</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="le">
           <maml:name>LessThanOrEqualTo</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="gt">
           <maml:name>GreaterThan</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-String</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ge">
           <maml:name>GreaterThanOrEqualTo</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
           <command:parameterValue required="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
         <maml:name>Value</maml:name>
         <maml:description>
           <maml:para>The value to test.</maml:para>
@@ -335,7 +335,7 @@ For case-sensitive string comparisons, this function may give a different result
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>IsString</maml:name>
         <maml:description>
           <maml:para>Tests if the value is a string.
@@ -355,7 +355,7 @@ $true          the value is a string*
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Contains</maml:name>
         <maml:description>
           <maml:para>Tests if the first string contains the second.
@@ -378,7 +378,7 @@ $true          String method IndexOf(String, StringComparison) &gt;= 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>NotContains</maml:name>
         <maml:description>
           <maml:para>Tests if the string does not contain the second.
@@ -401,7 +401,7 @@ $true          String method IndexOf(String, StringComparison) &lt; 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>StartsWith</maml:name>
         <maml:description>
           <maml:para>Tests if the first string starts with the second string.
@@ -424,7 +424,7 @@ $true          String method StartsWith(String, StringComparison) returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>NotStartsWith</maml:name>
         <maml:description>
           <maml:para>Tests if the first string does not start with the second string.
@@ -447,7 +447,7 @@ $true          String method StartsWith(String, StringComparison) returns $false
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>EndsWith</maml:name>
         <maml:description>
           <maml:para>Tests if the first string ends with the second string.
@@ -470,7 +470,7 @@ $true          String method EndsWith(String, StringComparison) returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>NotEndsWith</maml:name>
         <maml:description>
           <maml:para>Tests if the first string does not end with the second string
@@ -493,7 +493,7 @@ $true          String method EndsWith(String, StringComparison) returns $false
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="eq">
         <maml:name>Equals</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is equal to the second.
@@ -516,7 +516,7 @@ $true          String.Equals(String, String, StringComparison) returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ne">
         <maml:name>NotEquals</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is not equal to the second.
@@ -539,7 +539,7 @@ $true          String.Equals(String, String, StringComparison) returns $false
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="lt">
         <maml:name>LessThan</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is less than the second.
@@ -562,7 +562,7 @@ $true          String.Compare(String, String, StringComparison) &lt; 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="le">
         <maml:name>LessThanOrEqualTo</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is less than or equal to the second.
@@ -585,7 +585,7 @@ $true          String.Compare(String, String, StringComparison) &lt;= 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="gt">
         <maml:name>GreaterThan</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is greater than the second.
@@ -608,7 +608,7 @@ $true          String.Compare(String, String, StringComparison) &gt; 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ge">
         <maml:name>GreaterThanOrEqualTo</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is greater than or equal to the second.
@@ -631,7 +631,7 @@ $true          String.Compare(String, String, StringComparison) &gt;= 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>CaseSensitive</maml:name>
         <maml:description>
           <maml:para>Makes the comparisons case sensitive.
@@ -653,7 +653,7 @@ as the default.</maml:para>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>FormCompatible</maml:name>
         <maml:description>
           <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
@@ -667,7 +667,7 @@ See the -Normalization parameter for more details.</maml:para>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Normalization</maml:name>
         <maml:description>
           <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.

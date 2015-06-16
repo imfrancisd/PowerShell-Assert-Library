@@ -28,18 +28,18 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-NotExists</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Collection</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="2">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="2" aliases="">
           <maml:name>Predicate</maml:name>
           <command:parameterValue required="true">ScriptBlock</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
         <maml:name>Collection</maml:name>
         <maml:description>
           <maml:para>The collection of items used to test the predicate.
@@ -54,7 +54,7 @@ The order in which the items in the collection are tested is determined by the c
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="2">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="2" aliases="">
         <maml:name>Predicate</maml:name>
         <maml:description>
           <maml:para>The script block that will be invoked on each item in the collection.

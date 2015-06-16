@@ -31,129 +31,129 @@ NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by 
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-Number</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>IsNumber</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Number</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="eq">
           <maml:name>Equals</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Number</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ne">
           <maml:name>NotEquals</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Number</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="lt">
           <maml:name>LessThan</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Number</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="le">
           <maml:name>LessThanOrEqualTo</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Number</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="gt">
           <maml:name>GreaterThan</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Number</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ge">
           <maml:name>GreaterThanOrEqualTo</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
         <maml:name>Value</maml:name>
         <maml:description>
           <maml:para>The value to test.</maml:para>
@@ -166,7 +166,7 @@ NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by 
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>IsNumber</maml:name>
         <maml:description>
           <maml:para>Tests if the value is a number.
@@ -186,7 +186,7 @@ $true          value is a number*
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="eq">
         <maml:name>Equals</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is equal to the second.
@@ -210,7 +210,7 @@ $true          PowerShell's -eq operator returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ne">
         <maml:name>NotEquals</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is not equal to the second.
@@ -234,7 +234,7 @@ $true          PowerShell's -ne operator returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="lt">
         <maml:name>LessThan</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is less than the second.
@@ -258,7 +258,7 @@ $true          PowerShell's -lt operator returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="le">
         <maml:name>LessThanOrEqualTo</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is less than or equal to the second.
@@ -282,7 +282,7 @@ $true          PowerShell's -le operator returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="gt">
         <maml:name>GreaterThan</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is greater than the second.
@@ -306,7 +306,7 @@ $true          PowerShell's -gt operator returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ge">
         <maml:name>GreaterThanOrEqualTo</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is greater than or equal to the second.
@@ -330,7 +330,7 @@ $true          PowerShell's -ge operator returns $true
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>MatchType</maml:name>
         <maml:description>
           <maml:para>Causes the comparison of two numbers to return $null if they do not have the same type.</maml:para>
@@ -342,7 +342,7 @@ $true          PowerShell's -ge operator returns $true
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Type</maml:name>
         <maml:description>
           <maml:para>One or more strings that can be used to define which numeric types are to be considered numeric types.

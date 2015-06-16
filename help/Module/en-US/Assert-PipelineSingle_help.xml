@@ -23,14 +23,14 @@ This function throws an error if any of the following conditions are met:
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Assert-PipelineSingle</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="1" aliases="">
           <maml:name>InputObject</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="1">
+      <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="1" aliases="">
         <maml:name>InputObject</maml:name>
         <maml:description>
           <maml:para>The object from the pipeline.

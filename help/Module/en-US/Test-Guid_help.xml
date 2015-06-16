@@ -26,175 +26,175 @@ A return value of $null indicates an invalid test. See each parameter for specif
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-Guid</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>IsGuid</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Variant</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Version</maml:name>
           <command:parameterValue required="true">Int32[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Guid</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="eq">
           <maml:name>Equals</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVariant</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVersion</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Variant</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Version</maml:name>
           <command:parameterValue required="true">Int32[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Guid</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ne">
           <maml:name>NotEquals</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVariant</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVersion</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Variant</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Version</maml:name>
           <command:parameterValue required="true">Int32[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Guid</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="lt">
           <maml:name>LessThan</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVariant</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVersion</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Variant</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Version</maml:name>
           <command:parameterValue required="true">Int32[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Guid</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="le">
           <maml:name>LessThanOrEqualTo</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVariant</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVersion</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Variant</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Version</maml:name>
           <command:parameterValue required="true">Int32[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Guid</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="gt">
           <maml:name>GreaterThan</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVariant</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVersion</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Variant</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Version</maml:name>
           <command:parameterValue required="true">Int32[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Guid</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ge">
           <maml:name>GreaterThanOrEqualTo</maml:name>
           <command:parameterValue required="true">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVariant</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchVersion</maml:name>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Variant</maml:name>
           <command:parameterValue required="true">String[]</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Version</maml:name>
           <command:parameterValue required="true">Int32[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1" aliases="">
         <maml:name>Value</maml:name>
         <maml:description>
           <maml:para>The value to test.</maml:para>
@@ -207,7 +207,7 @@ A return value of $null indicates an invalid test. See each parameter for specif
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>IsGuid</maml:name>
         <maml:description>
           <maml:para>Tests if the value is a GUID.
@@ -227,7 +227,7 @@ $true          value is a GUID*
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="eq">
         <maml:name>Equals</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is equal to the second.
@@ -250,7 +250,7 @@ $true          System.Guid method CompareTo(Guid) == 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ne">
         <maml:name>NotEquals</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is not equal to the second.
@@ -273,7 +273,7 @@ $true          System.Guid method CompareTo(Guid) != 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="lt">
         <maml:name>LessThan</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is less than the second.
@@ -296,7 +296,7 @@ $true          System.Guid method CompareTo(Guid) &lt; 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="le">
         <maml:name>LessThanOrEqualTo</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is less than or equal to the second.
@@ -319,7 +319,7 @@ $true          System.Guid method CompareTo(Guid) &lt;= 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="gt">
         <maml:name>GreaterThan</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is greater than the second.
@@ -342,7 +342,7 @@ $true          System.Guid method CompareTo(Guid) &gt; 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="named" aliases="ge">
         <maml:name>GreaterThanOrEqualTo</maml:name>
         <maml:description>
           <maml:para>Tests if the first value is greater than or equal to the second.
@@ -365,7 +365,7 @@ $true          System.Guid method CompareTo(Guid) &gt;= 0
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>MatchVariant</maml:name>
         <maml:description>
           <maml:para>Causes the comparison of two GUIDs to return $null if they do not have an equivalent variant.
@@ -379,7 +379,7 @@ $true          System.Guid method CompareTo(Guid) &gt;= 0
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>MatchVersion</maml:name>
         <maml:description>
           <maml:para>Causes the comparison of two GUIDs to return $null if they do not have the same value in their version fields.
@@ -393,7 +393,7 @@ $true          System.Guid method CompareTo(Guid) &gt;= 0
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Variant</maml:name>
         <maml:description>
           <maml:para>One or more Strings that can be used to define which variants of GUIDs are to be considered GUIDs.
@@ -423,7 +423,7 @@ Specifying this parameter with a $null or an empty array will cause this functio
         <dev:defaultValue>
         </dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Version</maml:name>
         <maml:description>
           <maml:para>One or more integers that can be used to define which versions of GUIDs are to be considered GUIDs.

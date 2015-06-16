@@ -203,6 +203,7 @@ function Add-MamlHelpCommand
                                 _addAttribute $cmdSyntaxItemParameter 'globbing' $syntaxItemParameter.globbing
                                 _addAttribute $cmdSyntaxItemParameter 'pipelineInput' $syntaxItemParameter.pipelineInput
                                 _addAttribute $cmdSyntaxItemParameter 'position' $syntaxItemParameter.position
+                                _addAttribute $cmdSyntaxItemParameter 'aliases' ([System.String]::Join(',', $fullCmd.Parameters[$syntaxItemParameter.name].Aliases))
 
                                 $cmdSyntaxItemParameterName = $shared.xmlDoc.CreateElement('maml', 'name', $shared.mamlUri)
                                     _addTextElement $cmdSyntaxItemParameterName $syntaxItemParameter.name
@@ -238,6 +239,7 @@ function Add-MamlHelpCommand
                         _addAttribute $cmdParameter 'globbing' $parameter.globbing
                         _addAttribute $cmdParameter 'pipelineInput' $parameter.pipelineInput
                         _addAttribute $cmdParameter 'position' $parameter.position
+                        _addAttribute $cmdParameter 'aliases' ([System.String]::Join(',', $fullCmd.Parameters[$parameter.name].Aliases))
 
                         $cmdParameterName = $shared.xmlDoc.CreateElement('maml', 'name', $shared.mamlUri)
                             _addTextElement $cmdParameterName $parameter.name
