@@ -37,248 +37,704 @@ Use Test-String if you want text operators that are not affected by language and
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>IsText</maml:name>
+          <maml:description>
+            <maml:para>Tests if the value is text.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         value is not of type System.String
+$true          value is of type System.String</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Match</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value matches the regular expression pattern in the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         Regex.IsMatch(String, String, RegexOptions) returns $false
+$true          Regex.IsMatch(String, String, RegexOptions) returns $true
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotMatch</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value does not match the regular expression pattern in the second.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         Regex.IsMatch(String, String, RegexOptions) returns $true
+$true          Regex.IsMatch(String, String, RegexOptions) returns $false
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Contains</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value contains the second.
+
+Note: The empty string is inside all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method IndexOf(String, StringComparison) &lt; 0
+$true          String method IndexOf(String, StringComparison) &gt;= 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotContains</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value does not contain the second.
+
+Note: The empty string is inside all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method IndexOf(String, StringComparison) &gt;= 0
+$true          String method IndexOf(String, StringComparison) &lt; 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>StartsWith</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value starts with the second.
+
+Note: The empty string starts all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method StartsWith(String, StringComparison) returns $false
+$true          String method StartsWith(String, StringComparison) returns $true
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotStartsWith</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value does not start with the second.
+
+Note: The empty string starts all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method StartsWith(String, StringComparison) returns $true
+$true          String method StartsWith(String, StringComparison) returns $false
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>EndsWith</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value ends with the second.
+
+Note: The empty string ends all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method EndsWith(String, StringComparison) returns $false
+$true          String method EndsWith(String, StringComparison) returns $true
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotEndsWith</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value does not end with the second.
+
+Note: The empty string ends all texts.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String method EndsWith(String, StringComparison) returns $true
+$true          String method EndsWith(String, StringComparison) returns $false
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="eq">
           <maml:name>Equals</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is equal to the second.
+
+The -Equals parameter has the alias -eq.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Equals(String, String, StringComparison) returns $false
+$true          String.Equals(String, String, StringComparison) returns $true
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
           <maml:name>NotEquals</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is not equal to the second.
+
+The -NotEquals parameter has the alias -ne.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Equals(String, String, StringComparison) returns $true
+$true          String.Equals(String, String, StringComparison) returns $false
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="lt">
           <maml:name>LessThan</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is less than the second.
+
+The -LessThan parameter has the alias -lt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Compare(String, String, StringComparison) &gt;= 0
+$true          String.Compare(String, String, StringComparison) &lt; 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="le">
           <maml:name>LessThanOrEqualTo</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is less than or equal to the second.
+
+The -LessThanOrEqualTo parameter has the alias -le.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Compare(String, String, StringComparison) &gt; 0
+$true          String.Compare(String, String, StringComparison) &lt;= 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="gt">
           <maml:name>GreaterThan</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is greater than the second.
+
+The -GreaterThan parameter has the alias -gt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Compare(String, String, StringComparison) &lt;= 0
+$true          String.Compare(String, String, StringComparison) &gt; 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Text</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ge">
           <maml:name>GreaterThanOrEqualTo</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is greater than or equal to the second.
+
+The -GreaterThanOrEqualTo parameter has the alias -ge.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not of type System.String
+$false         String.Compare(String, String, StringComparison) &lt; 0
+$true          String.Compare(String, String, StringComparison) &gt;= 0
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators case-sensitive.
+
+If this parameter is not specified, the operators will be case-insensitive.
+
+*See the -UseCurrentCulture parameter for details about how language and culture can affect this parameter.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>UseCurrentCulture</maml:name>
+          <maml:description>
+            <maml:para>Makes the operators use the language rules of the current culture.
+
+If this parameter is not specified, the operators will use the language rules from System.Globalization.CultureInfo.InvariantCulture. Operators using InvariantCulture will give the same results when the operations are run in different computers.
+
+Note that the culture (including InvariantCulture) defines rules such as the ordering of the characters, the casing of the characters, and disturbingly, rules such as which characters can be ignored in text operations. This means that two string that are equal in one culture may not be equal in another culture. Even operations using InvariantCulture can compare two strings of different lengths as equal because the strings contain characters which are considered ignorable by the culture.
+
+See the MSDN documentation for System.Globalization.CultureInfo for more information.</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>

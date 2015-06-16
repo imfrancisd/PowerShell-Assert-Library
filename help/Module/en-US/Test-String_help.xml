@@ -58,13 +58,44 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>IsString</maml:name>
+          <maml:description>
+            <maml:para>Tests if the value is a string.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         the value is not a string*
+$true          the value is a string*
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -72,20 +103,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Contains</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first string contains the second.
+
+Note: The empty string is inside all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method IndexOf(String, StringComparison) &lt; 0
+$true          String method IndexOf(String, StringComparison) &gt;= 0
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -93,20 +175,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotContains</maml:name>
+          <maml:description>
+            <maml:para>Tests if the string does not contain the second.
+
+Note: The empty string is inside all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method IndexOf(String, StringComparison) &gt;= 0
+$true          String method IndexOf(String, StringComparison) &lt; 0
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -114,20 +247,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>StartsWith</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first string starts with the second string.
+
+Note: The empty string starts all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method StartsWith(String, StringComparison) returns $false
+$true          String method StartsWith(String, StringComparison) returns $true
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -135,20 +319,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotStartsWith</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first string does not start with the second string.
+
+Note: The empty string starts all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method StartsWith(String, StringComparison) returns $true
+$true          String method StartsWith(String, StringComparison) returns $false
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -156,20 +391,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>EndsWith</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first string ends with the second string.
+
+Note: The empty string ends all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method EndsWith(String, StringComparison) returns $false
+$true          String method EndsWith(String, StringComparison) returns $true
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -177,20 +463,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>NotEndsWith</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first string does not end with the second string
+
+Note: The empty string ends all strings.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String method EndsWith(String, StringComparison) returns $true
+$true          String method EndsWith(String, StringComparison) returns $false
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -198,20 +535,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="eq">
           <maml:name>Equals</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is equal to the second.
+
+The -Equals parameter has the alias -eq.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Equals(String, String, StringComparison) returns $false
+$true          String.Equals(String, String, StringComparison) returns $true
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -219,20 +607,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
           <maml:name>NotEquals</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is not equal to the second.
+
+The -NotEquals parameter has the alias -ne.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Equals(String, String, StringComparison) returns $true
+$true          String.Equals(String, String, StringComparison) returns $false
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -240,20 +679,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="lt">
           <maml:name>LessThan</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is less than the second.
+
+The -LessThan parameter has the alias -lt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) &gt;= 0
+$true          String.Compare(String, String, StringComparison) &lt; 0
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -261,20 +751,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="le">
           <maml:name>LessThanOrEqualTo</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is less than or equal to the second.
+
+The -LessThanOrEqualTo parameter has the alias -le.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) &gt; 0
+$true          String.Compare(String, String, StringComparison) &lt;= 0
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -282,20 +823,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="gt">
           <maml:name>GreaterThan</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is greater than the second.
+
+The -GreaterThan parameter has the alias -gt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) &lt;= 0
+$true          String.Compare(String, String, StringComparison) &gt; 0
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -303,20 +895,71 @@ For case-sensitive string comparisons, this function may give a different result
         <maml:name>Test-String</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ge">
           <maml:name>GreaterThanOrEqualTo</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is greater than or equal to the second.
+
+The -GreaterThanOrEqualTo parameter has the alias -ge.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a string*
+$false         String.Compare(String, String, StringComparison) &lt; 0
+$true          String.Compare(String, String, StringComparison) &gt;= 0
+
+*See the -Normalization parameter for more details</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>CaseSensitive</maml:name>
+          <maml:description>
+            <maml:para>Makes the comparisons case sensitive.
+
+If this switch is set, the comparisons use
+
+    [System.StringComparison]::Ordinal
+
+otherwise, the comparisons use
+
+    [System.StringComparison]::OrdinalIgnoreCase
+
+as the default.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>FormCompatible</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two strings to return $null if they are not normalized to compatible forms.
+
+See the -Normalization parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Normalization</maml:name>
+          <maml:description>
+            <maml:para>One or more Enums that can be used to define which form of strings are to be considered strings.
+
+Normalization is a way of making sure that a Unicode character will only have one binary representation. This allows strings to be compared using only their binary representations. Comparing strings using only their binary representation is often desirable in scripts and programs because these comparisons are not affected by the rules of different cultures and languages.
+
+The Normalization Forms are: FormC, FormD, FormKC, and FormKD.
+
+You can use this parameter to specify which of the forms above a string must have in order for the string to be considered a string.
+
+Note:
+* Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-strings.
+
+* This function does not normalize strings to a common form before performing the comparison.
+
+Reference:
+For more details, see the MSDN documentation for the System.String methods called Normalize() and IsNormalized().</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">NormalizationForm[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>

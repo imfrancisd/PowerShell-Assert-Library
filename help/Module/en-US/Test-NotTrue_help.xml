@@ -28,6 +28,9 @@
         <maml:name>Test-NotTrue</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>

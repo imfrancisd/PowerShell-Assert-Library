@@ -26,10 +26,22 @@ This function will output all pipeline objects it receives until an error is thr
         <maml:name>Assert-PipelineCount</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
           <maml:name>InputObject</maml:name>
+          <maml:description>
+            <maml:para>The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Equals</maml:name>
+          <maml:description>
+            <maml:para>This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to fail.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -37,10 +49,22 @@ This function will output all pipeline objects it receives until an error is thr
         <maml:name>Assert-PipelineCount</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
           <maml:name>InputObject</maml:name>
+          <maml:description>
+            <maml:para>The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Minimum</maml:name>
+          <maml:description>
+            <maml:para>This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to pass.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -48,10 +72,22 @@ This function will output all pipeline objects it receives until an error is thr
         <maml:name>Assert-PipelineCount</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
           <maml:name>InputObject</maml:name>
+          <maml:description>
+            <maml:para>The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Maximum</maml:name>
+          <maml:description>
+            <maml:para>This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to fail.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>

@@ -28,24 +28,76 @@ A return value of $null indicates an invalid test. See each parameter for specif
         <maml:name>Test-Version</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>IsVersion</maml:name>
+          <maml:description>
+            <maml:para>Tests if the value is a Version object.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         value is not a Version object
+$true          value is a Version object</maml:para>
+          </maml:description>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-Version</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="eq">
           <maml:name>Equals</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is equal to the second.
+
+The -Equals parameter has the alias -eq.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) != 0
+$true          System.Version method CompareTo(Version) == 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
+          <maml:description>
+            <maml:para>Compares the Version objects using the specified properties.
+
+Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
+
+Allowed Properties
+------------------
+Major, Minor, Build, Revision, MajorRevision, MinorRevision
+
+No wildcards are allowed.
+No calculated properties (script blocks) are allowed.
+Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
+
+Comparison method
+-----------------
+1. Start with the first property specified.
+2. Compare the properties from the two Version objects using the CompareTo method.
+3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
+4. Done.
+
+PowerShell Note:
+Synthetic properties are not used in comparisons.
+For example, when the build property is compared, an expression like $a.psbase.build is used instead of $a.build.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -53,14 +105,54 @@ A return value of $null indicates an invalid test. See each parameter for specif
         <maml:name>Test-Version</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
           <maml:name>NotEquals</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is not equal to the second.
+
+The -NotEquals parameter has the alias -ne.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) == 0
+$true          System.Version method CompareTo(Version) != 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
+          <maml:description>
+            <maml:para>Compares the Version objects using the specified properties.
+
+Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
+
+Allowed Properties
+------------------
+Major, Minor, Build, Revision, MajorRevision, MinorRevision
+
+No wildcards are allowed.
+No calculated properties (script blocks) are allowed.
+Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
+
+Comparison method
+-----------------
+1. Start with the first property specified.
+2. Compare the properties from the two Version objects using the CompareTo method.
+3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
+4. Done.
+
+PowerShell Note:
+Synthetic properties are not used in comparisons.
+For example, when the build property is compared, an expression like $a.psbase.build is used instead of $a.build.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -68,14 +160,54 @@ A return value of $null indicates an invalid test. See each parameter for specif
         <maml:name>Test-Version</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="lt">
           <maml:name>LessThan</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is less than the second.
+
+The -LessThan parameter has the alias -lt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) &gt;= 0
+$true          System.Version method CompareTo(Version) &lt; 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
+          <maml:description>
+            <maml:para>Compares the Version objects using the specified properties.
+
+Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
+
+Allowed Properties
+------------------
+Major, Minor, Build, Revision, MajorRevision, MinorRevision
+
+No wildcards are allowed.
+No calculated properties (script blocks) are allowed.
+Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
+
+Comparison method
+-----------------
+1. Start with the first property specified.
+2. Compare the properties from the two Version objects using the CompareTo method.
+3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
+4. Done.
+
+PowerShell Note:
+Synthetic properties are not used in comparisons.
+For example, when the build property is compared, an expression like $a.psbase.build is used instead of $a.build.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -83,14 +215,54 @@ A return value of $null indicates an invalid test. See each parameter for specif
         <maml:name>Test-Version</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="le">
           <maml:name>LessThanOrEqualTo</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is less than or equal to the second.
+
+The -LessThanOrEqualTo parameter has the alias -le.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) &gt; 0
+$true          System.Version method CompareTo(Version) &lt;= 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
+          <maml:description>
+            <maml:para>Compares the Version objects using the specified properties.
+
+Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
+
+Allowed Properties
+------------------
+Major, Minor, Build, Revision, MajorRevision, MinorRevision
+
+No wildcards are allowed.
+No calculated properties (script blocks) are allowed.
+Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
+
+Comparison method
+-----------------
+1. Start with the first property specified.
+2. Compare the properties from the two Version objects using the CompareTo method.
+3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
+4. Done.
+
+PowerShell Note:
+Synthetic properties are not used in comparisons.
+For example, when the build property is compared, an expression like $a.psbase.build is used instead of $a.build.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -98,14 +270,54 @@ A return value of $null indicates an invalid test. See each parameter for specif
         <maml:name>Test-Version</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="gt">
           <maml:name>GreaterThan</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is greater than the second.
+
+The -GreaterThan parameter has the alias -gt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) &lt;= 0
+$true          System.Version method CompareTo(Version) &gt; 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
+          <maml:description>
+            <maml:para>Compares the Version objects using the specified properties.
+
+Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
+
+Allowed Properties
+------------------
+Major, Minor, Build, Revision, MajorRevision, MinorRevision
+
+No wildcards are allowed.
+No calculated properties (script blocks) are allowed.
+Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
+
+Comparison method
+-----------------
+1. Start with the first property specified.
+2. Compare the properties from the two Version objects using the CompareTo method.
+3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
+4. Done.
+
+PowerShell Note:
+Synthetic properties are not used in comparisons.
+For example, when the build property is compared, an expression like $a.psbase.build is used instead of $a.build.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -113,14 +325,54 @@ A return value of $null indicates an invalid test. See each parameter for specif
         <maml:name>Test-Version</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ge">
           <maml:name>GreaterThanOrEqualTo</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is greater than or equal to the second.
+
+The -GreaterThanOrEqualTo parameter has the alias -ge.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a Version object
+$false         System.Version method CompareTo(Version) &lt; 0
+$true          System.Version method CompareTo(Version) &gt;= 0
+
+Note: If the -Property parameter is specified, a different comparison method is used.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Property</maml:name>
+          <maml:description>
+            <maml:para>Compares the Version objects using the specified properties.
+
+Note that the order that you specify the properties is significant. The first property specified has the highest priority in the comparison, and the last property specified has the lowest priority in the comparison.
+
+Allowed Properties
+------------------
+Major, Minor, Build, Revision, MajorRevision, MinorRevision
+
+No wildcards are allowed.
+No calculated properties (script blocks) are allowed.
+Specifying this parameter with a $null or an empty array causes the comparisons to return $null.
+
+Comparison method
+-----------------
+1. Start with the first property specified.
+2. Compare the properties from the two Version objects using the CompareTo method.
+3. If the properties are equal, repeat steps 2 and 3 with the remaining properties.
+4. Done.
+
+PowerShell Note:
+Synthetic properties are not used in comparisons.
+For example, when the build property is compared, an expression like $a.psbase.build is used instead of $a.build.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>

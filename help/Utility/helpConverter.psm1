@@ -229,6 +229,10 @@ function Add-MamlHelpCommand
                                     _addTextElement $cmdSyntaxItemParameterName $syntaxItemParameter.name
                                 [System.Void]$cmdSyntaxItemParameter.AppendChild($cmdSyntaxItemParameterName)
 
+                                $cmdSyntaxItemParameterDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+                                    _addParaCollection $cmdSyntaxItemParameterDescription $syntaxItemParameter.description
+                                [System.Void]$cmdSyntaxItemParameter.AppendChild($cmdSyntaxItemParameterDescription)
+
                                 #null check for SwitchParameter
                                 if ($null -ne $syntaxItemParameter.parameterValue) {
                                     $cmdSyntaxItemParameterValue = $shared.xmlDoc.CreateElement('command', 'parameterValue', $shared.cmdUri)

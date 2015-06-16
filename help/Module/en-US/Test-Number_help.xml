@@ -33,13 +33,69 @@ NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by 
         <maml:name>Test-Number</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>IsNumber</maml:name>
+          <maml:description>
+            <maml:para>Tests if the value is a number.
+
+Return Value   Condition
+------------   ---------
+$null          never
+$false         value is not a number*
+$true          value is a number*
+
+* See -Type parameter for more details.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>One or more strings that can be used to define which numeric types are to be considered numeric types.
+
+These types are considered to be numeric types:
+   System.Byte, System.SByte,
+   System.Int16, System.Int32, System.Int64,
+   System.UInt16, System.UInt32, System.UInt64,
+   System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
+
+You can use this parameter to specify which of the types above are to be considered numeric types.
+
+Each type can be specified by its type name or by its full type name.
+
+Note:
+NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-numbers.
+
+For example:
+    $a = [uint32]0
+    $b = [double]10.0
+
+    #$a (uint32) is not considered a number
+    #
+    Test-Number $a -lt $b -Type Double
+    Test-Number $a -lt $b -Type Double, Decimal
+    Test-Number $a -lt $b -Type Double, Decimal, Int32
+    Test-Number $a -lt $b -Type Double, Decimal, System.Int32
+
+    #$b (double) is not considered a number
+    #
+    Test-Number $a -lt $b -Type UInt32
+    Test-Number $a -lt $b -Type UInt32, Byte
+    Test-Number $a -lt $b -Type UInt32, Byte, Int64
+    Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
+
+    #$a and $b are considered numbers
+    #
+    Test-Number $a -lt $b
+    Test-Number $a -lt $b -Type UInt32, Double
+    Test-Number $a -lt $b -Type Double, UInt32
+    Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -47,17 +103,79 @@ NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by 
         <maml:name>Test-Number</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="eq">
           <maml:name>Equals</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is equal to the second.
+
+The -Equals parameter has the alias -eq.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -eq operator returns $false
+$true          PowerShell's -eq operator returns $true
+
+* See -Type parameter for more details.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two numbers to return $null if they do not have the same type.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>One or more strings that can be used to define which numeric types are to be considered numeric types.
+
+These types are considered to be numeric types:
+   System.Byte, System.SByte,
+   System.Int16, System.Int32, System.Int64,
+   System.UInt16, System.UInt32, System.UInt64,
+   System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
+
+You can use this parameter to specify which of the types above are to be considered numeric types.
+
+Each type can be specified by its type name or by its full type name.
+
+Note:
+NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-numbers.
+
+For example:
+    $a = [uint32]0
+    $b = [double]10.0
+
+    #$a (uint32) is not considered a number
+    #
+    Test-Number $a -lt $b -Type Double
+    Test-Number $a -lt $b -Type Double, Decimal
+    Test-Number $a -lt $b -Type Double, Decimal, Int32
+    Test-Number $a -lt $b -Type Double, Decimal, System.Int32
+
+    #$b (double) is not considered a number
+    #
+    Test-Number $a -lt $b -Type UInt32
+    Test-Number $a -lt $b -Type UInt32, Byte
+    Test-Number $a -lt $b -Type UInt32, Byte, Int64
+    Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
+
+    #$a and $b are considered numbers
+    #
+    Test-Number $a -lt $b
+    Test-Number $a -lt $b -Type UInt32, Double
+    Test-Number $a -lt $b -Type Double, UInt32
+    Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -65,17 +183,79 @@ NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by 
         <maml:name>Test-Number</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
           <maml:name>NotEquals</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is not equal to the second.
+
+The -NotEquals parameter has the alias -ne.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -ne operator returns $false
+$true          PowerShell's -ne operator returns $true
+
+* See -Type parameter for more details.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two numbers to return $null if they do not have the same type.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>One or more strings that can be used to define which numeric types are to be considered numeric types.
+
+These types are considered to be numeric types:
+   System.Byte, System.SByte,
+   System.Int16, System.Int32, System.Int64,
+   System.UInt16, System.UInt32, System.UInt64,
+   System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
+
+You can use this parameter to specify which of the types above are to be considered numeric types.
+
+Each type can be specified by its type name or by its full type name.
+
+Note:
+NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-numbers.
+
+For example:
+    $a = [uint32]0
+    $b = [double]10.0
+
+    #$a (uint32) is not considered a number
+    #
+    Test-Number $a -lt $b -Type Double
+    Test-Number $a -lt $b -Type Double, Decimal
+    Test-Number $a -lt $b -Type Double, Decimal, Int32
+    Test-Number $a -lt $b -Type Double, Decimal, System.Int32
+
+    #$b (double) is not considered a number
+    #
+    Test-Number $a -lt $b -Type UInt32
+    Test-Number $a -lt $b -Type UInt32, Byte
+    Test-Number $a -lt $b -Type UInt32, Byte, Int64
+    Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
+
+    #$a and $b are considered numbers
+    #
+    Test-Number $a -lt $b
+    Test-Number $a -lt $b -Type UInt32, Double
+    Test-Number $a -lt $b -Type Double, UInt32
+    Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -83,17 +263,79 @@ NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by 
         <maml:name>Test-Number</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="lt">
           <maml:name>LessThan</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is less than the second.
+
+The -LessThan parameter has the alias -lt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -lt operator returns $false
+$true          PowerShell's -lt operator returns $true
+
+* See -Type parameter for more details.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two numbers to return $null if they do not have the same type.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>One or more strings that can be used to define which numeric types are to be considered numeric types.
+
+These types are considered to be numeric types:
+   System.Byte, System.SByte,
+   System.Int16, System.Int32, System.Int64,
+   System.UInt16, System.UInt32, System.UInt64,
+   System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
+
+You can use this parameter to specify which of the types above are to be considered numeric types.
+
+Each type can be specified by its type name or by its full type name.
+
+Note:
+NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-numbers.
+
+For example:
+    $a = [uint32]0
+    $b = [double]10.0
+
+    #$a (uint32) is not considered a number
+    #
+    Test-Number $a -lt $b -Type Double
+    Test-Number $a -lt $b -Type Double, Decimal
+    Test-Number $a -lt $b -Type Double, Decimal, Int32
+    Test-Number $a -lt $b -Type Double, Decimal, System.Int32
+
+    #$b (double) is not considered a number
+    #
+    Test-Number $a -lt $b -Type UInt32
+    Test-Number $a -lt $b -Type UInt32, Byte
+    Test-Number $a -lt $b -Type UInt32, Byte, Int64
+    Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
+
+    #$a and $b are considered numbers
+    #
+    Test-Number $a -lt $b
+    Test-Number $a -lt $b -Type UInt32, Double
+    Test-Number $a -lt $b -Type Double, UInt32
+    Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -101,17 +343,79 @@ NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by 
         <maml:name>Test-Number</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="le">
           <maml:name>LessThanOrEqualTo</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is less than or equal to the second.
+
+The -LessThanOrEqualTo parameter has the alias -le.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -le operator returns $false
+$true          PowerShell's -le operator returns $true
+
+* See -Type parameter for more details.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two numbers to return $null if they do not have the same type.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>One or more strings that can be used to define which numeric types are to be considered numeric types.
+
+These types are considered to be numeric types:
+   System.Byte, System.SByte,
+   System.Int16, System.Int32, System.Int64,
+   System.UInt16, System.UInt32, System.UInt64,
+   System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
+
+You can use this parameter to specify which of the types above are to be considered numeric types.
+
+Each type can be specified by its type name or by its full type name.
+
+Note:
+NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-numbers.
+
+For example:
+    $a = [uint32]0
+    $b = [double]10.0
+
+    #$a (uint32) is not considered a number
+    #
+    Test-Number $a -lt $b -Type Double
+    Test-Number $a -lt $b -Type Double, Decimal
+    Test-Number $a -lt $b -Type Double, Decimal, Int32
+    Test-Number $a -lt $b -Type Double, Decimal, System.Int32
+
+    #$b (double) is not considered a number
+    #
+    Test-Number $a -lt $b -Type UInt32
+    Test-Number $a -lt $b -Type UInt32, Byte
+    Test-Number $a -lt $b -Type UInt32, Byte, Int64
+    Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
+
+    #$a and $b are considered numbers
+    #
+    Test-Number $a -lt $b
+    Test-Number $a -lt $b -Type UInt32, Double
+    Test-Number $a -lt $b -Type Double, UInt32
+    Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -119,17 +423,79 @@ NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by 
         <maml:name>Test-Number</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="gt">
           <maml:name>GreaterThan</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is greater than the second.
+
+The -GreaterThan parameter has the alias -gt.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -gt operator returns $false
+$true          PowerShell's -gt operator returns $true
+
+* See -Type parameter for more details.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two numbers to return $null if they do not have the same type.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>One or more strings that can be used to define which numeric types are to be considered numeric types.
+
+These types are considered to be numeric types:
+   System.Byte, System.SByte,
+   System.Int16, System.Int32, System.Int64,
+   System.UInt16, System.UInt32, System.UInt64,
+   System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
+
+You can use this parameter to specify which of the types above are to be considered numeric types.
+
+Each type can be specified by its type name or by its full type name.
+
+Note:
+NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-numbers.
+
+For example:
+    $a = [uint32]0
+    $b = [double]10.0
+
+    #$a (uint32) is not considered a number
+    #
+    Test-Number $a -lt $b -Type Double
+    Test-Number $a -lt $b -Type Double, Decimal
+    Test-Number $a -lt $b -Type Double, Decimal, Int32
+    Test-Number $a -lt $b -Type Double, Decimal, System.Int32
+
+    #$b (double) is not considered a number
+    #
+    Test-Number $a -lt $b -Type UInt32
+    Test-Number $a -lt $b -Type UInt32, Byte
+    Test-Number $a -lt $b -Type UInt32, Byte, Int64
+    Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
+
+    #$a and $b are considered numbers
+    #
+    Test-Number $a -lt $b
+    Test-Number $a -lt $b -Type UInt32, Double
+    Test-Number $a -lt $b -Type Double, UInt32
+    Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
@@ -137,17 +503,79 @@ NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by 
         <maml:name>Test-Number</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The value to test.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ge">
           <maml:name>GreaterThanOrEqualTo</maml:name>
+          <maml:description>
+            <maml:para>Tests if the first value is greater than or equal to the second.
+
+The -GreaterThanOrEqualTo parameter has the alias -ge.
+
+Return Value   Condition
+------------   ---------
+$null          one or both of the values is not a number*
+               -MatchType is set and values are not of the same type
+$false         PowerShell's -ge operator returns $false
+$true          PowerShell's -ge operator returns $true
+
+* See -Type parameter for more details.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>MatchType</maml:name>
+          <maml:description>
+            <maml:para>Causes the comparison of two numbers to return $null if they do not have the same type.</maml:para>
+          </maml:description>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>One or more strings that can be used to define which numeric types are to be considered numeric types.
+
+These types are considered to be numeric types:
+   System.Byte, System.SByte,
+   System.Int16, System.Int32, System.Int64,
+   System.UInt16, System.UInt32, System.UInt64,
+   System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
+
+You can use this parameter to specify which of the types above are to be considered numeric types.
+
+Each type can be specified by its type name or by its full type name.
+
+Note:
+NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
+Specifying this parameter with a $null or an empty array will cause this function to treat all objects as non-numbers.
+
+For example:
+    $a = [uint32]0
+    $b = [double]10.0
+
+    #$a (uint32) is not considered a number
+    #
+    Test-Number $a -lt $b -Type Double
+    Test-Number $a -lt $b -Type Double, Decimal
+    Test-Number $a -lt $b -Type Double, Decimal, Int32
+    Test-Number $a -lt $b -Type Double, Decimal, System.Int32
+
+    #$b (double) is not considered a number
+    #
+    Test-Number $a -lt $b -Type UInt32
+    Test-Number $a -lt $b -Type UInt32, Byte
+    Test-Number $a -lt $b -Type UInt32, Byte, Int64
+    Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
+
+    #$a and $b are considered numbers
+    #
+    Test-Number $a -lt $b
+    Test-Number $a -lt $b -Type UInt32, Double
+    Test-Number $a -lt $b -Type Double, UInt32
+    Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>

@@ -24,6 +24,12 @@ This function throws an error if any of the following conditions are met:
         <maml:name>Assert-PipelineAny</maml:name>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="1" aliases="">
           <maml:name>InputObject</maml:name>
+          <maml:description>
+            <maml:para>The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.</maml:para>
+          </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
