@@ -131,6 +131,10 @@ function Add-MamlHelpCommand
         ($null -ne $fullHelp.alertSet) -and
         ($null -ne $fullHelp.alertSet.alert) -and
         (0 -lt @($fullHelp.alertSet.alert).Count)
+    $fullHelpHasNoteTitles =
+        ($null -ne $fullHelp.alertSet) -and
+        ($null -ne $fullHelp.alertSet.title) -and
+        (0 -lt @($fullHelp.alertSet.title).Count)
     $fullHelpHasExamples =
         ($null -ne $fullHelp.examples) -and
         ($null -ne $fullHelp.examples.example) -and
@@ -385,12 +389,46 @@ function Add-MamlHelpCommand
         #PSMaml Note
         #===========
         #Notes may be present?
+        #
+        #Notes have multiple section (alert).
+        #
+        #Each section (alert) may have an optional title.
+        #However, instead of the tile being a child of the section,
+        #the title is a sibling of the section, so it's very unusual.
+        #PowerShell 4 doesn't even support multiple titles properly.
+        #
+        #    Important:
+        #    In general, we cannot know which section a title belongs.
+        #
+        #    The only time we can know for sure is when
+        #    the number of titles and the number sections are equal.
+        #
+        #How to Add Notes to a Cmdlet Help Topic
+        #https://msdn.microsoft.com/en-us/library/bb736330(v=vs.85).aspx
 
         if ($fullHelpHasNotes) {
             $cmdNotes = $shared.xmlDoc.CreateElement('maml', 'alertSet', $shared.mamlUri)
-                foreach ($note in $fullHelp.alertSet.alert) {
+                for ($i = 0; $i -lt $fullHelp.alertSet.alert.Count; $i++) {
+                    if ($fullHelpHasNoteTitles -and ($i -lt $fullHelp.alertSet.title.Count)) {
+                        $cmdNoteTitle = $shared.xmlDoc.CreateElement('maml', 'title', $shared.mamlUri)
+                            _addTextElement $cmdNoteTitle $fullHelp.alertSet.title[$i]
+                        [System.Void]$cmdNotes.AppendChild($cmdNoteTitle)
+                    }
+
                     $cmdNote = $shared.xmlDoc.CreateElement('maml', 'alert', $shared.mamlUri)
-                        _addParaCollection $cmdNote $note
+                        _addParaCollection $cmdNote $fullHelp.alertSet.alert[$i]
+                    [System.Void]$cmdNotes.AppendChild($cmdNote)
+                }
+
+                #If there are more titles than note sections, then create empty
+                #sections under the titles.
+                for (; $i -lt $fullHelp.alertSet.title.Count; $i++) {
+                    $cmdNoteTitle = $shared.xmlDoc.CreateElement('maml', 'title', $shared.mamlUri)
+                        _addTextElement $cmdNoteTitle $fullHelp.alertSet.title[$i]
+                    [System.Void]$cmdNotes.AppendChild($cmdNoteTitle)
+
+                    $cmdNote = $shared.xmlDoc.CreateElement('maml', 'alert', $shared.mamlUri)
+                        _addParaCollection $cmdNote @()
                     [System.Void]$cmdNotes.AppendChild($cmdNote)
                 }
             [System.Void]$cmd.AppendChild($cmdNotes)
