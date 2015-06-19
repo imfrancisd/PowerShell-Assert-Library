@@ -144,18 +144,36 @@ function Add-MamlHelpCommand
         ($null -ne $fullHelp.relatedLinks.navigationLink) -and
         (0 -lt @($fullHelp.relatedLinks.navigationLink).Count)
         
+    #region command
     $cmd = $shared.xmlDoc.CreateElement('command', 'command', $shared.cmdUri)
+
+        #====================
+        #PSMaml Note
+        #developerCommand.xsd
+        #====================
+        #<complexType name="commandType">
+        #  <sequence>
+        #    <element ref="command:details"/>
+        #    <element ref="maml:description"/>
+        #    <element ref="command:syntax"/>
+        #    <element ref="command:parameters" minOccurs="0"/>
+        #    <element ref="command:inputTypes"/>
+        #    <element ref="command:returnValues"/>
+        #    <element ref="command:terminatingErrors"/>
+        #    <element ref="command:nonTerminatingErrors"/>
+        #    <element ref="maml:alertSet" minOccurs="0" maxOccurs="unbounded"/>
+        #    <element ref="command:examples" minOccurs="0"/>
+        #    <element ref="maml:relatedLinks" maxOccurs="unbounded"/>
+        #  </sequence>
+        #  <attribute name="contentType" type="token"/>
+        #</complexType>
 
         _addAttribute $cmd 'xmlns:maml' $shared.mamlUri
         _addAttribute $cmd 'xmlns:command' $shared.cmdUri
         _addAttribute $cmd 'xmlns:dev' $shared.devUri
         _addAttribute $cmd 'xmlns:MSHelp' $shared.helpUri
 
-        #===========
-        #PSMaml Note
-        #===========
-        #Name, Synopsis, Copyright, Verb, Noun, and Version must always be present, in that order.
-
+        #region details
         $cmdDetails = $shared.xmlDoc.CreateElement('command', 'details', $shared.cmdUri)
 
             $cmdName = $shared.xmlDoc.CreateElement('command', 'name', $shared.cmdUri)
@@ -183,25 +201,19 @@ function Add-MamlHelpCommand
             [System.Void]$cmdDetails.AppendChild($cmdVersion)
 
         [System.Void]$cmd.AppendChild($cmdDetails)
+        #endregion details
 
-        #===========
-        #PSMaml Note
-        #===========
-        #Description must always be present.
-
+        #region description
         $cmdDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
 
             _addParaCollection $cmdDescription $(if ($fullHelpHasDescription) {,$fullHelp.description} else {,@()})
 
         [System.Void]$cmd.AppendChild($cmdDescription)
+        #endregion description
 
-        #===========
-        #PSMaml Note
-        #===========
-        #Syntax may be present?
-
-        if ($fullHelpHasSyntax) {
-            $cmdSyntax = $shared.xmlDoc.CreateElement('command', 'syntax', $shared.cmdUri)
+        #region syntax
+        $cmdSyntax = $shared.xmlDoc.CreateElement('command', 'syntax', $shared.cmdUri)
+            if ($fullHelpHasSyntax) {
                 foreach ($syntaxItem in $fullHelp.syntax.syntaxItem) {
                     $cmdSyntaxItem = $shared.xmlDoc.CreateElement('command', 'syntaxItem', $shared.cmdUri)
 
@@ -251,14 +263,11 @@ function Add-MamlHelpCommand
 
                     [System.Void]$cmdSyntax.AppendChild($cmdSyntaxItem)
                 }
-            [System.Void]$cmd.AppendChild($cmdSyntax)
-        }
+            }
+        [System.Void]$cmd.AppendChild($cmdSyntax)
+        #endregion syntax
 
-        #===========
-        #PSMaml Note
-        #===========
-        #Parameters may be present?
-
+        #region parameters
         if ($fullHelpHasParameters) {
             $cmdParameters = $shared.xmlDoc.CreateElement('command', 'parameters', $shared.cmdUri)
                 foreach ($parameter in $fullHelp.parameters.parameter) {
@@ -314,14 +323,11 @@ function Add-MamlHelpCommand
                 }
             [System.Void]$cmd.AppendChild($cmdParameters)
         }
+        #endregion parameters
 
-        #===========
-        #PSMaml Note
-        #===========
-        #Inputs may be present?
-
-        if ($fullHelpHasInputs) {
-            $cmdInputs = $shared.xmlDoc.CreateElement('command', 'inputTypes', $shared.cmdUri)
+        #region inputTypes
+        $cmdInputs = $shared.xmlDoc.CreateElement('command', 'inputTypes', $shared.cmdUri)
+            if ($fullHelpHasInputs) {
                 foreach ($inputType in $fullHelp.inputTypes.inputType) {
                     $cmdInput = $shared.xmlDoc.CreateElement('command', 'inputType', $shared.cmdUri)
 
@@ -347,16 +353,13 @@ function Add-MamlHelpCommand
 
                     [System.Void]$cmdInputs.AppendChild($cmdInput)
                 }
-            [System.Void]$cmd.AppendChild($cmdInputs)
-        }
+            }
+        [System.Void]$cmd.AppendChild($cmdInputs)
+        #endregion inputTypes
 
-        #===========
-        #PSMaml Note
-        #===========
-        #Outputs may be present?
-
-        if ($fullHelpHasOutputs) {
-            $cmdOutputs = $shared.xmlDoc.CreateElement('command', 'returnValues', $shared.cmdUri)
+        #region returnValues
+        $cmdOutputs = $shared.xmlDoc.CreateElement('command', 'returnValues', $shared.cmdUri)
+            if ($fullHelpHasOutputs) {
                 foreach ($outputType in $fullHelp.returnValues.returnValue) {
                     $cmdOutput = $shared.xmlDoc.CreateElement('command', 'returnValue', $shared.cmdUri)
 
@@ -382,30 +385,27 @@ function Add-MamlHelpCommand
 
                     [System.Void]$cmdOutputs.AppendChild($cmdOutput)
                 }
-            [System.Void]$cmd.AppendChild($cmdOutputs)
-        }
+            }
+        [System.Void]$cmd.AppendChild($cmdOutputs)
+        #endregion returnValues
 
-        #===========
-        #PSMaml Note
-        #===========
-        #Notes may be present?
-        #
-        #Notes have multiple section (alert).
-        #
-        #Each section (alert) may have an optional title.
-        #However, instead of the tile being a child of the section,
-        #the title is a sibling of the section, so it's very unusual.
-        #PowerShell 4 doesn't even support multiple titles properly.
-        #
-        #    Important:
-        #    In general, we cannot know which section a title belongs.
-        #
-        #    The only time we can know for sure is when
-        #    the number of titles and the number sections are equal.
-        #
-        #How to Add Notes to a Cmdlet Help Topic
-        #https://msdn.microsoft.com/en-us/library/bb736330(v=vs.85).aspx
+        #region terminatingErrors
+        $cmdTerminatingErrors = $shared.xmlDoc.CreateElement('command', 'terminatingErrors', $shared.cmdUri)
 
+            #TODO: Add code to generate error types.
+
+        [System.Void]$cmd.AppendChild($cmdTerminatingErrors)
+        #endregion terminatingErrors
+
+        #region nonTerminatingErrors
+        $cmdNonTerminatingErrors = $shared.xmlDoc.CreateElement('command', 'nonTerminatingErrors', $shared.cmdUri)
+        [System.Void]$cmd.AppendChild($cmdNonTerminatingErrors)
+
+            #TODO: Add code to generate error types.
+
+        #endregion nonTerminatingErrors
+
+        #region alertSet
         if ($fullHelpHasNotes) {
             $cmdNotes = $shared.xmlDoc.CreateElement('maml', 'alertSet', $shared.mamlUri)
                 for ($i = 0; $i -lt $fullHelp.alertSet.alert.Count; $i++) {
@@ -433,12 +433,9 @@ function Add-MamlHelpCommand
                 }
             [System.Void]$cmd.AppendChild($cmdNotes)
         }
+        #endregion alertSet
 
-        #===========
-        #PSMaml Note
-        #===========
-        #Examples may be present?
-
+        #region examples
         if ($fullHelpHasExamples) {
             $cmdExamples = $shared.xmlDoc.CreateElement('command', 'examples', $shared.cmdUri)
                 foreach ($example in $fullHelp.examples.example) {
@@ -464,14 +461,11 @@ function Add-MamlHelpCommand
                 }
             [System.Void]$cmd.AppendChild($cmdExamples)
         }
+        #endregion examples
 
-        #===========
-        #PSMaml Note
-        #===========
-        #Related Links may be present?
-
-        if ($fullHelpHasRelatedLinks) {
-            $cmdRelatedLinks = $shared.xmlDoc.CreateElement('maml', 'relatedLinks', $shared.mamlUri)
+        #region relatedLinks
+        $cmdRelatedLinks = $shared.xmlDoc.CreateElement('maml', 'relatedLinks', $shared.mamlUri)
+            if ($fullHelpHasRelatedLinks) {
                 foreach ($navigationLink in $fullHelp.relatedLinks.navigationLink) {
                     $cmdRelatedLink = $shared.xmlDoc.CreateElement('maml', 'navigationLink', $shared.mamlUri)
 
@@ -485,10 +479,12 @@ function Add-MamlHelpCommand
 
                     [System.Void]$cmdRelatedLinks.AppendChild($cmdRelatedLink)
                 }
-            [System.Void]$cmd.AppendChild($cmdRelatedLinks)
-        }
+            }
+        [System.Void]$cmd.AppendChild($cmdRelatedLinks)
+        #endregion relatedLinks
 
     [System.Void]$shared.xmlRoot.AppendChild($cmd)
+    #endregion command
 }
 
 Clear-MamlHelp

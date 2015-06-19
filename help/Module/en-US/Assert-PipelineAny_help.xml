@@ -83,6 +83,8 @@ If the assertion passes, this function outputs the objects from the pipeline inp
         </maml:description>
       </command:returnValue>
     </command:returnValues>
+    <command:terminatingErrors />
+    <command:nonTerminatingErrors />
     <maml:alertSet>
       <maml:alert>
         <maml:para>An example of how this function might be used in a unit test.

@@ -568,6 +568,8 @@ The array in the 'Items' property has a type of [System.Object[]] by default. Ho
         </maml:description>
       </command:returnValue>
     </command:returnValues>
+    <command:terminatingErrors />
+    <command:nonTerminatingErrors />
     <maml:alertSet>
       <maml:alert>
         <maml:para>Why not output a list of lists?
@@ -970,5 +972,6 @@ group-listItem -zip $aList, $bList | foreach-object {$a, $b = $_.Items; assert-t
         </dev:remarks>
       </command:example>
     </command:examples>
+    <maml:relatedLinks />
   </command:command>
 </helpItems>
