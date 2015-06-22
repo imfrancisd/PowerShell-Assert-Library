@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<helpItems schema="maml">
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10">
+<helpItems xmlns="http://msh" schema="maml">
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
       <command:name>Assert-PipelineCount</command:name>
       <maml:description>
         <maml:para>Assert the number of objects in the pipeline.</maml:para>
       </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
       <command:verb>Assert</command:verb>
       <command:noun>PipelineCount</command:noun>
+      <dev:version />
     </command:details>
     <maml:description>
       <maml:para>This function is useful for asserting that a function outputs the correct number of objects.
@@ -20,40 +24,76 @@ This function will output all pipeline objects it receives until an error is thr
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Assert-PipelineCount</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="named">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
           <maml:name>InputObject</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <maml:description>
+            <maml:para>The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
           <maml:name>Equals</maml:name>
-          <command:parameterValue required="true">Int64</command:parameterValue>
+          <maml:description>
+            <maml:para>This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to fail.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Assert-PipelineCount</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="named">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
           <maml:name>InputObject</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <maml:description>
+            <maml:para>The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Minimum</maml:name>
-          <command:parameterValue required="true">Int64</command:parameterValue>
+          <maml:description>
+            <maml:para>This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to pass.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Assert-PipelineCount</maml:name>
-        <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="named">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
           <maml:name>InputObject</maml:name>
-          <command:parameterValue required="true">Object</command:parameterValue>
+          <maml:description>
+            <maml:para>The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Maximum</maml:name>
-          <command:parameterValue required="true">Int64</command:parameterValue>
+          <maml:description>
+            <maml:para>This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+
+Note:
+A negative number will always cause this assertion to fail.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="named">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
         <maml:name>InputObject</maml:name>
         <maml:description>
           <maml:para>The object from the pipeline.
@@ -61,14 +101,14 @@ This function will output all pipeline objects it receives until an error is thr
 Note:
 The argument for this parameter must come from the pipeline.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Object</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
           <maml:name>Object</maml:name>
+          <maml:uri />
         </dev:type>
-        <dev:defaultValue>
-        </dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
         <maml:name>Equals</maml:name>
         <maml:description>
           <maml:para>This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
@@ -76,13 +116,14 @@ The argument for this parameter must come from the pipeline.</maml:para>
 Note:
 A negative number will always cause this assertion to fail.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Int64</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         <dev:type>
           <maml:name>Int64</maml:name>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Minimum</maml:name>
         <maml:description>
           <maml:para>This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
@@ -90,13 +131,14 @@ A negative number will always cause this assertion to fail.</maml:para>
 Note:
 A negative number will always cause this assertion to pass.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Int64</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         <dev:type>
           <maml:name>Int64</maml:name>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" globbing="false" pipelineInput="false" position="named">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Maximum</maml:name>
         <maml:description>
           <maml:para>This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
@@ -104,9 +146,10 @@ A negative number will always cause this assertion to pass.</maml:para>
 Note:
 A negative number will always cause this assertion to fail.</maml:para>
         </maml:description>
-        <command:parameterValue required="true">Int64</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         <dev:type>
           <maml:name>Int64</maml:name>
+          <maml:uri />
         </dev:type>
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
@@ -117,7 +160,11 @@ A negative number will always cause this assertion to fail.</maml:para>
           <maml:name>System.Object
 
 This function accepts any kind of object from the pipeline.</maml:name>
+          <maml:uri />
         </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
       </command:inputType>
     </command:inputTypes>
     <command:returnValues>
@@ -126,9 +173,15 @@ This function accepts any kind of object from the pipeline.</maml:name>
           <maml:name>System.Object
 
 If the assertion passes, this function outputs the objects from the pipeline input.</maml:name>
+          <maml:uri />
         </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
       </command:returnValue>
     </command:returnValues>
+    <command:terminatingErrors />
+    <command:nonTerminatingErrors />
     <maml:alertSet>
       <maml:alert>
         <maml:para>An example of how this function might be used in a unit test.
@@ -154,14 +207,10 @@ $d = myFunc4 | Assert-PipelineCount -Minimum 3 | Assert-PipelineCount -Maximum 1
         <dev:code>$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount 10</dev:code>
         <dev:remarks>
           <maml:para>Throws an error if Get-Random -Count 10 does not return exactly ten objects.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -172,14 +221,10 @@ $d = myFunc4 | Assert-PipelineCount -Minimum 3 | Assert-PipelineCount -Maximum 1
         <dev:code>$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount -Maximum 10</dev:code>
         <dev:remarks>
           <maml:para>Throws an error if Get-Random -Count 10 returns more than ten objects.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -190,14 +235,10 @@ $d = myFunc4 | Assert-PipelineCount -Minimum 3 | Assert-PipelineCount -Maximum 1
         <dev:code>$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount -Minimum 10</dev:code>
         <dev:remarks>
           <maml:para>Throws an error if Get-Random -Count 10 returns less than ten objects.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -209,14 +250,10 @@ $d = myFunc4 | Assert-PipelineCount -Minimum 3 | Assert-PipelineCount -Maximum 1
         <dev:remarks>
           <maml:para>Throws an error if Get-Random -Count 10 does not return exactly ten objects.
 The -Verbose switch will output the result of the assertion to the Verbose stream.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -228,14 +265,10 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
         <dev:remarks>
           <maml:para>Throws an error if Get-Random -Count 10 does not return exactly ten objects.
 The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
       <command:example>
@@ -246,62 +279,73 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
         <dev:code>$a = Get-ChildItem 'a*' | Assert-PipelineCount -Minimum 5 | Assert-PipelineCount -Maximum 10</dev:code>
         <dev:remarks>
           <maml:para>Throws an error if Get-ChildItem 'a*' either returns less than five objects, or returns more than 10 objects.</maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
-          <maml:para>
-          </maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
         </dev:remarks>
       </command:example>
     </command:examples>
     <maml:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Assert-True</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-False</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-Null</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotTrue</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotFalse</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotNull</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-All</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-Exists</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-NotExists</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineAll</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineExists</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineNotExists</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineEmpty</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineAny</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-PipelineSingle</maml:linkText>
+        <maml:uri />
       </maml:navigationLink>
     </maml:relatedLinks>
   </command:command>

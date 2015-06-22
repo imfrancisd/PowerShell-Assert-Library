@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.7.0.0
+#Assert Library version 1.7.1.0
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -746,7 +746,7 @@ function Assert-All
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-        
+
             if (-not (($result -is [System.Boolean]) -and $result)) {
                 $fail = $true
                 break
@@ -796,7 +796,7 @@ function Assert-Exists
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-        
+
             if (($result -is [System.Boolean]) -and $result) {
                 $fail = $false
                 break
@@ -882,7 +882,7 @@ function Assert-NotExists
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-        
+
             if (($result -is [System.Boolean]) -and $result) {
                 $fail = $true
                 break
@@ -1075,7 +1075,7 @@ function Assert-PipelineAll
         $result = $null
         try   {$result = do {& $Predicate $InputObject} while ($false)}
         catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-        
+
         if (-not (($result -is [System.Boolean]) -and $result)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
@@ -1332,7 +1332,7 @@ function Assert-PipelineExists
             $result = $null
             try   {$result = do {& $Predicate $InputObject} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-        
+
             if (($result -is [System.Boolean]) -and $result) {
                 $fail = $false
             }
@@ -1392,7 +1392,7 @@ function Assert-PipelineNotExists
         $result = $null
         try   {$result = do {& $Predicate $InputObject} while ($false)}
         catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-        
+
         if (($result -is [System.Boolean]) -and $result) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
@@ -1654,7 +1654,7 @@ function Test-All
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-        
+
             if (-not (($result -is [System.Boolean]) -and $result)) {
                 $false
                 return
@@ -1893,7 +1893,7 @@ function Test-Exists
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-        
+
             if (($result -is [System.Boolean]) -and $result) {
                 $true
                 return
@@ -2202,7 +2202,7 @@ function Test-NotExists
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-        
+
             if (($result -is [System.Boolean]) -and $result) {
                 $false
                 return
@@ -2332,7 +2332,7 @@ function Test-Number
         [Alias('lt')]
         [System.Object]
         $LessThan,
-        
+
         [Parameter(Mandatory = $true, ParameterSetName = 'OpLessThanOrEqualTo')]
         [AllowNull()]
         [Alias('le')]
