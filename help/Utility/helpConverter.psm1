@@ -213,7 +213,39 @@ function Add-MamlHelpCommand
 
         #region syntax
         $cmdSyntax = $shared.xmlDoc.CreateElement('command', 'syntax', $shared.cmdUri)
-            if ($fullHelpHasSyntax) {
+
+            #====================
+            #PSMaml Note
+            #developerCommand.xsd
+            #====================
+            #<element name="syntax" type="command:syntaxType"/>
+            #<complexType name="syntaxType">
+            #  <sequence>
+            #    <element ref="command:syntaxItem" maxOccurs="unbounded"/>
+            #  </sequence>
+            #  <attributeGroup ref="maml:contentIdentificationSharingAndConditionGroup"/>
+            #</complexType>
+            #
+            #<element name="syntaxItem" type="command:syntaxItemType"/>
+            #<complexType name="syntaxItemType">
+            #  <sequence>
+            #    <element ref="maml:name"/>
+            #    <element ref="command:parameter" minOccurs="0" maxOccurs="unbounded"/>
+            #    <element ref="command:parameterGroup" minOccurs="0" maxOccurs="unbounded"/>
+            #  </sequence>
+            #  <attributeGroup ref="maml:contentIdentificationSharingAndConditionGroup"/>
+            #</complexType>
+
+            if (-not $fullHelpHasSyntax) {
+                #Don't guess.
+                #Either generate all syntax items properly,
+                #or just make the schema "happy" by generating mandatory elements with blank text.
+
+                $cmdSyntaxItem = $shared.xmlDoc.CreateElement('command', 'syntaxItem', $shared.cmdUri)
+                    $cmdSyntaxItemName = $shared.xmlDoc.CreateElement('maml', 'name', $shared.mamlUri)
+                    [System.Void]$cmdSyntaxItem.AppendChild($cmdSyntaxItemName)
+                [System.Void]$cmdSyntax.AppendChild($cmdSyntaxItem)
+            } else {
                 foreach ($syntaxItem in $fullHelp.syntax.syntaxItem) {
                     $cmdSyntaxItem = $shared.xmlDoc.CreateElement('command', 'syntaxItem', $shared.cmdUri)
 
