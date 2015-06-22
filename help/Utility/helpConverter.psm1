@@ -647,8 +647,75 @@ function Add-MamlHelpCommand
 
         #region relatedLinks
         $cmdRelatedLinks = $shared.xmlDoc.CreateElement('maml', 'relatedLinks', $shared.mamlUri)
-            if ($fullHelpHasRelatedLinks) {
+
+            #=============
+            #PSMaml Note
+            #hierarchy.xsd
+            #=============
+            #<element name="relatedLinks" type="maml:relatedLinksType">
+            #  <annotation>
+            #    <documentation>Describes a collection of links, typically used for the "Related Topics" section of a document. The purpose of this element is to provide links to topics that may be of further interest to the user.</documentation>
+            #    <appinfo>
+            #      <doc:localizable>n/a</doc:localizable>
+            #    </appinfo>
+            #  </annotation>
+            #</element>
+            #
+            #<complexType name="relatedLinksType">
+            #  <sequence>
+            #    <element ref="maml:title" minOccurs="0"/>
+            #    <element ref="maml:navigationLink" maxOccurs="unbounded"/>
+            #  </sequence>
+            #  <attributeGroup ref="maml:contentIdentificationSharingAndConditionGroup"/>
+            #  <attribute name="type" use="optional" default="seeAlso" type="maml:relatedLinksTypeType"/>
+            #</complexType>
+            #
+            #<simpleType name="relatedLinksTypeType">
+            #  <restriction base="token">
+            #    <enumeration value="seeAlso"/>
+            #    <enumeration value="relatedFiles"/>
+            #    <enumeration value="samples"/>
+            #    <enumeration value="other"/>
+            #  </restriction>
+            #</simpleType>
+
+            #===========
+            #PSMaml Note
+            #inline.xsd
+            #==========
+            #<element name="navigationLink" type="maml:navigationLinkType"/>
+            #
+            #<complexType name="navigationLinkType">
+            #  <annotation>
+            #    <documentation>The navigationLink element is the navigational link in MAML, intended to produce a jump-type link in the help pane. Glossary links are navigation links.</documentation>
+            #  </annotation>
+            #  <sequence>
+            #    <element ref="maml:linkText"/>
+            #    <element ref="maml:uri"/>
+            #  </sequence>
+            #  <attribute name="targetVerification" type="boolean" default="false"/>
+            #  <attributeGroup ref="maml:contentIdentificationSharingAndConditionGroup"/>
+            #</complexType>
+
+            #TODO: Add optional "title" element.
+
+            if (-not $fullHelpHasRelatedLinks) {
+                #Don't guess.
+                #Either generate all related links properly,
+                #or just make the schema "happy" by generating mandatory elements with blank text.
+
+                $cmdRelatedLink = $shared.xmlDoc.CreateElement('maml', 'navigationLink', $shared.mamlUri)
+
+                    $cmdRelatedLinkText = $shared.xmlDoc.CreateElement('maml', 'linkText', $shared.mamlUri)
+                    [System.Void]$cmdRelatedLink.AppendChild($cmdRelatedLinkText)
+
+                    $cmdRelatedLinkUri = $shared.xmlDoc.CreateElement('maml', 'uri', $shared.mamlUri)
+                    [System.Void]$cmdRelatedLink.AppendChild($cmdRelatedLinkUri)
+
+                [System.Void]$cmdRelatedLinks.AppendChild($cmdRelatedLink)
+            } else {
                 foreach ($navigationLink in $fullHelp.relatedLinks.navigationLink) {
+
                     $cmdRelatedLink = $shared.xmlDoc.CreateElement('maml', 'navigationLink', $shared.mamlUri)
 
                         $cmdRelatedLinkText = $shared.xmlDoc.CreateElement('maml', 'linkText', $shared.mamlUri)

@@ -966,6 +966,11 @@ group-listItem -zip $aList, $bList | foreach-object {$a, $b = $_.Items; assert-t
         </dev:remarks>
       </command:example>
     </command:examples>
-    <maml:relatedLinks />
+    <maml:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText />
+        <maml:uri />
+      </maml:navigationLink>
+    </maml:relatedLinks>
   </command:command>
 </helpItems>
