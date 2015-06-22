@@ -66,9 +66,6 @@ This function does not accept input from the pipeline.</maml:name>
         <dev:type>
           <maml:name>System.Boolean</maml:name>
           <maml:uri />
-          <maml:description>
-            <maml:para />
-          </maml:description>
         </dev:type>
         <maml:description>
           <maml:para />

@@ -1177,9 +1177,6 @@ This function does not accept input from the pipeline.</maml:name>
 
 This function returns a Boolean if the test can be performed.</maml:name>
           <maml:uri />
-          <maml:description>
-            <maml:para />
-          </maml:description>
         </dev:type>
         <maml:description>
           <maml:para />
@@ -1191,9 +1188,6 @@ This function returns a Boolean if the test can be performed.</maml:name>
 
 This function returns $null if the test cannot be performed.</maml:name>
           <maml:uri />
-          <maml:description>
-            <maml:para />
-          </maml:description>
         </dev:type>
         <maml:description>
           <maml:para />

@@ -449,29 +449,121 @@ function Add-MamlHelpCommand
 
         #region returnValues
         $cmdOutputs = $shared.xmlDoc.CreateElement('command', 'returnValues', $shared.cmdUri)
-            if ($fullHelpHasOutputs) {
+
+            #====================
+            #PSMaml Note
+            #developerCommand.xsd
+            #====================
+            #<element name="returnValues" type="command:returnValuesType"/>
+            #<complexType name="returnValuesType">
+            #  <sequence>
+            #    <element ref="command:returnValue" maxOccurs="unbounded"/>
+            #  </sequence>
+            #</complexType>
+            #
+            #<element name="returnValue" type="command:returnValueType"/>
+            #<complexType name="returnValueType">
+            #  <complexContent>
+            #    <extension base="dev:returnValueType">
+            #      <attribute ref="command:isTrustedData" use="optional"/>
+            #    </extension>
+            #  </complexContent>
+            #</complexType>
+
+            #=============
+            #PSMaml Note
+            #developer.xsd
+            #=============
+            #<complexType name="returnValueType">
+            #  <sequence minOccurs="0">
+            #    <group ref="dev:parameterRetvalBaseGroup"/>
+            #  </sequence>
+            #</complexType>
+            #
+            #<group name="parameterRetvalBaseGroup">
+            #  <sequence>
+            #    <element ref="dev:type"/>
+            #    <element ref="maml:description"/>
+            #    <element ref="dev:possibleValues" minOccurs="0"/>
+            #  </sequence>
+            #</group>
+            #
+            #<element name="type" type="dev:typeType"/>
+            #<complexType name="typeType">
+            #  <sequence>
+            #    <element ref="maml:name" minOccurs="0"/>
+            #    <element ref="maml:uri"/>
+            #    <element ref="maml:description" minOccurs="0"/>
+            #  </sequence>
+            #  <attributeGroup ref="maml:contentIdentificationSharingAndConditionGroup"/>
+            #</complexType>
+            #
+            #<element name="possibleValues" type="dev:possibleValuesType"/>
+            #<complexType name="possibleValuesType">
+            #  <sequence>
+            #    <element ref="dev:possibleValue" maxOccurs="unbounded"/>
+            #  </sequence>
+            #</complexType>
+            #
+            #<element name="possibleValue" type="dev:possibleValueType"/>
+            #<complexType name="possibleValueType">
+            #  <sequence>
+            #    <element name="value" type="maml:textType"/>
+            #    <element ref="maml:description" minOccurs="0" maxOccurs="1"/>
+            #  </sequence>
+            #  <attributeGroup ref="maml:contentIdentificationSharingAndConditionGroup"/>
+            #  <attribute name="default" type="boolean" use="optional"/>
+            #</complexType>
+
+            if (-not $fullHelpHasOutputs) {
+                #Don't guess.
+                #Either generate all output types properly,
+                #or just make the schema "happy" by generating mandatory elements with blank text.
+
+                $cmdOutput = $shared.xmlDoc.CreateElement('command', 'returnValue', $shared.cmdUri)
+
+                    $cmdOutputType = $shared.xmlDoc.CreateElement('dev', 'type', $shared.devUri)
+
+                        $cmdOutputTypeUri = $shared.xmlDoc.CreateElement('maml', 'uri', $shared.mamlUri)
+                            _addTextElement $cmdOutputTypeUri $outputType.type.uri
+                        [System.Void]$cmdOutputType.AppendChild($cmdOutputTypeUri)
+
+                    [System.Void]$cmdOutput.AppendChild($cmdOutputType)
+
+                    $cmdOutputDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+                        _addParaCollection $cmdOutputDescription $outputType.description
+                    [System.Void]$cmdOutput.AppendChild($cmdOutputDescription)
+
+                [System.Void]$cmdOutputs.AppendChild($cmdOutput)
+            } else {
                 foreach ($outputType in $fullHelp.returnValues.returnValue) {
                     $cmdOutput = $shared.xmlDoc.CreateElement('command', 'returnValue', $shared.cmdUri)
 
                         $cmdOutputType = $shared.xmlDoc.CreateElement('dev', 'type', $shared.devUri)
 
-                            $cmdOutputTypeName = $shared.xmlDoc.CreateElement('maml', 'name', $shared.mamlUri)
-                                _addTextElement $cmdOutputTypeName $outputType.type.name
-                            [System.Void]$cmdOutputType.AppendChild($cmdOutputTypeName)
+                            if ($null -ne $outputType.type.name) {
+                                $cmdOutputTypeName = $shared.xmlDoc.CreateElement('maml', 'name', $shared.mamlUri)
+                                    _addTextElement $cmdOutputTypeName $outputType.type.name
+                                [System.Void]$cmdOutputType.AppendChild($cmdOutputTypeName)
+                            }
 
                             $cmdOutputTypeUri = $shared.xmlDoc.CreateElement('maml', 'uri', $shared.mamlUri)
                                 _addTextElement $cmdOutputTypeUri $outputType.type.uri
                             [System.Void]$cmdOutputType.AppendChild($cmdOutputTypeUri)
 
-                            $cmdOutputTypeDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
-                                _addParaCollection $cmdOutputTypeDescription $outputType.type.description
-                            [System.Void]$cmdOutputType.AppendChild($cmdOutputTypeDescription)
+                            if ($null -ne $outputType.type.description) {
+                                $cmdOutputTypeDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+                                    _addParaCollection $cmdOutputTypeDescription $outputType.type.description
+                                [System.Void]$cmdOutputType.AppendChild($cmdOutputTypeDescription)
+                            }
 
                         [System.Void]$cmdOutput.AppendChild($cmdOutputType)
 
                         $cmdOutputDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
                             _addParaCollection $cmdOutputDescription $outputType.description
                         [System.Void]$cmdOutput.AppendChild($cmdOutputDescription)
+
+                        #TODO: Add the optional "possibleValues" element.
 
                     [System.Void]$cmdOutputs.AppendChild($cmdOutput)
                 }

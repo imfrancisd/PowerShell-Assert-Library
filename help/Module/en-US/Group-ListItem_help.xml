@@ -556,9 +556,6 @@ The PSCustomObject has a property called 'Items' which will always be an array.
 
 The array in the 'Items' property has a type of [System.Object[]] by default. However, the 'Items' property may be constrained with a specific type, such as [System.Int32[]], if the list input to -Pair, -Window, -Combine, or -Permute is constrained to a specific type, or if the list inputs to -CartesianProduct or -Zip are constrained to the same specific type.</maml:name>
           <maml:uri />
-          <maml:description>
-            <maml:para />
-          </maml:description>
         </dev:type>
         <maml:description>
           <maml:para />
