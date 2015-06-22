@@ -359,23 +359,81 @@ function Add-MamlHelpCommand
 
         #region inputTypes
         $cmdInputs = $shared.xmlDoc.CreateElement('command', 'inputTypes', $shared.cmdUri)
-            if ($fullHelpHasInputs) {
+
+            #====================
+            #PSMaml Note
+            #developerCommand.xsd
+            #====================
+            #<element name="inputTypes" type="command:inputTypesType"/>
+            #<complexType name="inputTypesType">
+            #  <sequence>
+            #    <element ref="command:inputType" maxOccurs="unbounded"/>
+            #  </sequence>
+            #  <attributeGroup ref="maml:contentIdentificationSharingAndConditionGroup"/>
+            #</complexType>
+            #
+            #<element name="inputType" type="command:inputTypeType"/>
+            #<complexType name="inputTypeType">
+            #  <sequence>
+            #    <element ref="dev:type"/>
+            #    <element ref="maml:description"/>
+            #  </sequence>
+            #  <attribute ref="command:requiresTrustedData" use="optional"/>
+            #</complexType>
+
+            #=============
+            #PSMaml Note
+            #developer.xsd
+            #=============
+            #<element name="type" type="dev:typeType"/>
+            #<complexType name="typeType">
+            #  <sequence>
+            #    <element ref="maml:name" minOccurs="0"/>
+            #    <element ref="maml:uri"/>
+            #    <element ref="maml:description" minOccurs="0"/>
+            #  </sequence>
+            #  <attributeGroup ref="maml:contentIdentificationSharingAndConditionGroup"/>
+            #</complexType>
+
+            if (-not $fullHelpHasInputs) {
+                #Don't guess.
+                #Either generate all input types properly,
+                #or just make the schema "happy" by generating mandatory elements with blank text.
+
+                $cmdInput = $shared.xmlDoc.CreateElement('command', 'inputType', $shared.cmdUri)
+
+                    $cmdInputType = $shared.xmlDoc.CreateElement('dev', 'type', $shared.devUri)
+
+                        $cmdInputTypeUri = $shared.xmlDoc.CreateElement('maml', 'uri', $shared.mamlUri)
+                        [System.Void]$cmdInputType.AppendChild($cmdInputTypeUri)
+
+                    [System.Void]$cmdInput.AppendChild($cmdInputType)
+
+                    $cmdInputDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+                    [System.Void]$cmdInput.AppendChild($cmdInputDescription)
+
+                [System.Void]$cmdInputs.AppendChild($cmdInput)
+            } else {
                 foreach ($inputType in $fullHelp.inputTypes.inputType) {
                     $cmdInput = $shared.xmlDoc.CreateElement('command', 'inputType', $shared.cmdUri)
 
                         $cmdInputType = $shared.xmlDoc.CreateElement('dev', 'type', $shared.devUri)
 
-                            $cmdInputTypeName = $shared.xmlDoc.CreateElement('maml', 'name', $shared.mamlUri)
-                                _addTextElement $cmdInputTypeName $inputType.type.name
-                            [System.Void]$cmdInputType.AppendChild($cmdInputTypeName)
+                            if ($null -ne $inputType.type.name) {
+                                $cmdInputTypeName = $shared.xmlDoc.CreateElement('maml', 'name', $shared.mamlUri)
+                                    _addTextElement $cmdInputTypeName $inputType.type.name
+                                [System.Void]$cmdInputType.AppendChild($cmdInputTypeName)
+                            }
 
                             $cmdInputTypeUri = $shared.xmlDoc.CreateElement('maml', 'uri', $shared.mamlUri)
                                 _addTextElement $cmdInputTypeUri $inputType.type.uri
                             [System.Void]$cmdInputType.AppendChild($cmdInputTypeUri)
 
-                            $cmdInputTypeDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
-                                _addParaCollection $cmdInputTypeDescription $inputType.type.description
-                            [System.Void]$cmdInputType.AppendChild($cmdInputTypeDescription)
+                            if ($null -ne $inputType.type.description) {
+                                $cmdInputTypeDescription = $shared.xmlDoc.CreateElement('maml', 'description', $shared.mamlUri)
+                                    _addParaCollection $cmdInputTypeDescription $inputType.type.description
+                                [System.Void]$cmdInputType.AppendChild($cmdInputTypeDescription)
+                            }
 
                         [System.Void]$cmdInput.AppendChild($cmdInputType)
 

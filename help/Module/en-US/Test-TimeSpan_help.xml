@@ -581,9 +581,6 @@ For example, when the hours property is compared, an expression like $a.psbase.h
 
 This function does not accept input from the pipeline.</maml:name>
           <maml:uri />
-          <maml:description>
-            <maml:para />
-          </maml:description>
         </dev:type>
         <maml:description>
           <maml:para />

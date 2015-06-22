@@ -1331,9 +1331,6 @@ For more details, see the MSDN documentation for the System.String methods calle
 
 This function does not accept input from the pipeline.</maml:name>
           <maml:uri />
-          <maml:description>
-            <maml:para />
-          </maml:description>
         </dev:type>
         <maml:description>
           <maml:para />
