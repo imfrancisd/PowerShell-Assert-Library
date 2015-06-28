@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.7.1.0
+#Assert Library version 1.7.2.0
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -718,7 +718,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError = {
 }
 
 
-#.ExternalHelp Assert-All_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-All
 {
     [CmdletBinding()]
@@ -770,7 +770,7 @@ function Assert-All
 }
 
 
-#.ExternalHelp Assert-Exists_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-Exists
 {
     [CmdletBinding()]
@@ -820,7 +820,7 @@ function Assert-Exists
 }
 
 
-#.ExternalHelp Assert-False_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-False
 {
     [CmdletBinding()]
@@ -854,7 +854,7 @@ function Assert-False
 }
 
 
-#.ExternalHelp Assert-NotExists_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-NotExists
 {
     [CmdletBinding()]
@@ -906,7 +906,7 @@ function Assert-NotExists
 }
 
 
-#.ExternalHelp Assert-NotFalse_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-NotFalse
 {
     [CmdletBinding()]
@@ -940,7 +940,7 @@ function Assert-NotFalse
 }
 
 
-#.ExternalHelp Assert-NotNull_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-NotNull
 {
     [CmdletBinding()]
@@ -974,7 +974,7 @@ function Assert-NotNull
 }
 
 
-#.ExternalHelp Assert-NotTrue_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-NotTrue
 {
     [CmdletBinding()]
@@ -1008,7 +1008,7 @@ function Assert-NotTrue
 }
 
 
-#.ExternalHelp Assert-Null_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-Null
 {
     [CmdletBinding()]
@@ -1042,7 +1042,7 @@ function Assert-Null
 }
 
 
-#.ExternalHelp Assert-PipelineAll_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-PipelineAll
 {
     [CmdletBinding()]
@@ -1101,7 +1101,7 @@ function Assert-PipelineAll
 }
 
 
-#.ExternalHelp Assert-PipelineAny_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-PipelineAny
 {
     [CmdletBinding()]
@@ -1152,7 +1152,7 @@ function Assert-PipelineAny
 }
 
 
-#.ExternalHelp Assert-PipelineCount_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-PipelineCount
 {
     [CmdletBinding(DefaultParameterSetName = 'Equals')]
@@ -1247,7 +1247,7 @@ function Assert-PipelineCount
 }
 
 
-#.ExternalHelp Assert-PipelineEmpty_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-PipelineEmpty
 {
     [CmdletBinding()]
@@ -1296,7 +1296,7 @@ function Assert-PipelineEmpty
 }
 
 
-#.ExternalHelp Assert-PipelineExists_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-PipelineExists
 {
     [CmdletBinding()]
@@ -1359,7 +1359,7 @@ function Assert-PipelineExists
 }
 
 
-#.ExternalHelp Assert-PipelineNotExists_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-PipelineNotExists
 {
     [CmdletBinding()]
@@ -1418,7 +1418,7 @@ function Assert-PipelineNotExists
 }
 
 
-#.ExternalHelp Assert-PipelineSingle_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-PipelineSingle
 {
     [CmdletBinding()]
@@ -1486,7 +1486,7 @@ function Assert-PipelineSingle
 }
 
 
-#.ExternalHelp Assert-True_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Assert-True
 {
     [CmdletBinding()]
@@ -1520,7 +1520,7 @@ function Assert-True
 }
 
 
-#.ExternalHelp Group-ListItem_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Group-ListItem
 {
     [CmdletBinding()]
@@ -1628,7 +1628,7 @@ function Group-ListItem
 }
 
 
-#.ExternalHelp Test-All_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-All
 {
     [CmdletBinding()]
@@ -1668,7 +1668,7 @@ function Test-All
 }
 
 
-#.ExternalHelp Test-DateTime_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-DateTime
 {
     [CmdletBinding(DefaultParameterSetName = 'IsDateTime')]
@@ -1867,7 +1867,7 @@ function Test-DateTime
 }
 
 
-#.ExternalHelp Test-Exists_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-Exists
 {
     [CmdletBinding()]
@@ -1907,7 +1907,7 @@ function Test-Exists
 }
 
 
-#.ExternalHelp Test-False_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-False
 {
     [CmdletBinding()]
@@ -1928,7 +1928,7 @@ function Test-False
 }
 
 
-#.ExternalHelp Test-Guid_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-Guid
 {
     [CmdletBinding(DefaultParameterSetName = 'IsGuid')]
@@ -2176,7 +2176,7 @@ function Test-Guid
 }
 
 
-#.ExternalHelp Test-NotExists_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-NotExists
 {
     [CmdletBinding()]
@@ -2216,7 +2216,7 @@ function Test-NotExists
 }
 
 
-#.ExternalHelp Test-NotFalse_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-NotFalse
 {
     [CmdletBinding()]
@@ -2237,7 +2237,7 @@ function Test-NotFalse
 }
 
 
-#.ExternalHelp Test-NotNull_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-NotNull
 {
     [CmdletBinding()]
@@ -2258,7 +2258,7 @@ function Test-NotNull
 }
 
 
-#.ExternalHelp Test-NotTrue_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-NotTrue
 {
     [CmdletBinding()]
@@ -2279,7 +2279,7 @@ function Test-NotTrue
 }
 
 
-#.ExternalHelp Test-Null_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-Null
 {
     [CmdletBinding()]
@@ -2300,7 +2300,7 @@ function Test-Null
 }
 
 
-#.ExternalHelp Test-Number_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-Number
 {
     [CmdletBinding(DefaultParameterSetName = 'IsNumber')]
@@ -2467,7 +2467,7 @@ function Test-Number
 }
 
 
-#.ExternalHelp Test-String_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-String
 {
     [CmdletBinding(DefaultParameterSetName = 'IsString')]
@@ -2728,7 +2728,7 @@ function Test-String
 }
 
 
-#.ExternalHelp Test-Text_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-Text
 {
     [CmdletBinding(DefaultParameterSetName = 'IsText')]
@@ -2981,7 +2981,7 @@ function Test-Text
 }
 
 
-#.ExternalHelp Test-TimeSpan_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-TimeSpan
 {
     [CmdletBinding(DefaultParameterSetName = 'IsTimeSpan')]
@@ -3151,7 +3151,7 @@ function Test-TimeSpan
 }
 
 
-#.ExternalHelp Test-True_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-True
 {
     [CmdletBinding()]
@@ -3172,7 +3172,7 @@ function Test-True
 }
 
 
-#.ExternalHelp Test-Version_help.xml
+#.ExternalHelp AssertLibrary.psm1-help.xml
 function Test-Version
 {
     [CmdletBinding(DefaultParameterSetName = 'IsVersion')]

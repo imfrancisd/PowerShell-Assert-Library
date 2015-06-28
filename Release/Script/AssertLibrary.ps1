@@ -23,13 +23,13 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.7.1.0
+#Assert Library version 1.7.2.0
 #
 #PowerShell requirements
 #requires -version 2.0
 
 
-New-Module -Name 'AssertLibrary_en-US_v1.7.1.0' -ScriptBlock {
+New-Module -Name 'AssertLibrary_en-US_v1.7.2.0' -ScriptBlock {
 
 
 $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType = {
