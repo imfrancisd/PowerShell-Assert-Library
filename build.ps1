@@ -200,7 +200,7 @@ function buildModule
         foreach ($item in $functionFiles) {
             ''
             if (-not $item.BaseName.StartsWith('_', [System.StringComparison]::OrdinalIgnoreCase)) {
-                "#.ExternalHelp $($item.BaseName)_help.xml"
+                '#.ExternalHelp AssertLibrary.psm1-help.xml'
             }
             Get-Content -LiteralPath $item.PSPath
             ''
