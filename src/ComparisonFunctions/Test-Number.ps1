@@ -111,49 +111,66 @@ function Test-Number
         return $areNumbers
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsNumber' {
             $result = isNumber $Value
             if ($PSBoundParameters.ContainsKey('IsNumber')) {
-                return ($result) -xor (-not $IsNumber)
+                ($result) -xor (-not $IsNumber)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpEquals' {
             if ((canCompareNumbers $Value $Equals)) {
-                return ($Value -eq $Equals)
+                ($Value -eq $Equals)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             if ((canCompareNumbers $Value $NotEquals)) {
-                return ($Value -ne $NotEquals)
+                ($Value -ne $NotEquals)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             if ((canCompareNumbers $Value $LessThan)) {
-                return ($Value -lt $LessThan)
+                ($Value -lt $LessThan)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             if ((canCompareNumbers $Value $LessThanOrEqualTo)) {
-                return ($Value -le $LessThanOrEqualTo)
+                ($Value -le $LessThanOrEqualTo)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             if ((canCompareNumbers $Value $GreaterThan)) {
-                return ($Value -gt $GreaterThan)
+                ($Value -gt $GreaterThan)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             if ((canCompareNumbers $Value $GreaterThanOrEqualTo)) {
-                return ($Value -ge $GreaterThanOrEqualTo)
+                ($Value -ge $GreaterThanOrEqualTo)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
             throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(

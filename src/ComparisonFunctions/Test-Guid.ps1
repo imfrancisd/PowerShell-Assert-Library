@@ -186,55 +186,72 @@ function Test-Guid
         return $null
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsGuid' {
             $result = isGuid $Value
             if ($PSBoundParameters.ContainsKey('IsGuid')) {
-                return ($result) -xor (-not $IsGuid)
+                ($result) -xor (-not $IsGuid)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpEquals' {
             $result = compareGuid $Value $Equals
             if ($result -is [System.Int32]) {
-                return ($result -eq 0)
+                ($result -eq 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             $result = compareGuid $Value $NotEquals
             if ($result -is [System.Int32]) {
-                return ($result -ne 0)
+                ($result -ne 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             $result = compareGuid $Value $LessThan
             if ($result -is [System.Int32]) {
-                return ($result -lt 0)
+                ($result -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             $result = compareGuid $Value $LessThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -le 0)
+                ($result -le 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             $result = compareGuid $Value $GreaterThan
             if ($result -is [System.Int32]) {
-                return ($result -gt 0)
+                ($result -gt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             $result = compareGuid $Value $GreaterThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -ge 0)
+                ($result -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
             throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(

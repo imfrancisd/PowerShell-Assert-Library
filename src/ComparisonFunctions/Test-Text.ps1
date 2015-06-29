@@ -149,97 +149,130 @@ function Test-Text
         }
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsText' {
             $result = $Value -is [System.String]
             if ($PSBoundParameters.ContainsKey('IsText')) {
-                return ($result) -xor (-not $IsText)
+                ($result) -xor (-not $IsText)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpMatch' {
             if (($Value -is [System.String]) -and ($Match -is [System.String])) {
-                return ([System.Text.RegularExpressions.Regex]::IsMatch($Value, $Match, $options))
+                ([System.Text.RegularExpressions.Regex]::IsMatch($Value, $Match, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotMatch' {
             if (($Value -is [System.String]) -and ($NotMatch -is [System.String])) {
-                return (-not [System.Text.RegularExpressions.Regex]::IsMatch($Value, $NotMatch, $options))
+                (-not [System.Text.RegularExpressions.Regex]::IsMatch($Value, $NotMatch, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpContains' {
             if (($Value -is [System.String]) -and ($Contains -is [System.String])) {
-                return ($Value.IndexOf($Contains, $options) -ge 0)
+                ($Value.IndexOf($Contains, $options) -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotContains' {
             if (($Value -is [System.String]) -and ($NotContains -is [System.String])) {
-                return ($Value.IndexOf($NotContains, $options) -lt 0)
+                ($Value.IndexOf($NotContains, $options) -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpStartsWith' {
             if (($Value -is [System.String]) -and ($StartsWith -is [System.String])) {
-                return ($Value.StartsWith($StartsWith, $options))
+                ($Value.StartsWith($StartsWith, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotStartsWith' {
             if (($Value -is [System.String]) -and ($NotStartsWith -is [System.String])) {
-                return (-not $Value.StartsWith($NotStartsWith, $options))
+                (-not $Value.StartsWith($NotStartsWith, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpEndsWith' {
             if (($Value -is [System.String]) -and ($EndsWith -is [System.String])) {
-                return ($Value.EndsWith($EndsWith, $options))
+                ($Value.EndsWith($EndsWith, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEndsWith' {
             if (($value -is [System.String]) -and ($NotEndsWith -is [System.String])) {
-                return (-not $Value.EndsWith($NotEndsWith, $options))
+                (-not $Value.EndsWith($NotEndsWith, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpEquals' {
             if (($Value -is [System.String]) -and ($Equals -is [System.String])) {
-                return ([System.String]::Equals($Value, $Equals, $options))
+                ([System.String]::Equals($Value, $Equals, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             if (($Value -is [System.String]) -and ($NotEquals -is [System.String])) {
-                return (-not [System.String]::Equals($Value, $NotEquals, $options))
+                (-not [System.String]::Equals($Value, $NotEquals, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             if (($Value -is [System.String]) -and ($LessThan -is [System.String])) {
-                return ([System.String]::Compare($Value, $LessThan, $options) -lt 0)
+                ([System.String]::Compare($Value, $LessThan, $options) -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             if (($Value -is [System.String]) -and ($LessThanOrEqualTo -is [System.String])) {
-                return ([System.String]::Compare($Value, $LessThanOrEqualTo, $options) -le 0)
+                ([System.String]::Compare($Value, $LessThanOrEqualTo, $options) -le 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             if (($Value -is [System.String]) -and ($GreaterThan -is [System.String])) {
-                return ([System.String]::Compare($Value, $GreaterThan, $options) -gt 0)
+                ([System.String]::Compare($Value, $GreaterThan, $options) -gt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             if (($Value -is [System.String]) -and ($GreaterThanOrEqualTo -is [System.String])) {
-                return ([System.String]::Compare($Value, $GreaterThanOrEqualTo, $options) -ge 0)
+                ([System.String]::Compare($Value, $GreaterThanOrEqualTo, $options) -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
             throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(

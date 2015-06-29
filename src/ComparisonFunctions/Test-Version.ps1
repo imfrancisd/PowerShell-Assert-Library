@@ -107,55 +107,72 @@ function Test-Version
         return $result
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsVersion' {
             $result = $Value -is [System.Version]
             if ($PSBoundParameters.ContainsKey('IsVersion')) {
-                return ($result) -xor (-not $IsVersion)
+                ($result) -xor (-not $IsVersion)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpEquals' {
             $result = compareVersion $Value $Equals
             if ($result -is [System.Int32]) {
-                return ($result -eq 0)
+                ($result -eq 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             $result = compareVersion $Value $NotEquals
             if ($result -is [System.Int32]) {
-                return ($result -ne 0)
+                ($result -ne 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             $result = compareVersion $Value $LessThan
             if ($result -is [System.Int32]) {
-                return ($result -lt 0)
+                ($result -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             $result = compareVersion $Value $LessThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -le 0)
+                ($result -le 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             $result = compareVersion $Value $GreaterThan
             if ($result -is [System.Int32]) {
-                return ($result -gt 0)
+                ($result -gt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             $result = compareVersion $Value $GreaterThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -ge 0)
+                ($result -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
             throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(

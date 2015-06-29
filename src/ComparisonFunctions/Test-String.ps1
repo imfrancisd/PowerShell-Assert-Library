@@ -169,85 +169,114 @@ function Test-String
         return $areStrings
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsString' {
             $result = isString $Value
             if ($PSBoundParameters.ContainsKey('IsString')) {
-                return ($result) -xor (-not $IsString)
+                ($result) -xor (-not $IsString)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpContains' {
             if ((canCompareStrings $Value $Contains)) {
-                return ($Value.IndexOf($Contains, $comparisonType) -ge 0)
+                ($Value.IndexOf($Contains, $comparisonType) -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotContains' {
             if ((canCompareStrings $Value $NotContains)) {
-                return ($Value.IndexOf($NotContains, $comparisonType) -lt 0)
+                ($Value.IndexOf($NotContains, $comparisonType) -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpStartsWith' {
             if ((canCompareStrings $Value $StartsWith)) {
-                return ($Value.StartsWith($StartsWith, $comparisonType))
+                ($Value.StartsWith($StartsWith, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotStartsWith' {
             if ((canCompareStrings $Value $NotStartsWith)) {
-                return (-not $Value.StartsWith($NotStartsWith, $comparisonType))
+                (-not $Value.StartsWith($NotStartsWith, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpEndsWith' {
             if ((canCompareStrings $Value $EndsWith)) {
-                return ($Value.EndsWith($EndsWith, $comparisonType))
+                ($Value.EndsWith($EndsWith, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEndsWith' {
             if ((canCompareStrings $Value $NotEndsWith)) {
-                return (-not $Value.EndsWith($NotEndsWith, $comparisonType))
+                (-not $Value.EndsWith($NotEndsWith, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpEquals' {
             if ((canCompareStrings $Value $Equals)) {
-                return ([System.String]::Equals($Value, $Equals, $comparisonType))
+                ([System.String]::Equals($Value, $Equals, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             if ((canCompareStrings $Value $NotEquals)) {
-                return (-not [System.String]::Equals($Value, $NotEquals, $comparisonType))
+                (-not [System.String]::Equals($Value, $NotEquals, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             if ((canCompareStrings $Value $LessThan)) {
-                return ([System.String]::Compare($Value, $LessThan, $comparisonType) -lt 0)
+                ([System.String]::Compare($Value, $LessThan, $comparisonType) -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             if ((canCompareStrings $Value $LessThanOrEqualTo)) {
-                return ([System.String]::Compare($Value, $LessThanOrEqualTo, $comparisonType) -le 0)
+                ([System.String]::Compare($Value, $LessThanOrEqualTo, $comparisonType) -le 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             if ((canCompareStrings $Value $GreaterThan)) {
-                return ([System.String]::Compare($Value, $GreaterThan, $comparisonType) -gt 0)
+                ([System.String]::Compare($Value, $GreaterThan, $comparisonType) -gt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             if ((canCompareStrings $Value $GreaterThanOrEqualTo)) {
-                return ([System.String]::Compare($Value, $GreaterThanOrEqualTo, $comparisonType) -ge 0)
+                ([System.String]::Compare($Value, $GreaterThanOrEqualTo, $comparisonType) -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
             throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(

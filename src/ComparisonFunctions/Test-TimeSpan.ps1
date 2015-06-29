@@ -108,55 +108,72 @@ function Test-TimeSpan
         return $result
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsTimeSpan' {
             $result = $Value -is [System.TimeSpan]
             if ($PSBoundParameters.ContainsKey('IsTimeSpan')) {
-                return ($result) -xor (-not $IsTimeSpan)
+                ($result) -xor (-not $IsTimeSpan)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpEquals' {
             $result = compareTimeSpan $Value $Equals
             if ($result -is [System.Int32]) {
-                return ($result -eq 0)
+                ($result -eq 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             $result = compareTimeSpan $Value $NotEquals
             if ($result -is [System.Int32]) {
-                return ($result -ne 0)
+                ($result -ne 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             $result = compareTimeSpan $Value $LessThan
             if ($result -is [System.Int32]) {
-                return ($result -lt 0)
+                ($result -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             $result = compareTimeSpan $Value $LessThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -le 0)
+                ($result -le 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             $result = compareTimeSpan $Value $GreaterThan
             if ($result -is [System.Int32]) {
-                return ($result -gt 0)
+                ($result -gt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             $result = compareTimeSpan $Value $GreaterThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -ge 0)
+                ($result -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
             throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
