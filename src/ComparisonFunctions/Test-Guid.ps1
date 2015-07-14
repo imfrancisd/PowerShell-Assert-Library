@@ -102,7 +102,7 @@ function Test-Guid
 
             foreach ($item in $Version) {
                 if (($item -lt 0) -or ($item -gt 15)) {
-                    throw New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
+                    throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
                         'Version',
                         'The GUID version field can only contain integers between 0 and 15.'
                     )
@@ -123,7 +123,7 @@ function Test-Guid
                     'NCS'       {$variantConstraints += '01234567'; break;}
                     'Reserved'  {$variantConstraints += 'EF'; break;}
                     default     {
-                        throw New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
+                        throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
                             "Invalid GUID variant: $item.`r`n" +
                             "Use one of the following values: Standard, Microsoft, NCS, Reserved"
                         )
@@ -254,7 +254,7 @@ function Test-Guid
             return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }

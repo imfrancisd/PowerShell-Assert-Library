@@ -26,11 +26,11 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct = {
         $elementTypes[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $CartesianProduct[$i] -ErrorAction $ErrorActionPreference
     }
 
-    if (@($listLengths | Sort-Object)[0] -lt 1) {
+    if (@($listLengths | Microsoft.PowerShell.Utility\Sort-Object)[0] -lt 1) {
         return
     }
 
-    if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
+    if (@($elementTypes | Microsoft.PowerShell.Utility\Sort-Object -Unique).Length -eq 1) {
         $outputElementType = $elementTypes[0]
     }
     else {
@@ -57,7 +57,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct = {
             }
 
             #output cartesian product
-            New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
                 'Items' = $items
             }
         }

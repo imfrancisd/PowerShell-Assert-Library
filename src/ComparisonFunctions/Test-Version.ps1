@@ -74,7 +74,7 @@ function Test-Version
 
         foreach ($item in $Property) {
             if (($validProperties -notcontains $item) -or ($item -notmatch '^[a-zA-Z]+$')) {
-                throw New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
+                throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
                     "Invalid Version Property: $item.`r`n" +
                     "Use one of the following values: $($validProperties -join ', ')"
                 )
@@ -175,7 +175,7 @@ function Test-Version
             return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }

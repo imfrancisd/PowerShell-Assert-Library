@@ -26,9 +26,9 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip = {
         $elementTypes[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Zip[$i] -ErrorAction $ErrorActionPreference
     }
 
-    $minlistlength = @($listLengths | Sort-Object)[0]
+    $minlistlength = @($listLengths | Microsoft.PowerShell.Utility\Sort-Object)[0]
 
-    if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
+    if (@($elementTypes | Microsoft.PowerShell.Utility\Sort-Object -Unique).Length -eq 1) {
         $outputElementType = $elementTypes[0]
     }
     else {
@@ -46,7 +46,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip = {
         }
 
         #output the "Zip"
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = $items
         }
     }

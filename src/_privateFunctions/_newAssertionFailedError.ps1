@@ -15,8 +15,8 @@ $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError = {
         $value
     )
 
-    New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-        (New-Object -TypeName 'System.Exception' -ArgumentList @($message, $innerException)),
+    Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+        (Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Exception' -ArgumentList @($message, $innerException)),
         'AssertionFailed',
         [System.Management.Automation.ErrorCategory]::OperationStopped,
         $value

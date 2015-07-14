@@ -135,7 +135,7 @@ function Test-String
     else {
         $allowedNormalizations = [System.Text.NormalizationForm[]]@(
             [System.Enum]::GetValues([System.Text.NormalizationForm]) |
-                Where-Object -FilterScript {$Normalization -contains $_}
+                Microsoft.PowerShell.Core\Where-Object -FilterScript {$Normalization -contains $_}
         )
     }
 
@@ -279,7 +279,7 @@ function Test-String
             return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }

@@ -43,11 +43,11 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
         $elementTypes[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $CoveringArray[$i] -ErrorAction $ErrorActionPreference
     }
 
-    if (@($listLengths | Sort-Object)[0] -lt 1) {
+    if (@($listLengths | Microsoft.PowerShell.Utility\Sort-Object)[0] -lt 1) {
         return
     }
 
-    if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
+    if (@($elementTypes | Microsoft.PowerShell.Utility\Sort-Object -Unique).Length -eq 1) {
         $outputElementType = $elementTypes[0]
     }
     else {
@@ -58,7 +58,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
     #The important thing is all values in the lists are used 1 or more times.
 
     if ($Strength -eq 1) {
-        $maxListLength = @($listLengths | Sort-Object -Descending)[0]
+        $maxListLength = @($listLengths | Microsoft.PowerShell.Utility\Sort-Object -Descending)[0]
 
         for ($i = 0; $i -lt $maxListLength; $i++) {
             #generate a row in the covering array
@@ -68,7 +68,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
             }
 
             #output the row
-            New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
                 'Items' = $items
             }
         }
@@ -110,7 +110,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
     #with the first number in the string being the index of the combination.
 
     $f = '{0:D} '
-    $s = New-Object -TypeName 'System.Text.StringBuilder'
+    $s = Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Text.StringBuilder'
 
     while ($counter[0] -lt $listLengths[0]) {
         $i = $listCount - 1
@@ -146,7 +146,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
                 }
 
                 #output cartesian product
-                New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+                Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
                     'Items' = $items
                 }
             }

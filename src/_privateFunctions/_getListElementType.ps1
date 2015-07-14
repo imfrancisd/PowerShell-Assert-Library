@@ -31,9 +31,9 @@ $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType = {
     if ($List -is [System.Collections.IList]) {
         $IListGenericTypes = @(
             $objectGetType.Invoke($List, $null).GetInterfaces() |
-            Where-Object -FilterScript {
-                $_.IsGenericType -and ($_.GetGenericTypeDefinition() -eq $genericIList)
-            }
+                Microsoft.PowerShell.Core\Where-Object -FilterScript {
+                    $_.IsGenericType -and ($_.GetGenericTypeDefinition() -eq $genericIList)
+                }
         )
 
         if ($IListGenericTypes.Length -eq 1) {

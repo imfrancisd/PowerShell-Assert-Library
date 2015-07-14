@@ -275,7 +275,7 @@ function Test-Text
             return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }

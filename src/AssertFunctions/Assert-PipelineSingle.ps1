@@ -31,12 +31,12 @@ function Assert-PipelineSingle
 
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-            Write-Verbose -Message $message
+            Microsoft.PowerShell.Utility\Write-Verbose -Message $message
 
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            Microsoft.PowerShell.Utility\Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
@@ -51,13 +51,13 @@ function Assert-PipelineSingle
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-            Write-Verbose -Message $message
+            Microsoft.PowerShell.Utility\Write-Verbose -Message $message
 
             if ($fail) {
                 if (-not $PSBoundParameters.ContainsKey('Debug')) {
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
-                Write-Debug -Message $message
+                Microsoft.PowerShell.Utility\Write-Debug -Message $message
                 $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }

@@ -20,7 +20,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute = {
     }
 
     if ($Size -eq 0) {
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = [System.Array]::CreateInstance($outputElementType, 0)
         }
         return
@@ -54,7 +54,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute = {
         }
 
         #output permutation
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = $items
         }
 

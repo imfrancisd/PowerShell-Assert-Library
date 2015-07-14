@@ -20,7 +20,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPair = {
         $items[1] = $Pair[$i + 1]
 
         #output pair
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = $items
         }
     }

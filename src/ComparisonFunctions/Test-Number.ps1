@@ -77,7 +77,7 @@ function Test-Number
         else {
             $allowedTypes = [System.String[]]@(
                 $allowedTypes |
-                    Where-Object -FilterScript {($Type -icontains $_) -or ($Type -icontains $_.Split('.')[-1])}
+                    Microsoft.PowerShell.Core\Where-Object -FilterScript {($Type -icontains $_) -or ($Type -icontains $_.Split('.')[-1])}
             )
         }
     }
@@ -173,7 +173,7 @@ function Test-Number
             return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }
