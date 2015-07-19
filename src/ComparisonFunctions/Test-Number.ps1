@@ -88,7 +88,7 @@ function Test-Number
             return $false
         }
 
-        $nType = $n.GetType().FullName
+        $nType = (& $_7ddd17460d1743b2b6e683ef649e01b7_getType $n).FullName
         if ($nType -eq 'System.Double') {
             if (([System.Double]::IsNaN($n)) -or ([System.Double]::IsInfinity($n))) {
                 return $false
@@ -106,7 +106,7 @@ function Test-Number
     {
         $areNumbers = (isNumber $x) -and (isNumber $y)
         if ($MatchType) {
-            return $areNumbers -and ($x.GetType() -eq $y.GetType())
+            return $areNumbers -and ((& $_7ddd17460d1743b2b6e683ef649e01b7_getType $x) -eq (& $_7ddd17460d1743b2b6e683ef649e01b7_getType $y))
         }
         return $areNumbers
     }
