@@ -1,8 +1,69 @@
+#requires -version 2
+
+<#
+.Synopsis
+Test the Test-False cmdlet.
+.Description
+Test the Test-False cmdlet.
+.Inputs
+None
+.Outputs
+None
+.Notes
+=====================================================================
+
+
+#Use an ArrayList as a logger.
+#The log entries will be in $simpleLogger.
+#
+$simpleLogger = new-object -typename system.collections.arraylist
+.\test-test-false.ps1 -logger $simpleLogger
+
+
+=====================================================================
+
+
+#Use a custom object as a logger.
+#The log entries will be in $customLogger.Entries.
+#
+$customLogger = new-object -typename psobject -property @{
+    Entries = new-object -typename system.collections.arraylist
+} |
+add-member scriptmethod Add {
+    param($logEntry)
+
+    #Add entry.
+    $this.Entries.Add($logEntry) | out-null
+
+    #Limit the number of entries in the logger to 10.
+    if ($this.Entries.Count -gt 10) {
+        $this.Entries.RemoveAt(0)
+    }
+} -passthru
+.\test-test-false.ps1 -logger $customLogger
+
+
+=====================================================================
+#>
 [CmdletBinding()]
 Param(
+    #A data structure with an "Add" method that will be used to log tests.
+    #
+    #The data structure can be a simple ArrayList or a complicated custom object.
+    #The advantage of using a custom object is that you have full control over the logging behavior, such as limiting the number of log entries.
+    #
+    #See the Notes section for examples.
+    $Logger = $null,
+
+    #Suppress all verbose messages.
+    #
+    #The default is to suppress some verbose messages.
+    #Use the -Verbose switch (and turn off this switch) to display all verbose messages.
     [System.Management.Automation.SwitchParameter]
     $Silent
 )
+
+
 
 $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 if ($Silent) {
@@ -12,6 +73,24 @@ if ($Silent) {
     $headerVerbosity = [System.Management.Automation.ActionPreference]::Continue
 }
 
+$TestScriptFilePath = $MyInvocation.MyCommand.Path
+function newTestLogEntry($testDescription)
+{
+    Write-Verbose -Message $testDescription -Verbose:$headerVerbosity
+    $logEntry = New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        File = $TestScriptFilePath
+        Test = $testDescription
+        Pass = $false
+        Data = @{}
+    }
+    if ($null -ne $Logger) {
+        [System.Void]$Logger.Add($logEntry)
+    }
+    return $logEntry
+}
+
+
+
 $nonBooleanFalse = @(
     0, '', @($null), @(0), @(''), @($false), @(), @(,@())
 )
@@ -20,146 +99,158 @@ $nonBooleanTrue = @(
 )
 
 & {
-    Write-Verbose -Message 'Test Test-False with get-help -full' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Test Test-False with get-help -full'
 
-    $err = try {$fullHelp = Get-Help Test-False -Full} catch {$_}
+    $test.Data.err = try {$test.Data.fullHelp = Get-Help Test-False -Full} catch {$_}
 
-    $pass =
-        ($null -eq $err) -and
-        ($fullHelp.Name -is [System.String]) -and
-        ($fullHelp.Name.Equals('Test-False', [System.StringComparison]::OrdinalIgnoreCase)) -and
-        ($fullHelp.description -is [System.Collections.ICollection]) -and
-        ($fullHelp.description.Count -gt 0) -and
-        ($null -ne $fullHelp.examples) -and
-        (0 -lt @($fullHelp.examples.example).Count) -and
-        ('' -ne @($fullHelp.examples.example)[0].code)
+    $test.Pass =
+        ($null -eq $test.Data.err) -and
+        ($test.Data.fullHelp.Name -is [System.String]) -and
+        ($test.Data.fullHelp.Name.Equals('Test-False', [System.StringComparison]::OrdinalIgnoreCase)) -and
+        ($test.Data.fullHelp.description -is [System.Collections.ICollection]) -and
+        ($test.Data.fullHelp.description.Count -gt 0) -and
+        ($null -ne $test.Data.fullHelp.examples) -and
+        (0 -lt @($test.Data.fullHelp.examples.example).Count) -and
+        ('' -ne @($test.Data.fullHelp.examples.example)[0].code)
 
-    if (-not $pass) {
+    if (-not $test.Pass) {
         $message = 'Test-False failed with get-help -full.'
         throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Test-False parameters' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Test Test-False parameters'
 
     $message = 'Test-False failed parameter tests.'
 
-    $paramSets = @((Get-Command -Name Test-False).ParameterSets)
-    if (1 -ne $paramSets.Count) {
+    $test.Data.paramSets = @((Get-Command -Name Test-False).ParameterSets)
+    if (1 -ne $test.Data.paramSets.Count) {
         throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 
-    $valueParam = $paramSets[0].Parameters |
+    $test.Data.valueParam = $test.Data.paramSets[0].Parameters |
         Where-Object {'Value'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    if ($null -eq $valueParam) {
+    if ($null -eq $test.Data.valueParam) {
         throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 
-    $pass =
-        ($valueParam.IsMandatory) -and
-        ($valueParam.ParameterType -eq [System.Object]) -and
-        (-not $valueParam.ValueFromPipeline) -and
-        (-not $valueParam.ValueFromPipelineByPropertyName) -and
-        (-not $valueParam.ValueFromRemainingArguments) -and
-        (0 -eq $valueParam.Position) -and
-        (0 -eq $valueParam.Aliases.Count)
+    $test.Pass =
+        ($test.Data.valueParam.IsMandatory) -and
+        ($test.Data.valueParam.ParameterType -eq [System.Object]) -and
+        (-not $test.Data.valueParam.ValueFromPipeline) -and
+        (-not $test.Data.valueParam.ValueFromPipelineByPropertyName) -and
+        (-not $test.Data.valueParam.ValueFromRemainingArguments) -and
+        (0 -eq $test.Data.valueParam.Position) -and
+        (0 -eq $test.Data.valueParam.Aliases.Count)
 
-    if (-not $pass) {
-        throw New-Object 'System.Exception' -ArgumentList @($message)
-    }
-}
-
-& {
-    Write-Verbose -Message 'Test Test-False with Boolean $false' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {Test-False $false -OutVariable out1 | Out-Null} catch {$_}
-
-    $pass =
-        ($out1.Count -eq 1) -and
-        ($out1[0] -is [System.Boolean]) -and
-        ($out1[0]) -and
-        ($null -eq $er1)
-
-    if (-not $pass) {
-        $message = 'Test-False failed with $false value.'
+    if (-not $test.Pass) {
         throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Test-False with Boolean $true' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Test Test-False with Boolean $true'
 
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {Test-False $true -OutVariable out1 | Out-Null} catch {$_}
+    $test.Data.err = try {Test-False $true -OutVariable out | Out-Null} catch {$_}
+    $test.Data.out = $out
 
-    $pass =
-        ($out1.Count -eq 1) -and
-        ($out1[0] -is [System.Boolean]) -and
-        (-not $out1[0]) -and
-        ($null -eq $er1)
+    $test.Pass =
+        ($test.Data.out.Count -eq 1) -and
+        ($test.Data.out[0] -is [System.Boolean]) -and
+        (-not $test.Data.out[0]) -and
+        ($null -eq $test.Data.err)
 
-    if (-not $pass) {
+    if (-not $test.Pass) {
         $message = 'Test-False failed with $true value.'
         throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Test-False with $null' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Test Test-False with Boolean $false'
 
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {Test-False $null -OutVariable out1 | Out-Null} catch {$_}
+    $test.Data.err = try {Test-False $false -OutVariable out | Out-Null} catch {$_}
+    $test.Data.out = $out
 
-    $pass =
-        ($out1.Count -eq 1) -and
-        ($out1[0] -is [System.Boolean]) -and
-        (-not $out1[0]) -and
-        ($null -eq $er1)
+    $test.Pass =
+        ($test.Data.out.Count -eq 1) -and
+        ($test.Data.out[0] -is [System.Boolean]) -and
+        ($test.Data.out[0]) -and
+        ($null -eq $test.Data.err)
 
-    if (-not $pass) {
+    if (-not $test.Pass) {
+        $message = 'Test-False failed with $false value.'
+        throw New-Object 'System.Exception' -ArgumentList @($message)
+    }
+}
+
+& {
+    $test = newTestLogEntry 'Test Test-False with $null'
+
+    $test.Data.err = try {Test-False $null -OutVariable out | Out-Null} catch {$_}
+    $test.Data.out = $out
+
+    $test.Pass =
+        ($test.Data.out.Count -eq 1) -and
+        ($test.Data.out[0] -is [System.Boolean]) -and
+        (-not $test.Data.out[0]) -and
+        ($null -eq $test.Data.err)
+
+    if (-not $test.Pass) {
         $message = 'Test-False failed with $null value.'
         throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Test-False with Non-Booleans that are convertible to $true' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Test Test-False with Non-Booleans that are convertible to $true'
+    $test.Data.err = [System.Array]::CreateInstance([System.Object], $nonBooleanTrue.Count)
+    $test.Data.out = [System.Array]::CreateInstance([System.Object], $nonBooleanTrue.Count)
 
-    foreach ($item in $nonBooleanTrue) {
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {Test-False $item -OutVariable out1 | Out-Null} catch {$_}
+    for ($i = 0; $i -lt $nonBooleanTrue.Count; $i++) {
+        $test.Data.err[$i] = try {Test-False $nonBooleanTrue[$i] -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out[$i] = $out
 
-        $pass =
-            ($out1.Count -eq 1) -and
-            ($out1[0] -is [System.Boolean]) -and
-            (-not $out1[0]) -and
-            ($null -eq $er1)
+        $test.Pass =
+            ($test.Data.out[$i].Count -eq 1) -and
+            ($test.Data.out[$i][0] -is [System.Boolean]) -and
+            (-not $test.Data.out[$i][0]) -and
+            ($null -eq $test.Data.err[$i])
 
-        if (-not $pass) {
-            $message = 'Test-False failed with Non-Boolean that is convertible to $true: ' + "$item"
-            throw New-Object 'System.Exception' -ArgumentList @($message)
+        if (-not $test.Pass) {
+            break
         }
+    }
+
+    if (-not $test.Pass) {
+        $message = 'Test-False failed with Non-Boolean that is convertible to $true.'
+        throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Test-False with Non-Booleans that are convertible to $false' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Test Test-False with Non-Booleans that are convertible to $false'
+    $test.Data.err = [System.Array]::CreateInstance([System.Object], $nonBooleanFalse.Count)
+    $test.Data.out = [System.Array]::CreateInstance([System.Object], $nonBooleanFalse.Count)
 
-    foreach ($item in $nonBooleanFalse) {
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {Test-False $item -OutVariable out1 | Out-Null} catch {$_}
+    for ($i = 0; $i -lt $nonBooleanFalse.Count; $i++) {
+        $test.Data.err[$i] = try {Test-False $nonBooleanFalse[$i] -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out[$i] = $out
 
-        $pass =
-            ($out1.Count -eq 1) -and
-            ($out1[0] -is [System.Boolean]) -and
-            (-not $out1[0]) -and
-            ($null -eq $er1)
+        $test.Pass =
+            ($test.Data.out[$i].Count -eq 1) -and
+            ($test.Data.out[$i][0] -is [System.Boolean]) -and
+            (-not $test.Data.out[$i][0]) -and
+            ($null -eq $test.Data.err[$i])
 
-        if (-not $pass) {
-            $message = 'Test-False failed with Non-Boolean that is convertible to $false: ' + "$item"
-            throw New-Object 'System.Exception' -ArgumentList @($message)
+        if (-not $test.Pass) {
+            break
         }
+    }
+
+    if (-not $test.Pass) {
+        $message = 'Test-False failed with Non-Boolean that is convertible to $false.'
+        throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 }
