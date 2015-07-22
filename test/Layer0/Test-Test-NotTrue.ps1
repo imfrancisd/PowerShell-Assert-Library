@@ -17,7 +17,7 @@ None
 #The log entries will be in $simpleLogger.
 #
 $simpleLogger = new-object -typename system.collections.arraylist
-.\test-test-nottrue.ps1 -logger $simpleLogger
+.\Test-Test-NotTrue.ps1 -logger $simpleLogger
 
 
 =====================================================================
@@ -40,7 +40,7 @@ add-member scriptmethod Add {
         $this.Entries.RemoveAt(0)
     }
 } -passthru
-.\test-test-nottrue.ps1 -logger $customLogger
+.\Test-Test-NotTrue.ps1 -logger $customLogger
 
 
 =====================================================================
@@ -80,8 +80,12 @@ function newTestLogEntry($testDescription)
     $logEntry = New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
         File = $TestScriptFilePath
         Test = $testDescription
-        Pass = $false
-        Data = @{}
+        Pass = $null
+        Data = @{
+            in  = $null #IDictionary (for named parameters) or IList (for arguments)
+            out = $null #IList (one item per output, generated from -OutVariable parameter)
+            err = $null #ErrorRecord from command that takes in and generates out
+        }
     }
     if ($null -ne $Logger) {
         [System.Void]$Logger.Add($logEntry)
@@ -101,17 +105,20 @@ $nonBooleanTrue = @(
 & {
     $test = newTestLogEntry 'Test Test-NotTrue with get-help -full'
 
-    $test.Data.err = try {$test.Data.fullHelp = Get-Help Test-NotTrue -Full} catch {$_}
+    $test.Data.in  = @{name = 'Test-NotTrue'}
+    $test.Data.err = try {Get-Help -Name $test.Data.in.name -Full -OutVariable out | Out-Null} catch {$_}
+    $test.Data.out = $out
 
     $test.Pass =
         ($null -eq $test.Data.err) -and
-        ($test.Data.fullHelp.Name -is [System.String]) -and
-        ($test.Data.fullHelp.Name.Equals('Test-NotTrue', [System.StringComparison]::OrdinalIgnoreCase)) -and
-        ($test.Data.fullHelp.description -is [System.Collections.ICollection]) -and
-        ($test.Data.fullHelp.description.Count -gt 0) -and
-        ($null -ne $test.Data.fullHelp.examples) -and
-        (0 -lt @($test.Data.fullHelp.examples.example).Count) -and
-        ('' -ne @($test.Data.fullHelp.examples.example)[0].code)
+        ($test.Data.out.Count -eq 1) -and
+        ($test.Data.out[0].Name -is [System.String]) -and
+        ($test.Data.out[0].Name.Equals('Test-NotTrue', [System.StringComparison]::OrdinalIgnoreCase)) -and
+        ($test.Data.out[0].description -is [System.Collections.ICollection]) -and
+        ($test.Data.out[0].description.Count -gt 0) -and
+        ($null -ne $test.Data.out[0].examples) -and
+        (0 -lt @($test.Data.out[0].examples.example).Count) -and
+        ('' -ne @($test.Data.out[0].examples.example)[0].code)
 
     if (-not $test.Pass) {
         $message = 'Test-NotTrue failed with get-help -full.'
@@ -122,29 +129,39 @@ $nonBooleanTrue = @(
 & {
     $test = newTestLogEntry 'Test Test-NotTrue parameters'
 
-    $message = 'Test-NotTrue failed parameter tests.'
+    $test.Data.in  = @{name = 'Test-NotTrue'}
+    $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+    $test.Data.out = $out
 
-    $test.Data.paramSets = @((Get-Command -Name Test-NotTrue).ParameterSets)
-    if (1 -ne $test.Data.paramSets.Count) {
+    if ($null -ne $test.Data.err) {
+        $message = 'Test-NotTrue failed parameter tests (could not get command).'
         throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 
-    $test.Data.valueParam = $test.Data.paramSets[0].Parameters |
+    $paramSets = @($test.Data.out[0].ParameterSets)
+    if (1 -ne $paramSets.Count) {
+        $message = 'Test-NotTrue failed parameter tests (more than one parameter set).'
+        throw New-Object 'System.Exception' -ArgumentList @($message)
+    }
+
+    $valueParam = $paramSets[0].Parameters |
         Where-Object {'Value'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    if ($null -eq $test.Data.valueParam) {
+    if ($null -eq $valueParam) {
+        $message = 'Test-NotTrue failed parameter tests (no parameter with name "Value").'
         throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 
     $test.Pass =
-        ($test.Data.valueParam.IsMandatory) -and
-        ($test.Data.valueParam.ParameterType -eq [System.Object]) -and
-        (-not $test.Data.valueParam.ValueFromPipeline) -and
-        (-not $test.Data.valueParam.ValueFromPipelineByPropertyName) -and
-        (-not $test.Data.valueParam.ValueFromRemainingArguments) -and
-        (0 -eq $test.Data.valueParam.Position) -and
-        (0 -eq $test.Data.valueParam.Aliases.Count)
+        ($valueParam.IsMandatory) -and
+        ($valueParam.ParameterType -eq [System.Object]) -and
+        (-not $valueParam.ValueFromPipeline) -and
+        (-not $valueParam.ValueFromPipelineByPropertyName) -and
+        (-not $valueParam.ValueFromRemainingArguments) -and
+        (0 -eq $valueParam.Position) -and
+        (0 -eq $valueParam.Aliases.Count)
 
     if (-not $test.Pass) {
+        $message = 'Test-NotTrue failed parameter tests ("Value" parameter attributes).'
         throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 }
@@ -152,14 +169,15 @@ $nonBooleanTrue = @(
 & {
     $test = newTestLogEntry 'Test Test-NotTrue with Boolean $true'
 
-    $test.Data.err = try {Test-NotTrue $true -OutVariable out | Out-Null} catch {$_}
+    $test.Data.in  = @{value = $true}
+    $test.Data.err = try {Test-NotTrue $test.Data.in.value -OutVariable out | Out-Null} catch {$_}
     $test.Data.out = $out
 
     $test.Pass =
+        ($null -eq $test.Data.err) -and
         ($test.Data.out.Count -eq 1) -and
         ($test.Data.out[0] -is [System.Boolean]) -and
-        (-not $test.Data.out[0]) -and
-        ($null -eq $test.Data.err)
+        (-not $test.Data.out[0])
 
     if (-not $test.Pass) {
         $message = 'Test-NotTrue failed with $true value.'
@@ -170,14 +188,15 @@ $nonBooleanTrue = @(
 & {
     $test = newTestLogEntry 'Test Test-NotTrue with Boolean $false'
 
-    $test.Data.err = try {Test-NotTrue $false -OutVariable out | Out-Null} catch {$_}
+    $test.Data.in  = @{value = $false}
+    $test.Data.err = try {Test-NotTrue $test.Data.in.value -OutVariable out | Out-Null} catch {$_}
     $test.Data.out = $out
 
     $test.Pass =
+        ($null -eq $test.Data.err) -and
         ($test.Data.out.Count -eq 1) -and
         ($test.Data.out[0] -is [System.Boolean]) -and
-        ($test.Data.out[0]) -and
-        ($null -eq $test.Data.err)
+        ($test.Data.out[0])
 
     if (-not $test.Pass) {
         $message = 'Test-NotTrue failed with $false value.'
@@ -188,14 +207,15 @@ $nonBooleanTrue = @(
 & {
     $test = newTestLogEntry 'Test Test-NotTrue with $null'
 
-    $test.Data.err = try {Test-NotTrue $null -OutVariable out | Out-Null} catch {$_}
+    $test.Data.in  = @{value = $null}
+    $test.Data.err = try {Test-NotTrue $test.Data.in.value -OutVariable out | Out-Null} catch {$_}
     $test.Data.out = $out
 
     $test.Pass =
+        ($null -eq $test.Data.err) -and
         ($test.Data.out.Count -eq 1) -and
         ($test.Data.out[0] -is [System.Boolean]) -and
-        ($test.Data.out[0]) -and
-        ($null -eq $test.Data.err)
+        ($test.Data.out[0])
 
     if (-not $test.Pass) {
         $message = 'Test-NotTrue failed with $null value.'
@@ -204,53 +224,57 @@ $nonBooleanTrue = @(
 }
 
 & {
-    $test = newTestLogEntry 'Test Test-NotTrue with Non-Booleans that are convertible to $true'
-    $test.Data.err = [System.Array]::CreateInstance([System.Object], $nonBooleanTrue.Count)
-    $test.Data.out = [System.Array]::CreateInstance([System.Object], $nonBooleanTrue.Count)
-
     for ($i = 0; $i -lt $nonBooleanTrue.Count; $i++) {
-        $test.Data.err[$i] = try {Test-NotTrue $nonBooleanTrue[$i] -OutVariable out | Out-Null} catch {$_}
-        $test.Data.out[$i] = $out
+        $test = newTestLogEntry 'Test Test-NotTrue with Non-Boolean that is convertible to $true'
+
+        $test.Data.in  = @{value = $nonBooleanTrue[$i]}
+        $test.Data.err = try {Test-NotTrue $test.Data.in.value -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
         $test.Pass =
-            ($test.Data.out[$i].Count -eq 1) -and
-            ($test.Data.out[$i][0] -is [System.Boolean]) -and
-            ($test.Data.out[$i][0]) -and
-            ($null -eq $test.Data.err[$i])
+            ($null -eq $test.Data.err) -and
+            ($test.Data.out.Count -eq 1) -and
+            ($test.Data.out[0] -is [System.Boolean]) -and
+            ($test.Data.out[0])
 
         if (-not $test.Pass) {
-            break
+            $message = 'Test-NotTrue failed with Non-Boolean that is convertible to $true.'
+            throw New-Object 'System.Exception' -ArgumentList @($message)
         }
     }
 
-    if (-not $test.Pass) {
-        $message = 'Test-NotTrue failed with Non-Boolean that is convertible to $true.'
+    if ($i -eq 0) {
+        $test = newTestLogEntry 'Test Test-NotTrue with Non-Boolean that is convertible to $true'
+
+        $message = 'No data to test Test-NotTrue with Non-Boolean that is convertible to $true.'
         throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 }
 
 & {
-    $test = newTestLogEntry 'Test Test-NotTrue with Non-Booleans that are convertible to $false'
-    $test.Data.err = [System.Array]::CreateInstance([System.Object], $nonBooleanFalse.Count)
-    $test.Data.out = [System.Array]::CreateInstance([System.Object], $nonBooleanFalse.Count)
-
     for ($i = 0; $i -lt $nonBooleanFalse.Count; $i++) {
-        $test.Data.err[$i] = try {Test-NotTrue $nonBooleanFalse[$i] -OutVariable out | Out-Null} catch {$_}
-        $test.Data.out[$i] = $out
+        $test = newTestLogEntry 'Test Test-NotTrue with Non-Boolean that is convertible to $false'
+
+        $test.Data.in  = @{value = $nonBooleanFalse[$i]}
+        $test.Data.err = try {Test-NotTrue $test.Data.in.value -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
         $test.Pass =
-            ($test.Data.out[$i].Count -eq 1) -and
-            ($test.Data.out[$i][0] -is [System.Boolean]) -and
-            ($test.Data.out[$i][0]) -and
-            ($null -eq $test.Data.err[$i])
+            ($null -eq $test.Data.err) -and
+            ($test.Data.out.Count -eq 1) -and
+            ($test.Data.out[0] -is [System.Boolean]) -and
+            ($test.Data.out[0])
 
         if (-not $test.Pass) {
-            break
+            $message = 'Test-NotTrue failed with Non-Boolean that is convertible to $false.'
+            throw New-Object 'System.Exception' -ArgumentList @($message)
         }
     }
 
-    if (-not $test.Pass) {
-        $message = 'Test-NotTrue failed with Non-Boolean that is convertible to $false.'
+    if ($i -eq 0) {
+        $test = newTestLogEntry 'Test Test-NotTrue with Non-Boolean that is convertible to $false'
+
+        $message = 'No data to test Test-NotTrue with Non-Boolean that is convertible to $false.'
         throw New-Object 'System.Exception' -ArgumentList @($message)
     }
 }
