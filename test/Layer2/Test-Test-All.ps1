@@ -1,8 +1,95 @@
+#requires -version 2
+
+<#
+.Synopsis
+Test the Test-All cmdlet.
+.Description
+Test the Test-All cmdlet.
+.Inputs
+None
+.Outputs
+None
+.Notes
+=====================================================================
+
+
+#Use an ArrayList as a logger.
+#The log entries will be in $simpleLogger.
+#
+$simpleLogger = new-object -typename system.collections.arraylist
+.\Test-Test-All.ps1 -logger $simpleLogger
+
+
+=====================================================================
+
+
+#Use a custom object as a logger.
+#The log entries will be in $customLogger.Entries.
+#
+$customLogger = new-object -typename psobject -property @{
+    Entries = new-object -typename system.collections.arraylist
+} |
+add-member scriptmethod Add {
+    param($logEntry)
+
+    #Add entry.
+    $this.Entries.Add($logEntry) | out-null
+
+    #Limit the number of entries in the logger to 10.
+    if ($this.Entries.Count -gt 10) {
+        $this.Entries.RemoveAt(0)
+    }
+} -passthru
+.\Test-Test-All.ps1 -logger $customLogger
+
+
+=====================================================================
+
+
+Log Entry Structure
+===================
+All log entries will have the same structure.
+A log entry will not change after it is added to the logger.
+
+[pscustomobject]@{
+    File = #String (full path)
+    Test = #String (test description)
+    Pass = #Boolean (test result, $null if inconclusive)
+    Data = @{
+        err = #ErrorRecord from command that takes in and creates out
+        out = #IList (generated from -OutVariable parameter)
+        in  = #IDictionary (for parameter names/values
+              #list of args, if any, will be in entry with key '')
+    }
+    Time = @{
+        start = #DateTime UTC (test log entry creation time)
+        stop  = #DateTime UTC (test log entry log time)
+        span  = #TimeSpan (test duration)
+    }
+}
+
+
+=====================================================================
+#>
 [CmdletBinding()]
 Param(
+    #A data structure with an "Add" method that will be used to log tests.
+    #
+    #The data structure can be a simple ArrayList or a complicated custom object.
+    #The advantage of using a custom object is that you have full control over the logging behavior such as limiting the number of log entries.
+    #
+    #See the Notes section for more details and examples.
+    $Logger = $null,
+
+    #Suppress all verbose messages.
+    #
+    #The default is to suppress some verbose messages.
+    #Use the -Verbose switch (and turn off this switch) to display all verbose messages.
     [System.Management.Automation.SwitchParameter]
     $Silent
 )
+
+
 
 $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 if ($Silent) {
@@ -11,6 +98,60 @@ if ($Silent) {
 } else {
     $headerVerbosity = [System.Management.Automation.ActionPreference]::Continue
 }
+
+
+
+$TestScriptFilePath = $MyInvocation.MyCommand.Path
+$TestScriptStopWatch = New-Object -TypeName 'System.Diagnostics.Stopwatch'
+
+function newTestLogEntry
+{
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $testDescription
+    )
+
+    if ([System.Int32]$headerVerbosity) {
+        $VerbosePreference = $headerVerbosity
+        Write-Verbose -Message $testDescription
+    }
+
+    $logEntry = New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        File = $TestScriptFilePath
+        Test = $testDescription
+        Pass = $null
+        Data = @{err = $null; out = $null; in = $null;}
+        Time = @{start = [System.DateTime]::UtcNow; stop = $null; span = $null;}
+    }
+
+    $TestScriptStopWatch.Reset()
+    $TestScriptStopWatch.Start()
+    return $logEntry
+}
+
+function commitTestLogEntry
+{
+    param(
+        [parameter(Mandatory = $true)]
+        $logEntry,
+        
+        [parameter(Mandatory = $false)]
+        [System.Boolean]
+        $pass
+    )
+
+    $logEntry.Pass = if ($PSBoundParameters.ContainsKey('pass')) {$pass} else {$null}
+    $TestScriptStopWatch.Stop()
+    $logEntry.Time.span = $TestScriptStopWatch.Elapsed
+    $logEntry.Time.stop = [System.DateTime]::UtcNow
+
+    if ($null -ne $Logger) {
+        [System.Void]$Logger.Add($logEntry)
+    }
+}
+
+
 
 $nonBooleanFalse = @(
     0, '', @($null), @(0), @(''), @($false), @(), @(,@())
@@ -24,289 +165,597 @@ $emptyCollections = @(
     (New-Object -TypeName 'System.Collections.Generic.List[System.String]'),
     (New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary')
 )
+$nonCollections = @(
+    $true, $false, $null, 0, 1, 'hi', ([System.DateTime]::Now)
+)
+$predicates = @{
+    True     = {param($a) $true}
+    False    = {param($a) $false}
+    Identity = {param($a) ,$a}
+    Error    = {param($a) throw 'Error predicate'}
+}
+
+
 
 & {
-    Write-Verbose -Message 'Test Test-All with get-help -full' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Test-All help'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Test-All'}
+        $test.Data.err = try {Get-Help -Name $test.Data.in.name -Full -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
-    $err = try {$fullHelp = Get-Help Test-All -Full} catch {$_}
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True ($test.Data.out[0].Name -is [System.String])
+        Assert-True ($test.Data.out[0].Name.Equals('Test-All', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out[0].description -is [System.Collections.ICollection])
+        Assert-True ($test.Data.out[0].description.Count -gt 0)
+        Assert-NotNull $test.Data.out[0].examples
+        Assert-True (0 -lt @($test.Data.out[0].examples.example).Count)
+        Assert-True ('' -ne @($test.Data.out[0].examples.example)[0].code)
 
-    Assert-Null $err
-    Assert-True ($fullHelp.Name -is [System.String])
-    Assert-True ($fullHelp.Name.Equals('Test-All', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($fullHelp.description -is [System.Collections.ICollection])
-    Assert-True ($fullHelp.description.Count -gt 0)
-    Assert-NotNull $fullHelp.examples
-    Assert-True (0 -lt @($fullHelp.examples.example).Count)
-    Assert-True ('' -ne @($fullHelp.examples.example)[0].code)
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
 }
 
 & {
-    Write-Verbose -Message 'Test Test-All parameters' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Test-All parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Test-All'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
-    $paramSets = @((Get-Command -Name Test-All).ParameterSets)
-    Assert-True (1 -eq $paramSets.Count)
+        Assert-Null $test.Data.err
 
-    $collectionParam = $paramSets[0].Parameters |
-        Where-Object {'Collection'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    Assert-NotNull $collectionParam
+        $paramSets = @($test.Data.out[0].ParameterSets)
+        Assert-True (1 -eq $paramSets.Count)
 
-    $predicateParam = $paramSets[0].Parameters |
-        Where-Object {'Predicate'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    Assert-NotNull $predicateParam
+        $collectionParam = $paramSets[0].Parameters |
+            Where-Object {'Collection'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $collectionParam
 
-    Assert-True ($collectionParam.IsMandatory)
-    Assert-True ($collectionParam.ParameterType -eq [System.Object])
-    Assert-False ($collectionParam.ValueFromPipeline)
-    Assert-False ($collectionParam.ValueFromPipelineByPropertyName)
-    Assert-False ($collectionParam.ValueFromRemainingArguments)
-    Assert-True (0 -eq $collectionParam.Position)
-    Assert-True (0 -eq $collectionParam.Aliases.Count)
+        $predicateParam = $paramSets[0].Parameters |
+            Where-Object {'Predicate'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $predicateParam
 
-    Assert-True ($predicateParam.IsMandatory)
-    Assert-True ($predicateParam.ParameterType -eq [System.Management.Automation.ScriptBlock])
-    Assert-False ($predicateParam.ValueFromPipeline)
-    Assert-False ($predicateParam.ValueFromPipelineByPropertyName)
-    Assert-False ($predicateParam.ValueFromRemainingArguments)
-    Assert-True (1 -eq $predicateParam.Position)
-    Assert-True (0 -eq $predicateParam.Aliases.Count)
+        Assert-True ($collectionParam.IsMandatory)
+        Assert-True ($collectionParam.ParameterType -eq [System.Object])
+        Assert-False ($collectionParam.ValueFromPipeline)
+        Assert-False ($collectionParam.ValueFromPipelineByPropertyName)
+        Assert-False ($collectionParam.ValueFromRemainingArguments)
+        Assert-True (0 -eq $collectionParam.Position)
+        Assert-True (0 -eq $collectionParam.Aliases.Count)
+
+        Assert-True ($predicateParam.IsMandatory)
+        Assert-True ($predicateParam.ParameterType -eq [System.Management.Automation.ScriptBlock])
+        Assert-False ($predicateParam.ValueFromPipeline)
+        Assert-False ($predicateParam.ValueFromPipelineByPropertyName)
+        Assert-False ($predicateParam.ValueFromRemainingArguments)
+        Assert-True (1 -eq $predicateParam.Position)
+        Assert-True (0 -eq $predicateParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
 }
 
 & {
-    Write-Verbose -Message 'Test Test-All with empty collections' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Test-All with singleton containing $true'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{collection = @($true); predicate = $predicates.Identity;}
+        $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
-    foreach ($emptyCollection in $emptyCollections) {
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out4 = New-Object -TypeName 'System.Collections.ArrayList'
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
 
-        $er1 = try {Test-All $emptyCollection {$true} -OutVariable out1 | Out-Null} catch {$_}
-        $er2 = try {Test-All $emptyCollection {$false} -OutVariable out2 | Out-Null} catch {$_}
-        $er3 = try {Test-All $emptyCollection {param($a) ,$a} -OutVariable out3 | Out-Null} catch {$_}
-        $er4 = try {Test-All $emptyCollection {throw 'Bad predicate'} -OutVariable out4 | Out-Null} catch {$_}
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
 
-        Assert-True ($out1.Count -eq 1)
-        Assert-True ($out2.Count -eq 1)
-        Assert-True ($out3.Count -eq 1)
-        Assert-True ($out4.Count -eq 1)
+& {
+    $test = newTestLogEntry 'Test-All with singleton containing $false'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{collection = @($false); predicate = $predicates.Identity;}
+        $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
-        Assert-True ($out1[0])
-        Assert-True ($out2[0])
-        Assert-True ($out3[0])
-        Assert-True ($out4[0])
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-False $test.Data.out[0]
+        
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
 
-        Assert-Null $er1
-        Assert-Null $er2
-        Assert-Null $er3
-        Assert-Null $er4
+& {
+    $test = newTestLogEntry 'Test-All with singleton containing $null'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{collection = @($null); predicate = $predicates.Identity;}
+        $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-False $test.Data.out[0]
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $testDescription = 'Test-All with singleton containing Non-Boolean that is convertible to $true'
+
+    for ($i = 0; $i -lt $nonBooleanTrue.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = @(,$nonBooleanTrue[$i]); predicate = $predicates.Identity;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-False $test.Data.out[0]
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Test-All with $null collection' -Verbose:$headerVerbosity
+    $testDescription = 'Test-All with singleton containing Non-Boolean that is convertible to $false'
 
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
+    for ($i = 0; $i -lt $nonBooleanFalse.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = @(,$nonBooleanFalse[$i]); predicate = $predicates.Identity;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    $er1 = try {Test-All $null {$true} -OutVariable out1 | Out-Null} catch {$_}
-    $er2 = try {Test-All $null {$false} -OutVariable out2 | Out-Null} catch {$_}
-    $er3 = try {Test-All $null {param($a) ,$a} -OutVariable out3 | Out-Null} catch {$_}
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-False $test.Data.out[0]
 
-    Assert-True ($out1.Count -eq 1)
-    Assert-True ($out2.Count -eq 1)
-    Assert-True ($out3.Count -eq 1)
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
 
-    Assert-Null ($out1[0])
-    Assert-Null ($out2[0])
-    Assert-Null ($out3[0])
-
-    Assert-Null ($er1)
-    Assert-Null ($er2)
-    Assert-Null ($er3)
-}
-
-& {
-    Write-Verbose -Message 'Test Test-All with non-collection' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-
-    $er1 = try {Test-All 1 {$true} -OutVariable out1 | Out-Null} catch {$_}
-    $er2 = try {Test-All 'hi' {$true} -OutVariable out2 | Out-Null} catch {$_}
-    $er3 = try {Test-All ([System.DateTime]::Now) {$true} -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq 1)
-    Assert-True ($out2.Count -eq 1)
-    Assert-True ($out3.Count -eq 1)
-
-    Assert-Null ($out1[0])
-    Assert-Null ($out2[0])
-    Assert-Null ($out3[0])
-
-    Assert-Null ($er1)
-    Assert-Null ($er2)
-    Assert-Null ($er3)
-}
-
-& {
-    Write-Verbose -Message 'Test Test-All with $null predicate' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-
-    $er1 = try {Test-All @() $null -OutVariable out1 | Out-Null} catch {$_}
-    $er2 = try {Test-All @(1) $null -OutVariable out2 | Out-Null} catch {$_}
-    $er3 = try {Test-All @('a', 'b') $null -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq 0)
-    Assert-True ($out2.Count -eq 0)
-    Assert-True ($out3.Count -eq 0)
-
-    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-
-    Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Test-All', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er2.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Test-All', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Test-All', [System.StringComparison]::OrdinalIgnoreCase))
-
-    Assert-True ($er1.Exception.ParameterName.Equals('Predicate', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er2.Exception.ParameterName.Equals('Predicate', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er3.Exception.ParameterName.Equals('Predicate', [System.StringComparison]::OrdinalIgnoreCase))
-}
-
-& {
-    Write-Verbose -Message 'Test Test-All with predicate that throws an error' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
-
-    $er1 = try {Test-All @(1, 2, 3) {param($a) if ($a -eq 1) {throw 'Bad predicate 1'} else {$true}} -OutVariable out1 | Out-Null} catch {$_}
-    $er2 = try {Test-All @(1, 2, 3) {param($a) if ($a -eq 2) {throw 'Bad predicate 2'} else {$true}} -OutVariable out2 | Out-Null} catch {$_}
-    $er3 = try {Test-All @(1, 2, 3) {param($a) if ($a -eq 3) {throw 'Bad predicate 3'} else {$true}} -OutVariable out3 | Out-Null} catch {$_}
-    $er4 = try {Test-All @(1, 2, 3) {param($a) if ($a -eq 4) {throw 'Bad predicate 4'} else {$true}} -OutVariable out4 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq 0)
-    Assert-True ($out2.Count -eq 0)
-    Assert-True ($out3.Count -eq 0)
-    Assert-True ($out4.Count -eq 1)
-
-    Assert-True ($out4[0])
-
-    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-Null $er4
-
-    Assert-True ($er1.FullyQualifiedErrorId.Equals('PredicateFailed,Test-All', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er2.FullyQualifiedErrorId.Equals('PredicateFailed,Test-All', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('PredicateFailed,Test-All', [System.StringComparison]::OrdinalIgnoreCase))
-
-    Assert-True ($er1.Exception -is [System.InvalidOperationException])
-    Assert-True ($er2.Exception -is [System.InvalidOperationException])
-    Assert-True ($er3.Exception -is [System.InvalidOperationException])
-
-    Assert-NotNull ($er1.Exception.InnerException)
-    Assert-NotNull ($er2.Exception.InnerException)
-    Assert-NotNull ($er3.Exception.InnerException)
-
-    Assert-True ($er1.Exception.InnerException.Message.Equals('Bad predicate 1', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er2.Exception.InnerException.Message.Equals('Bad predicate 2', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er3.Exception.InnerException.Message.Equals('Bad predicate 3', [System.StringComparison]::OrdinalIgnoreCase))
-}
-
-& {
-    Write-Verbose -Message 'Test Test-All with collections containing $null' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-
-    $er1 = try {Test-All @($null) {$true} -OutVariable out1 | Out-Null} catch {$_}
-    $er2 = try {Test-All @(1, $null) {$true} -OutVariable out2 | Out-Null} catch {$_}
-    $er3 = try {Test-All @('a', 'b', $null, 'c') {$true} -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq 1)
-    Assert-True ($out2.Count -eq 1)
-    Assert-True ($out3.Count -eq 1)
-
-    Assert-True ($out1[0])
-    Assert-True ($out2[0])
-    Assert-True ($out3[0])
-
-    Assert-Null $er1
-    Assert-Null $er2
-    Assert-Null $er3
-}
-
-& {
-    Write-Verbose -Message 'Test Test-All @(,$null) {param($a) ,$a}' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {Test-All @(,$null) {param($a) ,$a} -OutVariable out1 | Out-Null} catch {$_}
-    Assert-True ($out1.Count -eq 1)
-    Assert-False ($out1[0])
-    Assert-Null ($er1)
-}
-
-& {
-    Write-Verbose -Message 'Test Test-All @(,$true) {param($a) ,$a}' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {Test-All @(,$true) {param($a) ,$a} -OutVariable out1 | Out-Null} catch {$_}
-    Assert-True ($out1.Count -eq 1)
-    Assert-True ($out1[0])
-    Assert-Null $er1
-}
-
-& {
-    Write-Verbose -Message 'Test Test-All @(,$false) {param($a) ,$a}' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {Test-All @(,$false) {param($a) ,$a} -OutVariable out1 | Out-Null} catch {$_}
-    Assert-True ($out1.Count -eq 1)
-    Assert-False ($out1[0])
-    Assert-Null ($er1)
-}
-
-& {
-    Write-Verbose -Message 'Test Test-All @(,$nonBooleanTrue) {param($a) ,$a}' -Verbose:$headerVerbosity
-
-    foreach ($item in $nonBooleanTrue) {
-        $collection = @(,$item)
-        Assert-True ($collection.Count -eq 1)
-
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {Test-All $collection {param($a) ,$a} -OutVariable out1 | Out-Null} catch {$_}
-        Assert-True ($out1.Count -eq 1)
-        Assert-False ($out1[0])
-        Assert-Null ($er1)
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Test-All @(,$nonBooleanFalse) {param($a) ,$a}' -Verbose:$headerVerbosity
+    $testDescription = 'Test-All with null predicate'
+    $collections = @($null, @(), @(1), @('is the', 'loneliest number'), @("three's", 'company', 'too'))
 
-    foreach ($item in $nonBooleanFalse) {
-        $collection = @(,$item)
-        Assert-True ($collection.Count -eq 1)
+    for ($i = 0; $i -lt $collections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = $collections[$i]; predicate = $null;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {Test-All $collection {param($a) ,$a} -OutVariable out1 | Out-Null} catch {$_}
-        Assert-True ($out1.Count -eq 1)
-        Assert-False ($out1[0])
-        Assert-Null ($er1)
+            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Test-All', [System.StringComparison]::OrdinalIgnoreCase))
+            Assert-True ($test.Data.err.Exception.ParameterName.Equals('Predicate', [System.StringComparison]::OrdinalIgnoreCase))
+            Assert-True ($test.Data.out.Count -eq 0)
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Test-All early fail' -Verbose:$headerVerbosity
+    $testDescription = 'Test-All with null collection'
+    $predicates = @($predicates.psbase.Values)
 
+    for ($i = 0; $i -lt $predicates.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = $null; predicate = $predicates[$i];}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null $test.Data.out[0]
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Test-All with collections containing null'
+    $collections = @(@($null), @(1, $null), @('a', 'b', $null, 'c'), @($null, $null, $null, $null, $null))
+
+    for ($i = 0; $i -lt $collections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = $collections[$i]; predicate = $predicates.True;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Test-All with empty collection and true predicate'
+
+    for ($i = 0; $i -lt $emptyCollections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = $emptyCollections[$i]; predicate = $predicates.True;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Test-All with empty collection and false predicate'
+
+    for ($i = 0; $i -lt $emptyCollections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = $emptyCollections[$i]; predicate = $predicates.False;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Test-All with empty collection and identity predicate'
+
+    for ($i = 0; $i -lt $emptyCollections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = $emptyCollections[$i]; predicate = $predicates.Identity;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Test-All with empty collection and error predicate'
+
+    for ($i = 0; $i -lt $emptyCollections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = $emptyCollections[$i]; predicate = $predicates.Error;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Test-All with scalar and true predicate'
+
+    for ($i = 0; $i -lt $nonCollections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = $nonCollections[$i]; predicate = $predicates.True;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null $test.Data.out[0]
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Test-All with scalar and false predicate'
+
+    for ($i = 0; $i -lt $nonCollections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = $nonCollections[$i]; predicate = $predicates.False;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null $test.Data.out[0]
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Test-All with scalar and identity predicate'
+
+    for ($i = 0; $i -lt $nonCollections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = $nonCollections[$i]; predicate = $predicates.Identity;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null $test.Data.out[0]
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Test-All with scalar and error predicate'
+
+    for ($i = 0; $i -lt $nonCollections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{collection = $nonCollections[$i]; predicate = $predicates.Error;}
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null $test.Data.out[0]
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $test = newTestLogEntry 'Test-All with quadruple and a predicate that throws on the first element'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{collection = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 1) {throw "Bad predicate $a"} else {$true}};}
+        $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Test-All', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.err.Exception -is [System.InvalidOperationException])
+        Assert-NotNull ($test.Data.err.Exception.InnerException)
+        Assert-True ($test.Data.err.Exception.InnerException.Message.Equals('Bad predicate 1', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out.Count -eq 0)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Test-All with quadruple and a predicate that throws on the second element'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{collection = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 2) {throw "Bad predicate $a"} else {$true}};}
+        $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Test-All', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.err.Exception -is [System.InvalidOperationException])
+        Assert-NotNull ($test.Data.err.Exception.InnerException)
+        Assert-True ($test.Data.err.Exception.InnerException.Message.Equals('Bad predicate 2', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out.Count -eq 0)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Test-All with quadruple and a predicate that throws on the third element'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{collection = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 3) {throw "Bad predicate $a"} else {$true}};}
+        $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Test-All', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.err.Exception -is [System.InvalidOperationException])
+        Assert-NotNull ($test.Data.err.Exception.InnerException)
+        Assert-True ($test.Data.err.Exception.InnerException.Message.Equals('Bad predicate 3', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out.Count -eq 0)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Test-All with quadruple and a predicate that throws on the fourth element'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{collection = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 4) {throw "Bad predicate $a"} else {$true}};}
+        $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Test-All', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.err.Exception -is [System.InvalidOperationException])
+        Assert-NotNull ($test.Data.err.Exception.InnerException)
+        Assert-True ($test.Data.err.Exception.InnerException.Message.Equals('Bad predicate 4', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out.Count -eq 0)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Test-All with quadruple and a predicate that throws on the fifth element'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{collection = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 5) {throw "Bad predicate $a"} else {$true}};}
+        $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
     $dictionary = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary'
     $dictionary.Add('a', 1)
     $dictionary.Add('b', 2)
@@ -315,30 +764,36 @@ $emptyCollections = @(
     $dictionary.Add('e', 5)
 
     foreach ($i in @(1..5)) {
-        $numPredicateCalls = 0
-        $predicate = {
-            param($entry)
+        $test = newTestLogEntry 'Test-All early fail'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in = @{
+                collection     = $dictionary
+                expectedCalls  = $i
+                remainingCalls = $i
+                predicate = {
+                    param($entry)
 
-            $numPredicateCalls = Get-Variable -Name 'numPredicateCalls' -Scope 1
-            $numPredicateCalls.Value = $numPredicateCalls.Value + 1
+                    $test.Data.in.remainingCalls--
+                    $entry.Value -lt $i
+                }
+            }
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-            return $entry.Value -lt $i
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-False $test.Data.out[0]
+            Assert-True (0 -eq $test.Data.in.remainingCalls)
+
+            $pass = $true
         }
-
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {Test-All $dictionary $predicate -OutVariable out1 | Out-Null} catch {$_}
-
-        Assert-True ($out1.Count -eq 1)
-        Assert-False ($out1[0])
-        Assert-Null ($er1)
-
-        Assert-True ($i -eq $numPredicateCalls)
+        finally {commitTestLogEntry $test $pass}
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Test-All with a predicate that contains "break" outside of a loop' -Verbose:$headerVerbosity
-
     $dictionary = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary'
     $dictionary.Add('a', 1)
     $dictionary.Add('b', 2)
@@ -346,26 +801,35 @@ $emptyCollections = @(
     $dictionary.Add('d', 4)
     $dictionary.Add('e', 5)
 
-    $numPredicateCalls = 0
-    $predicate = {
-        param($entry)
+    $test = newTestLogEntry 'Test-All with a predicate that contains "break" outside of a loop'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in = @{
+            collection     = $dictionary
+            expectedCalls  = 5
+            remainingCalls = 5
+            predicate = {
+                param($entry)
 
-        $numPredicateCalls = Get-Variable -Name 'numPredicateCalls' -Scope 1
-        $numPredicateCalls.Value = $numPredicateCalls.Value + 1
+                $test.Data.in.remainingCalls--
+                $true
+                break
+            }
+        }
 
-        $true
+        do {
+            $test.Data.err = try {Test-All $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        } while ($false)
 
-        break
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
+        Assert-True (0 -eq $test.Data.in.remainingCalls)
+
+        $pass = $true
     }
-
-    do {
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {Test-All $dictionary $predicate -OutVariable out1 | Out-Null} catch {$_}
-    } while ($false)
-
-    Assert-True ($out1.Count -eq 1)
-    Assert-True ($out1[0])
-    Assert-Null ($er1)
-
-    Assert-True (5 -eq $numPredicateCalls)
+    finally {commitTestLogEntry $test $pass}
 }
