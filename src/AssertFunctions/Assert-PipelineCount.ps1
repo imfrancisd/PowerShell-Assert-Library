@@ -29,7 +29,7 @@ function Assert-PipelineCount
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         #Make sure we can count higher than -Equals, -Minimum, and -Maximum.
