@@ -1,8 +1,95 @@
+#requires -version 2
+
+<#
+.Synopsis
+Test the Assert-PipelineCount cmdlet.
+.Description
+Test the Assert-PipelineCount cmdlet.
+.Inputs
+None
+.Outputs
+None
+.Notes
+=====================================================================
+
+
+#Use an ArrayList as a logger.
+#The log entries will be in $simpleLogger.
+#
+$simpleLogger = new-object -typename system.collections.arraylist
+.\Test-Assert-PipelineCount.ps1 -logger $simpleLogger
+
+
+=====================================================================
+
+
+#Use a custom object as a logger.
+#The log entries will be in $customLogger.Entries.
+#
+$customLogger = new-object -typename psobject -property @{
+    Entries = new-object -typename system.collections.arraylist
+} |
+add-member scriptmethod Add {
+    param($logEntry)
+
+    #Add entry.
+    $this.Entries.Add($logEntry) | out-null
+
+    #Limit the number of entries in the logger to 10.
+    if ($this.Entries.Count -gt 10) {
+        $this.Entries.RemoveAt(0)
+    }
+} -passthru
+.\Test-Assert-PipelineCount.ps1 -logger $customLogger
+
+
+=====================================================================
+
+
+Log Entry Structure
+===================
+All log entries will have the same structure.
+A log entry will not change after it is added to the logger.
+
+[pscustomobject]@{
+    File = #String (full path)
+    Test = #String (test description)
+    Pass = #Boolean (test result, $null if inconclusive)
+    Data = @{
+        err = #ErrorRecord from command that takes in and creates out
+        out = #IList (generated from -OutVariable parameter)
+        in  = #IDictionary (for parameter names/values
+              #list of args, if any, will be in entry with key '')
+    }
+    Time = @{
+        start = #DateTime UTC (test log entry creation time)
+        stop  = #DateTime UTC (test log entry log time)
+        span  = #TimeSpan (test duration)
+    }
+}
+
+
+=====================================================================
+#>
 [CmdletBinding()]
 Param(
+    #A data structure with an "Add" method that will be used to log tests.
+    #
+    #The data structure can be a simple ArrayList or a complicated custom object.
+    #The advantage of using a custom object is that you have full control over the logging behavior such as limiting the number of log entries.
+    #
+    #See the Notes section for more details and examples.
+    $Logger = $null,
+
+    #Suppress all verbose messages.
+    #
+    #The default is to suppress some verbose messages.
+    #Use the -Verbose switch (and turn off this switch) to display all verbose messages.
     [System.Management.Automation.SwitchParameter]
     $Silent
 )
+
+
 
 $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 if ($Silent) {
@@ -12,6 +99,60 @@ if ($Silent) {
     $headerVerbosity = [System.Management.Automation.ActionPreference]::Continue
 }
 
+
+
+$TestScriptFilePath = $MyInvocation.MyCommand.Path
+$TestScriptStopWatch = New-Object -TypeName 'System.Diagnostics.Stopwatch'
+
+function newTestLogEntry
+{
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $testDescription
+    )
+
+    if ([System.Int32]$headerVerbosity) {
+        $VerbosePreference = $headerVerbosity
+        Write-Verbose -Message $testDescription
+    }
+
+    $logEntry = New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        File = $TestScriptFilePath
+        Test = $testDescription
+        Pass = $null
+        Data = @{err = $null; out = $null; in = $null;}
+        Time = @{start = [System.DateTime]::UtcNow; stop = $null; span = $null;}
+    }
+
+    $TestScriptStopWatch.Reset()
+    $TestScriptStopWatch.Start()
+    return $logEntry
+}
+
+function commitTestLogEntry
+{
+    param(
+        [parameter(Mandatory = $true)]
+        $logEntry,
+        
+        [parameter(Mandatory = $false)]
+        [System.Boolean]
+        $pass
+    )
+
+    $logEntry.Pass = if ($PSBoundParameters.ContainsKey('pass')) {$pass} else {$null}
+    $TestScriptStopWatch.Stop()
+    $logEntry.Time.span = $TestScriptStopWatch.Elapsed
+    $logEntry.Time.stop = [System.DateTime]::UtcNow
+
+    if ($null -ne $Logger) {
+        [System.Void]$Logger.Add($logEntry)
+    }
+}
+
+
+
 $nonBooleanFalse = @(
     0, '', @($null), @(0), @(''), @($false), @(), @(,@())
 )
@@ -19,824 +160,904 @@ $nonBooleanTrue = @(
     1, 'True', 'False', @(1), @('True'), @('False'), @($true), @(,@(1)), @(,@($true))
 )
 
+
+
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount with get-help -full' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Assert-PipelineCount help'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Assert-PipelineCount'}
+        $test.Data.err = try {Get-Help -Name $test.Data.in.name -Full -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
-    $err = try {$fullHelp = Get-Help Assert-PipelineCount -Full} catch {$_}
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True ($test.Data.out[0].Name -is [System.String])
+        Assert-True ($test.Data.out[0].Name.Equals('Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out[0].description -is [System.Collections.ICollection])
+        Assert-True ($test.Data.out[0].description.Count -gt 0)
+        Assert-NotNull $test.Data.out[0].examples
+        Assert-True (0 -lt @($test.Data.out[0].examples.example).Count)
+        Assert-True ('' -ne @($test.Data.out[0].examples.example)[0].code)
 
-    Assert-Null $err
-    Assert-True ($fullHelp.Name -is [System.String])
-    Assert-True ($fullHelp.Name.Equals('Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($fullHelp.description -is [System.Collections.ICollection])
-    Assert-True ($fullHelp.description.Count -gt 0)
-    Assert-NotNull $fullHelp.examples
-    Assert-True (0 -lt @($fullHelp.examples.example).Count)
-    Assert-True ('' -ne @($fullHelp.examples.example)[0].code)
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount ParameterSet: Equals' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Assert-PipelineCount parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Assert-PipelineCount'; paramSet = 'Equals'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
-    $paramSet = (Get-Command -Name Assert-PipelineCount).ParameterSets |
-        Where-Object {'Equals'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    Assert-NotNull $paramSet
+        Assert-Null $test.Data.err
 
-    $inputObject = $paramSet.Parameters |
-        Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    Assert-NotNull $inputObject
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
 
-    $equalsParam = $paramSet.Parameters |
-        Where-Object {'Equals'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    Assert-NotNull $equalsParam
+        $inputObject = $paramSet.Parameters |
+            Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $inputObject
 
-    Assert-True ($inputObject.IsMandatory)
-    Assert-True ($inputObject.ParameterType -eq [System.Object])
-    Assert-True ($inputObject.ValueFromPipeline)
-    Assert-False ($inputObject.ValueFromPipelineByPropertyName)
-    Assert-False ($inputObject.ValueFromRemainingArguments)
-    Assert-True (0 -gt $inputObject.Position)
-    Assert-True (0 -eq $inputObject.Aliases.Count)
+        $equalsParam = $paramSet.Parameters |
+            Where-Object {'Equals'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $equalsParam
 
-    Assert-True ($equalsParam.IsMandatory)
-    Assert-True ($equalsParam.ParameterType -eq [System.Int64])
-    Assert-False ($equalsParam.ValueFromPipeline)
-    Assert-False ($equalsParam.ValueFromPipelineByPropertyName)
-    Assert-False ($equalsParam.ValueFromRemainingArguments)
-    Assert-True (0 -eq $equalsParam.Position)
-    Assert-True (0 -eq $equalsParam.Aliases.Count)
+        Assert-True ($inputObject.IsMandatory)
+        Assert-True ($inputObject.ParameterType -eq [System.Object])
+        Assert-True ($inputObject.ValueFromPipeline)
+        Assert-False ($inputObject.ValueFromPipelineByPropertyName)
+        Assert-False ($inputObject.ValueFromRemainingArguments)
+        Assert-True (0 -gt $inputObject.Position)
+        Assert-True (0 -eq $inputObject.Aliases.Count)
+
+        Assert-True ($equalsParam.IsMandatory)
+        Assert-True ($equalsParam.ParameterType -eq [System.Int64])
+        Assert-False ($equalsParam.ValueFromPipeline)
+        Assert-False ($equalsParam.ValueFromPipelineByPropertyName)
+        Assert-False ($equalsParam.ValueFromRemainingArguments)
+        Assert-True (0 -eq $equalsParam.Position)
+        Assert-True (0 -eq $equalsParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount ParameterSet: Minimum' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Assert-PipelineCount parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Assert-PipelineCount'; paramSet = 'Minimum'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
-    $paramSet = (Get-Command -Name Assert-PipelineCount).ParameterSets |
-        Where-Object {'Minimum'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    Assert-NotNull $paramSet
+        Assert-Null $test.Data.err
 
-    $inputObject = $paramSet.Parameters |
-        Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    Assert-NotNull $inputObject
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
 
-    $minimumParam = $paramSet.Parameters |
-        Where-Object {'Minimum'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    Assert-NotNull $minimumParam
+        $inputObject = $paramSet.Parameters |
+            Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $inputObject
 
-    Assert-True ($inputObject.IsMandatory)
-    Assert-True ($inputObject.ParameterType -eq [System.Object])
-    Assert-True ($inputObject.ValueFromPipeline)
-    Assert-False ($inputObject.ValueFromPipelineByPropertyName)
-    Assert-False ($inputObject.ValueFromRemainingArguments)
-    Assert-True (0 -gt $inputObject.Position)
-    Assert-True (0 -eq $inputObject.Aliases.Count)
+        $minParam = $paramSet.Parameters |
+            Where-Object {'Minimum'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $minParam
 
-    Assert-True ($minimumParam.IsMandatory)
-    Assert-True ($minimumParam.ParameterType -eq [System.Int64])
-    Assert-False ($minimumParam.ValueFromPipeline)
-    Assert-False ($minimumParam.ValueFromPipelineByPropertyName)
-    Assert-False ($minimumParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $minimumParam.Position)
-    Assert-True (0 -eq $minimumParam.Aliases.Count)
+        Assert-True ($inputObject.IsMandatory)
+        Assert-True ($inputObject.ParameterType -eq [System.Object])
+        Assert-True ($inputObject.ValueFromPipeline)
+        Assert-False ($inputObject.ValueFromPipelineByPropertyName)
+        Assert-False ($inputObject.ValueFromRemainingArguments)
+        Assert-True (0 -gt $inputObject.Position)
+        Assert-True (0 -eq $inputObject.Aliases.Count)
+
+        Assert-True ($minParam.IsMandatory)
+        Assert-True ($minParam.ParameterType -eq [System.Int64])
+        Assert-False ($minParam.ValueFromPipeline)
+        Assert-False ($minParam.ValueFromPipelineByPropertyName)
+        Assert-False ($minParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $minParam.Position)
+        Assert-True (0 -eq $minParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount ParameterSet: Maximum' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Assert-PipelineCount parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Assert-PipelineCount'; paramSet = 'Maximum'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
-    $paramSet = (Get-Command -Name Assert-PipelineCount).ParameterSets |
-        Where-Object {'Maximum'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    Assert-NotNull $paramSet
+        Assert-Null $test.Data.err
 
-    $inputObject = $paramSet.Parameters |
-        Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    Assert-NotNull $inputObject
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
 
-    $maximumParam = $paramSet.Parameters |
-        Where-Object {'Maximum'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-    Assert-NotNull $maximumParam
+        $inputObject = $paramSet.Parameters |
+            Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $inputObject
 
-    Assert-True ($inputObject.IsMandatory)
-    Assert-True ($inputObject.ParameterType -eq [System.Object])
-    Assert-True ($inputObject.ValueFromPipeline)
-    Assert-False ($inputObject.ValueFromPipelineByPropertyName)
-    Assert-False ($inputObject.ValueFromRemainingArguments)
-    Assert-True (0 -gt $inputObject.Position)
-    Assert-True (0 -eq $inputObject.Aliases.Count)
+        $maxParam = $paramSet.Parameters |
+            Where-Object {'Maximum'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $maxParam
 
-    Assert-True ($maximumParam.IsMandatory)
-    Assert-True ($maximumParam.ParameterType -eq [System.Int64])
-    Assert-False ($maximumParam.ValueFromPipeline)
-    Assert-False ($maximumParam.ValueFromPipelineByPropertyName)
-    Assert-False ($maximumParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $maximumParam.Position)
-    Assert-True (0 -eq $maximumParam.Aliases.Count)
+        Assert-True ($inputObject.IsMandatory)
+        Assert-True ($inputObject.ParameterType -eq [System.Object])
+        Assert-True ($inputObject.ValueFromPipeline)
+        Assert-False ($inputObject.ValueFromPipelineByPropertyName)
+        Assert-False ($inputObject.ValueFromRemainingArguments)
+        Assert-True (0 -gt $inputObject.Position)
+        Assert-True (0 -eq $inputObject.Aliases.Count)
+
+        Assert-True ($maxParam.IsMandatory)
+        Assert-True ($maxParam.ParameterType -eq [System.Int64])
+        Assert-False ($maxParam.ValueFromPipeline)
+        Assert-False ($maxParam.ValueFromPipelineByPropertyName)
+        Assert-False ($maxParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $maxParam.Position)
+        Assert-True (0 -eq $maxParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Equals with Boolean $true' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Assert-PipelineCount with non-pipeline input'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{inputObject = @(1..3); equals = 3;}
+        $test.Data.err = try {Assert-PipelineCount -InputObject $test.Data.in.inputObject -Equals $test.Data.in.equals -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$true | Assert-PipelineCount 1 -OutVariable out1 | Out-Null} catch {$_}
-    $er2 = try {$true | Assert-PipelineCount -Equals 1 -OutVariable out2 | Out-Null} catch {$_}
+        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out.Count -eq 0)
 
-    Assert-True ($out1.Count -eq 1)
-    Assert-True ($out2.Count -eq 1)
-    Assert-True $out1[0]
-    Assert-True $out2[0]
-    Assert-Null $er1
-    Assert-Null $er2
-
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$true | Assert-PipelineCount 0 -OutVariable out3 | Out-Null} catch {$_}
-    $er4 = try {$true | Assert-PipelineCount -Equals 0 -OutVariable out4 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 0)
-    Assert-True ($out4.Count -eq 0)
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-    $out5 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out6 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er5 = try {$true | Assert-PipelineCount 2 -OutVariable out5 | Out-Null} catch {$_}
-    $er6 = try {$true | Assert-PipelineCount -Equals 2 -OutVariable out6 | Out-Null} catch {$_}
-
-    Assert-True ($out5.Count -eq 1)
-    Assert-True ($out6.Count -eq 1)
-    Assert-True $out5[0]
-    Assert-True $out6[0]
-    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Equals with Boolean $false' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Assert-PipelineCount with non-pipeline input'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{inputObject = @(1..3); minimum = 2;}
+        $test.Data.err = try {Assert-PipelineCount -InputObject $test.Data.in.inputObject -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$false | Assert-PipelineCount 1 -OutVariable out1 | Out-Null} catch {$_}
-    $er2 = try {$false | Assert-PipelineCount -Equals 1 -OutVariable out2 | Out-Null} catch {$_}
+        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out.Count -eq 0)
 
-    Assert-True ($out1.Count -eq 1)
-    Assert-True ($out2.Count -eq 1)
-    Assert-False $out1[0]
-    Assert-False $out2[0]
-    Assert-Null $er1
-    Assert-Null $er2
-
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$false | Assert-PipelineCount 0 -OutVariable out3 | Out-Null} catch {$_}
-    $er4 = try {$false | Assert-PipelineCount -Equals 0 -OutVariable out4 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 0)
-    Assert-True ($out4.Count -eq 0)
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-    $out5 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out6 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er5 = try {$false | Assert-PipelineCount 2 -OutVariable out5 | Out-Null} catch {$_}
-    $er6 = try {$false | Assert-PipelineCount -Equals 2 -OutVariable out6 | Out-Null} catch {$_}
-
-    Assert-True ($out5.Count -eq 1)
-    Assert-True ($out6.Count -eq 1)
-    Assert-False $out5[0]
-    Assert-False $out6[0]
-    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Equals with $null' -Verbose:$headerVerbosity
+    $test = newTestLogEntry 'Assert-PipelineCount with non-pipeline input'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{inputObject = @(1..3); maximum = 4;}
+        $test.Data.err = try {Assert-PipelineCount -InputObject $test.Data.in.inputObject -Maximum $test.Data.in.maximum -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
 
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$null | Assert-PipelineCount 1 -OutVariable out1 | Out-Null} catch {$_}
-    $er2 = try {$null | Assert-PipelineCount -Equals 1 -OutVariable out2 | Out-Null} catch {$_}
+        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out.Count -eq 0)
 
-    Assert-True ($out1.Count -eq 1)
-    Assert-True ($out2.Count -eq 1)
-    Assert-Null $out1[0]
-    Assert-Null $out2[0]
-    Assert-Null $er1
-    Assert-Null $er2
-
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$null | Assert-PipelineCount 0 -OutVariable out3 | Out-Null} catch {$_}
-    $er4 = try {$null | Assert-PipelineCount -Equals 0 -OutVariable out4 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 0)
-    Assert-True ($out4.Count -eq 0)
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-    $out5 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out6 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er5 = try {$null | Assert-PipelineCount 2 -OutVariable out5 | Out-Null} catch {$_}
-    $er6 = try {$null | Assert-PipelineCount -Equals 2 -OutVariable out6 | Out-Null} catch {$_}
-
-    Assert-True ($out5.Count -eq 1)
-    Assert-True ($out6.Count -eq 1)
-    Assert-Null $out5[0]
-    Assert-Null $out6[0]
-    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Equals with Non-Booleans that are convertible to $true' -Verbose:$headerVerbosity
+    foreach ($i in @(-1..1)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing nothing'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @(); equals = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Equals $test.Data.in.equals -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    foreach ($item in $nonBooleanTrue) {
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {,$item | Assert-PipelineCount 1 -OutVariable out1 | Out-Null} catch {$_}
-        $er2 = try {,$item | Assert-PipelineCount -Equals 1 -OutVariable out2 | Out-Null} catch {$_}
+            if ($i -eq 0) {
+                Assert-Null ($test.Data.err)
+                Assert-True ($test.Data.out.Count -eq 0)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                Assert-True ($test.Data.out.Count -eq 0)
+            }
 
-        Assert-True ($out1.Count -eq 1)
-        Assert-True ($out2.Count -eq 1)
-        Assert-True ($out1[0].Equals($item))
-        Assert-True ($out2[0].Equals($item))
-        Assert-Null $er1
-        Assert-Null $er2
-
-        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out4 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er3 = try {,$item | Assert-PipelineCount 0 -OutVariable out3 | Out-Null} catch {$_}
-        $er4 = try {,$item | Assert-PipelineCount -Equals 0 -OutVariable out4 | Out-Null} catch {$_}
-
-        Assert-True ($out3.Count -eq 0)
-        Assert-True ($out4.Count -eq 0)
-        Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-        $out5 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out6 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er5 = try {,$item | Assert-PipelineCount 2 -OutVariable out5 | Out-Null} catch {$_}
-        $er6 = try {,$item | Assert-PipelineCount -Equals 2 -OutVariable out6 | Out-Null} catch {$_}
-
-        Assert-True ($out5.Count -eq 1)
-        Assert-True ($out6.Count -eq 1)
-        Assert-True ($out5[0].Equals($item))
-        Assert-True ($out6[0].Equals($item))
-        Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Equals with Non-Booleans that are convertible to $false' -Verbose:$headerVerbosity
+    foreach ($i in @(-1..1)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing nothing'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @(); minimum = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    foreach ($item in $nonBooleanFalse) {
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {,$item | Assert-PipelineCount 1 -OutVariable out1 | Out-Null} catch {$_}
-        $er2 = try {,$item | Assert-PipelineCount -Equals 1 -OutVariable out2 | Out-Null} catch {$_}
+            if ($i -le 0) {
+                Assert-Null ($test.Data.err)
+                Assert-True ($test.Data.out.Count -eq 0)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                Assert-True ($test.Data.out.Count -eq 0)
+            }
 
-        Assert-True ($out1.Count -eq 1)
-        Assert-True ($out2.Count -eq 1)
-        Assert-True ($out1[0].Equals($item))
-        Assert-True ($out2[0].Equals($item))
-        Assert-Null $er1
-        Assert-Null $er2
-
-        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out4 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er3 = try {,$item | Assert-PipelineCount 0 -OutVariable out3 | Out-Null} catch {$_}
-        $er4 = try {,$item | Assert-PipelineCount -Equals 0 -OutVariable out4 | Out-Null} catch {$_}
-
-        Assert-True ($out3.Count -eq 0)
-        Assert-True ($out4.Count -eq 0)
-        Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-        $out5 = New-Object -TypeName 'System.Collections.ArrayList'
-        $out6 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er5 = try {,$item | Assert-PipelineCount 2 -OutVariable out5 | Out-Null} catch {$_}
-        $er6 = try {,$item | Assert-PipelineCount -Equals 2 -OutVariable out6 | Out-Null} catch {$_}
-
-        Assert-True ($out5.Count -eq 1)
-        Assert-True ($out6.Count -eq 1)
-        Assert-True ($out5[0].Equals($item))
-        Assert-True ($out6[0].Equals($item))
-        Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Equals with pipelines that contain zero objects' -Verbose:$headerVerbosity
+    foreach ($i in @(-1..1)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing nothing'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @(); maximum = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Maximum $test.Data.in.maximum -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {@() | Assert-PipelineCount 0 -OutVariable out1 | Out-Null} catch {$_}
-    $er2 = try {@() | Assert-PipelineCount -Equals 0 -OutVariable out2 | Out-Null} catch {$_}
+            if ($i -ge 0) {
+                Assert-Null ($test.Data.err)
+                Assert-True ($test.Data.out.Count -eq 0)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                Assert-True ($test.Data.out.Count -eq 0)
+            }
 
-    Assert-True ($out1.Count -eq 0)
-    Assert-True ($out2.Count -eq 0)
-    Assert-Null $er1
-    Assert-Null $er2
-
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {& {@()} | Assert-PipelineCount 1 -OutVariable out3 | Out-Null} catch {$_}
-    $er4 = try {& {@()} | Assert-PipelineCount -Equals 1 -OutVariable out4 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 0)
-    Assert-True ($out4.Count -eq 0)
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-    function f1 {}
-    $out5 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out6 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er5 = try {f1 | Assert-PipelineCount (-1) -OutVariable out5 | Out-Null} catch {$_}
-    $er6 = try {f1 | Assert-PipelineCount -Equals (-1) -OutVariable out6 | Out-Null} catch {$_}
-
-    Assert-True ($out5.Count -eq 0)
-    Assert-True ($out6.Count -eq 0)
-    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-}
-
-& {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Equals with a pipeline that contains many objects' -Verbose:$headerVerbosity
-
-    $items = @(101..110)
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$items | Assert-PipelineCount 10 -OutVariable out1 | Out-Null} catch {$_}
-    $er2 = try {$items | Assert-PipelineCount -Equals 10 -OutVariable out2 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq $items.Length)
-    Assert-True ($out2.Count -eq $items.Length)
-    for ($i = 0; $i -lt $out1.Count; $i++) {
-        Assert-True ($out1[$i] -eq $items[$i])
-        Assert-True ($out2[$i] -eq $items[$i])
-    }
-    Assert-Null $er1
-    Assert-Null $er2
-
-    $items = @(101..110)
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out4 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$items | Assert-PipelineCount 11 -OutVariable out3 | Out-Null} catch {$_}
-    $er4 = try {$items | Assert-PipelineCount -Equals 11 -OutVariable out4 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq $items.Length)
-    Assert-True ($out4.Count -eq $items.Length)
-    for ($i = 0; $i -lt $out3.Count; $i++) {
-        Assert-True ($out3[$i] -eq $items[$i])
-        Assert-True ($out4[$i] -eq $items[$i])
-    }
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er4.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-    $items = @(101..110)
-    $out5 = New-Object -TypeName 'System.Collections.ArrayList'
-    $out6 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er5 = try {$items | Assert-PipelineCount 9 -OutVariable out5 | Out-Null} catch {$_}
-    $er6 = try {$items | Assert-PipelineCount -Equals 9 -OutVariable out6 | Out-Null} catch {$_}
-
-    Assert-True ($out5.Count -eq 9)
-    Assert-True ($out6.Count -eq 9)
-    for ($i = 0; $i -lt $out5.Count; $i++) {
-        Assert-True ($out5[$i] -eq $items[$i])
-        Assert-True ($out6[$i] -eq $items[$i])
-    }
-    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er6 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er5.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er6.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-}
-
-& {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with Boolean $true' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$true | Assert-PipelineCount -Minimum 1 -OutVariable out1 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq 1)
-    Assert-True $out1[0]
-    Assert-Null $er1
-
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er2 = try {$true | Assert-PipelineCount -Minimum 0 -OutVariable out2 | Out-Null} catch {$_}
-
-    Assert-True ($out2.Count -eq 1)
-    Assert-True $out2[0]
-    Assert-Null $er2
-
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$true | Assert-PipelineCount -Minimum 2 -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 1)
-    Assert-True $out3[0]
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-}
-
-& {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with Boolean $false' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$false | Assert-PipelineCount -Minimum 1 -OutVariable out1 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq 1)
-    Assert-False $out1[0]
-    Assert-Null $er1
-
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er2 = try {$false | Assert-PipelineCount -Minimum 0 -OutVariable out2 | Out-Null} catch {$_}
-
-    Assert-True ($out2.Count -eq 1)
-    Assert-False $out2[0]
-    Assert-Null $er2
-
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$false | Assert-PipelineCount -Minimum 2 -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 1)
-    Assert-False $out3[0]
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-}
-
-& {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with $null' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$null | Assert-PipelineCount -Minimum 1 -OutVariable out1 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq 1)
-    Assert-Null $out1[0]
-    Assert-Null $er1
-
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er2 = try {$null | Assert-PipelineCount -Minimum 0 -OutVariable out2 | Out-Null} catch {$_}
-
-    Assert-True ($out2.Count -eq 1)
-    Assert-Null $out2[0]
-    Assert-Null $er2
-
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$null | Assert-PipelineCount -Minimum 2 -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 1)
-    Assert-Null $out3[0]
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-}
-
-& {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with Non-Booleans that are convertible to $true' -Verbose:$headerVerbosity
-
-    foreach ($item in $nonBooleanTrue) {
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {,$item | Assert-PipelineCount -Minimum 1 -OutVariable out1 | Out-Null} catch {$_}
-
-        Assert-True ($out1.Count -eq 1)
-        Assert-True ($out1[0].Equals($item))
-        Assert-Null $er1
-
-        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er2 = try {,$item | Assert-PipelineCount -Minimum 0 -OutVariable out2 | Out-Null} catch {$_}
-
-        Assert-True ($out2.Count -eq 1)
-        Assert-True ($out2[0].Equals($item))
-        Assert-Null $er2
-
-        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er3 = try {,$item | Assert-PipelineCount -Minimum 2 -OutVariable out3 | Out-Null} catch {$_}
-
-        Assert-True ($out3.Count -eq 1)
-        Assert-True ($out3[0].Equals($item))
-        Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with Non-Booleans that are convertible to $false' -Verbose:$headerVerbosity
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $true'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($true); equals = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Equals $test.Data.in.equals -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    foreach ($item in $nonBooleanFalse) {
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {,$item | Assert-PipelineCount -Minimum 1 -OutVariable out1 | Out-Null} catch {$_}
+            if ($i -eq 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
 
-        Assert-True ($out1.Count -eq 1)
-        Assert-True ($out1[0].Equals($item))
-        Assert-Null $er1
+            if ($i -lt 1) {
+                Assert-True ($test.Data.out.Count -eq 0)
+            } else {
+                Assert-True ($test.Data.out.Count -eq 1)
+                Assert-True ($test.Data.out[0])
+            }
 
-        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er2 = try {,$item | Assert-PipelineCount -Minimum 0 -OutVariable out2 | Out-Null} catch {$_}
-
-        Assert-True ($out2.Count -eq 1)
-        Assert-True ($out2[0].Equals($item))
-        Assert-Null $er2
-
-        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er3 = try {,$item | Assert-PipelineCount -Minimum 2 -OutVariable out3 | Out-Null} catch {$_}
-
-        Assert-True ($out3.Count -eq 1)
-        Assert-True ($out3[0].Equals($item))
-        Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with pipelines that contain zero objects' -Verbose:$headerVerbosity
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $true'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($true); minimum = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {@() | Assert-PipelineCount -Minimum 0 -OutVariable out1 | Out-Null} catch {$_}
+            if ($i -le 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
 
-    Assert-True ($out1.Count -eq 0)
-    Assert-Null $er1
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True ($test.Data.out[0])
 
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er2 = try {& {@()} | Assert-PipelineCount -Minimum 1 -OutVariable out2 | Out-Null} catch {$_}
-
-    Assert-True ($out2.Count -eq 0)
-    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-    function f1 {}
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {f1 | Assert-PipelineCount -Minimum (-1) -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 0)
-    Assert-Null $er3
-}
-
-& {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Minimum with a pipeline that contains many objects' -Verbose:$headerVerbosity
-
-    $items = @(101..110)
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$items | Assert-PipelineCount -Minimum 10 -OutVariable out1 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq $items.Length)
-    for ($i = 0; $i -lt $out1.Count; $i++) {
-        Assert-True ($out1[$i] -eq $items[$i])
-    }
-    Assert-Null $er1
-
-    $items = @(101..110)
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er2 = try {$items | Assert-PipelineCount -Minimum 11 -OutVariable out2 | Out-Null} catch {$_}
-
-    Assert-True ($out2.Count -eq $items.Length)
-    for ($i = 0; $i -lt $out2.Count; $i++) {
-        Assert-True ($out2[$i] -eq $items[$i])
-    }
-    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-    $items = @(101..110)
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$items | Assert-PipelineCount -Minimum 9 -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq $items.Length)
-    for ($i = 0; $i -lt $out3.Count; $i++) {
-        Assert-True ($out3[$i] -eq $items[$i])
-    }
-    Assert-Null $er3
-}
-
-& {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with Boolean $true' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$true | Assert-PipelineCount -Maximum 1 -OutVariable out1 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq 1)
-    Assert-True $out1[0]
-    Assert-Null $er1
-
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er2 = try {$true | Assert-PipelineCount -Maximum 0 -OutVariable out2 | Out-Null} catch {$_}
-
-    Assert-True ($out2.Count -eq 0)
-    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$true | Assert-PipelineCount -Maximum 2 -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 1)
-    Assert-True $out3[0]
-    Assert-Null $er3
-}
-
-& {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with Boolean $false' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$false | Assert-PipelineCount -Maximum 1 -OutVariable out1 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq 1)
-    Assert-False $out1[0]
-    Assert-Null $er1
-
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er2 = try {$false | Assert-PipelineCount -Maximum 0 -OutVariable out2 | Out-Null} catch {$_}
-
-    Assert-True ($out2.Count -eq 0)
-    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$false | Assert-PipelineCount -Maximum 2 -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 1)
-    Assert-False $out3[0]
-    Assert-Null $er3
-}
-
-& {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with $null' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$null | Assert-PipelineCount -Maximum 1 -OutVariable out1 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq 1)
-    Assert-Null $out1[0]
-    Assert-Null $er1
-
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er2 = try {$null | Assert-PipelineCount -Maximum 0 -OutVariable out2 | Out-Null} catch {$_}
-
-    Assert-True ($out2.Count -eq 0)
-    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$null | Assert-PipelineCount -Maximum 2 -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 1)
-    Assert-Null $out3[0]
-    Assert-Null $er3
-}
-
-& {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with Non-Booleans that are convertible to $true' -Verbose:$headerVerbosity
-
-    foreach ($item in $nonBooleanTrue) {
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {,$item | Assert-PipelineCount -Maximum 1 -OutVariable out1 | Out-Null} catch {$_}
-
-        Assert-True ($out1.Count -eq 1)
-        Assert-True ($out1[0].Equals($item))
-        Assert-Null $er1
-
-        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er2 = try {,$item | Assert-PipelineCount -Maximum 0 -OutVariable out2 | Out-Null} catch {$_}
-
-        Assert-True ($out2.Count -eq 0)
-        Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er3 = try {,$item | Assert-PipelineCount -Maximum 2 -OutVariable out3 | Out-Null} catch {$_}
-
-        Assert-True ($out3.Count -eq 1)
-        Assert-True ($out3[0].Equals($item))
-        Assert-Null $er3
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with Non-Booleans that are convertible to $false' -Verbose:$headerVerbosity
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $true'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($true); maximum = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Maximum $test.Data.in.maximum -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    foreach ($item in $nonBooleanFalse) {
-        $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er1 = try {,$item | Assert-PipelineCount -Maximum 1 -OutVariable out1 | Out-Null} catch {$_}
+            if ($i -ge 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
 
-        Assert-True ($out1.Count -eq 1)
-        Assert-True ($out1[0].Equals($item))
-        Assert-Null $er1
+            if ($i -le 0) {
+                Assert-True ($test.Data.out.Count -eq 0)
+            } else {
+                Assert-True ($test.Data.out.Count -eq 1)
+                Assert-True ($test.Data.out[0])
+            }
 
-        $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er2 = try {,$item | Assert-PipelineCount -Maximum 0 -OutVariable out2 | Out-Null} catch {$_}
-
-        Assert-True ($out2.Count -eq 0)
-        Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($er2.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-
-        $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $er3 = try {,$item | Assert-PipelineCount -Maximum 2 -OutVariable out3 | Out-Null} catch {$_}
-
-        Assert-True ($out3.Count -eq 1)
-        Assert-True ($out3[0].Equals($item))
-        Assert-Null $er3
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with pipelines that contain zero objects' -Verbose:$headerVerbosity
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $false'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($false); equals = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Equals $test.Data.in.equals -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {@() | Assert-PipelineCount -Maximum 0 -OutVariable out1 | Out-Null} catch {$_}
+            if ($i -eq 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
 
-    Assert-True ($out1.Count -eq 0)
-    Assert-Null $er1
+            if ($i -lt 1) {
+                Assert-True ($test.Data.out.Count -eq 0)
+            } else {
+                Assert-True ($test.Data.out.Count -eq 1)
+                Assert-False ($test.Data.out[0])
+            }
 
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er2 = try {& {@()} | Assert-PipelineCount -Maximum 1 -OutVariable out2 | Out-Null} catch {$_}
-
-    Assert-True ($out2.Count -eq 0)
-    Assert-Null $er2
-
-    function f1 {}
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {f1 | Assert-PipelineCount -Maximum (-1) -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 0)
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount -Maximum with a pipeline that contains many objects' -Verbose:$headerVerbosity
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $false'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($false); minimum = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    $items = @(101..110)
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {$items | Assert-PipelineCount -Maximum 10 -OutVariable out1 | Out-Null} catch {$_}
+            if ($i -le 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
 
-    Assert-True ($out1.Count -eq $items.Length)
-    for ($i = 0; $i -lt $out1.Count; $i++) {
-        Assert-True ($out1[$i] -eq $items[$i])
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-False ($test.Data.out[0])
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
     }
-    Assert-Null $er1
-
-    $items = @(101..110)
-    $out2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er2 = try {$items | Assert-PipelineCount -Maximum 11 -OutVariable out2 | Out-Null} catch {$_}
-
-    Assert-True ($out2.Count -eq $items.Length)
-    for ($i = 0; $i -lt $out2.Count; $i++) {
-        Assert-True ($out2[$i] -eq $items[$i])
-    }
-    Assert-Null $er2
-
-    $items = @(101..110)
-    $out3 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er3 = try {$items | Assert-PipelineCount -Maximum 9 -OutVariable out3 | Out-Null} catch {$_}
-
-    Assert-True ($out3.Count -eq 9)
-    for ($i = 0; $i -lt $out3.Count; $i++) {
-        Assert-True ($out3[$i] -eq $items[$i])
-    }
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
 }
 
 & {
-    Write-Verbose -Message 'Test Assert-PipelineCount with a non-pipeline input' -Verbose:$headerVerbosity
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $false'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($false); maximum = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Maximum $test.Data.in.maximum -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    $er1 = try {Assert-PipelineCount -InputObject $true -Equals 1 | Out-Null} catch {$_}
-    $er2 = try {Assert-PipelineCount -InputObject $false -Minimum 1 | Out-Null} catch {$_}
-    $er3 = try {Assert-PipelineCount -InputObject $null -Maximum 1| Out-Null} catch {$_}
-    $er4 = try {Assert-PipelineCount -InputObject @() -Minimum 1| Out-Null} catch {$_}
-    $er5 = try {Assert-PipelineCount -InputObject @(0) -Maximum 0 | Out-Null} catch {$_}
+            if ($i -ge 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
 
-    $errorMessage = 'Assert-PipelineCount must take its input from the pipeline.'
+            if ($i -le 0) {
+                Assert-True ($test.Data.out.Count -eq 0)
+            } else {
+                Assert-True ($test.Data.out.Count -eq 1)
+                Assert-False ($test.Data.out[0])
+            }
 
-    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er2 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er3 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er4 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er5 -is [System.Management.Automation.ErrorRecord])
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+}
 
-    Assert-True ($er1.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er2.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er3.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er4.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er5.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+& {
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $null'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($null); equals = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Equals $test.Data.in.equals -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            if ($i -eq 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
+
+            if ($i -lt 1) {
+                Assert-True ($test.Data.out.Count -eq 0)
+            } else {
+                Assert-True ($test.Data.out.Count -eq 1)
+                Assert-Null ($test.Data.out[0])
+            }
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+}
+
+& {
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $null'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($null); minimum = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            if ($i -le 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
+
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null ($test.Data.out[0])
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+}
+
+& {
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $null'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($null); maximum = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Maximum $test.Data.in.maximum -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            if ($i -ge 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
+
+            if ($i -le 0) {
+                Assert-True ($test.Data.out.Count -eq 0)
+            } else {
+                Assert-True ($test.Data.out.Count -eq 1)
+                Assert-Null ($test.Data.out[0])
+            }
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing Non-Boolean that is convertible to $true'
+
+    for ($i = 0; $i -lt $nonBooleanTrue.Count; $i++) {
+        foreach ($j in @(-1..2)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = @(,$nonBooleanTrue[$i]); equals = $j;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Equals $test.Data.in.equals -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($j -eq 1) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                if ($j -le 0) {
+                    Assert-True ($test.Data.out.Count -eq 0)
+                } else {
+                    Assert-True ($test.Data.out.Count -eq 1)
+                    Assert-True ($test.Data.in.inputObject[0].Equals($test.Data.out[0]))
+                }
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing Non-Boolean that is convertible to $true'
+
+    for ($i = 0; $i -lt $nonBooleanTrue.Count; $i++) {
+        foreach ($j in @(-1..2)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = @(,$nonBooleanTrue[$i]); minimum = $j;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($j -le 1) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                Assert-True ($test.Data.out.Count -eq 1)
+                Assert-True ($test.Data.in.inputObject[0].Equals($test.Data.out[0]))
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing Non-Boolean that is convertible to $true'
+
+    for ($i = 0; $i -lt $nonBooleanTrue.Count; $i++) {
+        foreach ($j in @(-1..2)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = @(,$nonBooleanTrue[$i]); maximum = $j;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Maximum $test.Data.in.maximum -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($j -ge 1) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                if ($j -le 0) {
+                    Assert-True ($test.Data.out.Count -eq 0)
+                } else {
+                    Assert-True ($test.Data.out.Count -eq 1)
+                    Assert-True ($test.Data.in.inputObject[0].Equals($test.Data.out[0]))
+                }
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing Non-Boolean that is convertible to $false'
+
+    for ($i = 0; $i -lt $nonBooleanFalse.Count; $i++) {
+        foreach ($j in @(-1..2)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = @(,$nonBooleanFalse[$i]); equals = $j;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Equals $test.Data.in.equals -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($j -eq 1) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                if ($j -le 0) {
+                    Assert-True ($test.Data.out.Count -eq 0)
+                } else {
+                    Assert-True ($test.Data.out.Count -eq 1)
+                    Assert-True ($test.Data.in.inputObject[0].Equals($test.Data.out[0]))
+                }
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing Non-Boolean that is convertible to $false'
+
+    for ($i = 0; $i -lt $nonBooleanFalse.Count; $i++) {
+        foreach ($j in @(-1..2)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = @(,$nonBooleanFalse[$i]); minimum = $j;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($j -le 1) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                Assert-True ($test.Data.out.Count -eq 1)
+                Assert-True ($test.Data.in.inputObject[0].Equals($test.Data.out[0]))
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing Non-Boolean that is convertible to $false'
+
+    for ($i = 0; $i -lt $nonBooleanFalse.Count; $i++) {
+        foreach ($j in @(-1..2)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = @(,$nonBooleanFalse[$i]); maximum = $j;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Maximum $test.Data.in.maximum -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($j -ge 1) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                if ($j -le 0) {
+                    Assert-True ($test.Data.out.Count -eq 0)
+                } else {
+                    Assert-True ($test.Data.out.Count -eq 1)
+                    Assert-True ($test.Data.in.inputObject[0].Equals($test.Data.out[0]))
+                }
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing multiple items'
+
+    $items = @(
+        'hello', 0, 1.0, $true, $false, @(), @('hi', $null, 'world'), @{}, (New-Object -TypeName 'System.Collections.ArrayList')
+    )
+
+    for ($i = 0; $i -lt $items.Count; $i++) {
+        $inputObject = @($items[0..$i])
+
+        foreach ($equals in @(-1..$($inputObject.Count + 1))) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = $inputObject; equals = $equals;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Equals $test.Data.in.equals -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($equals -eq $inputObject.Count) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                if ($equals -lt $inputObject.Count) {
+                    Assert-True ($test.Data.out.Count -eq ([System.Math]::Max(0, $test.Data.in.equals)))
+                } else {
+                    Assert-True ($test.Data.out.Count -eq $test.Data.in.inputObject.Count)
+                    Assert-All @(0..$i) {param($index) $test.Data.in.inputObject[$index].Equals($test.Data.out[$index])}
+                }
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing multiple items'
+
+    $items = @(
+        'hello', 0, 1.0, $true, $false, @(), @('hi', $null, 'world'), @{}, (New-Object -TypeName 'System.Collections.ArrayList')
+    )
+
+    for ($i = 0; $i -lt $items.Count; $i++) {
+        $inputObject = @($items[0..$i])
+
+        foreach ($minimum in @(-1..$($inputObject.Count + 1))) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = $inputObject; minimum = $minimum;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($minimum -le $inputObject.Count) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                Assert-True ($test.Data.out.Count -eq $test.Data.in.inputObject.Count)
+                Assert-All @(0..$i) {param($index) $test.Data.in.inputObject[$index].Equals($test.Data.out[$index])}
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing multiple items'
+
+    $items = @(
+        'hello', 0, 1.0, $true, $false, @(), @('hi', $null, 'world'), @{}, (New-Object -TypeName 'System.Collections.ArrayList')
+    )
+
+    for ($i = 0; $i -lt $items.Count; $i++) {
+        $inputObject = @($items[0..$i])
+
+        foreach ($maximum in @(-1..$($inputObject.Count + 1))) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = $inputObject; maximum = $maximum;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Maximum $test.Data.in.maximum -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($maximum -ge $inputObject.Count) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                if ($maximum -lt $inputObject.Count) {
+                    Assert-True ($test.Data.out.Count -eq ([System.Math]::Max(0, $test.Data.in.maximum)))
+                } else {
+                    Assert-True ($test.Data.out.Count -eq $test.Data.in.inputObject.Count)
+                    Assert-All @(0..$i) {param($index) $test.Data.in.inputObject[$index].Equals($test.Data.out[$index])}
+                }
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
 }
