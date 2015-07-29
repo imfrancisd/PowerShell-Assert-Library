@@ -23,13 +23,13 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.7.2.0
+#Assert Library version 1.7.3.0
 #
 #PowerShell requirements
 #requires -version 2.0
 
 
-New-Module -Name 'AssertLibrary_en-US_v1.7.2.0' -ScriptBlock {
+New-Module -Name 'AssertLibrary_en-US_v1.7.3.0' -ScriptBlock {
 
 
 $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType = {
@@ -41,33 +41,18 @@ $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType = {
         $List
     )
 
-    #NOTE about compatibility
-    #
-    #In PowerShell, it is possible to override properties and methods of an object.
-    #
-    #The psbase property in all objects allows access to the real properties and methods.
-    #
-    #In PowerShell 4 (and possibly PowerShell 3) however, the psbase property does not
-    #allow access to the "real" GetType method of the object. Instead, .psbase.GetType()
-    #returns the type of the psbase object instead of the type of the object that psbase
-    #represents.
-    #
-    #Explicit .NET reflection must be used if you want to make sure that you are calling
-    #the "real" GetType method in PowerShell 4 (and possibly PowerShell 3).
-
-    $objectGetType = [System.Object].GetMethod('GetType', [System.Type]::EmptyTypes)
-    $genericIList = [System.Type]::GetType('System.Collections.Generic.IList`1')
-
     if ($List -is [System.Array]) {
-        return $objectGetType.Invoke($List, $null).GetElementType()
+        return (& $_7ddd17460d1743b2b6e683ef649e01b7_getType $List).GetElementType()
     }
 
     if ($List -is [System.Collections.IList]) {
+        $genericIList = [System.Type]::GetType('System.Collections.Generic.IList`1')
+
         $IListGenericTypes = @(
-            $objectGetType.Invoke($List, $null).GetInterfaces() |
-            Where-Object -FilterScript {
-                $_.IsGenericType -and ($_.GetGenericTypeDefinition() -eq $genericIList)
-            }
+            (& $_7ddd17460d1743b2b6e683ef649e01b7_getType $List).GetInterfaces() |
+                Microsoft.PowerShell.Core\Where-Object -FilterScript {
+                    $_.IsGenericType -and ($_.GetGenericTypeDefinition() -eq $genericIList)
+                }
         )
 
         if ($IListGenericTypes.Length -eq 1) {
@@ -102,6 +87,39 @@ $_7ddd17460d1743b2b6e683ef649e01b7_getListLength = {
 }
 
 
+$_7ddd17460d1743b2b6e683ef649e01b7_getType = {
+    [CmdletBinding()]
+    [OutputType([System.Type])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowNull()]
+        [System.Object]
+        $InputObject
+    )
+
+    #NOTE about compatibility
+    #
+    #In PowerShell, it is possible to override properties and methods of an object.
+    #
+    #The psbase property in all objects allows access to the real properties and methods.
+    #
+    #In PowerShell 4 (and possibly PowerShell 3) however, the psbase property does not
+    #allow access to the "real" GetType method of the object. Instead, .psbase.GetType()
+    #returns the type of the psbase object instead of the type of the object that psbase
+    #represents.
+    #
+    #Explicit .NET reflection must be used if you want to make sure that you are calling
+    #the "real" GetType method in PowerShell 4 (and possibly PowerShell 3).
+
+    if ($null -eq $InputObject) {
+        return [System.Void]
+    }
+    return $_7ddd17460d1743b2b6e683ef649e01b7_getTypeMethod.Invoke($InputObject, $null)
+}
+
+$_7ddd17460d1743b2b6e683ef649e01b7_getTypeMethod = [System.Object].GetMethod('GetType', [System.Type]::EmptyTypes)
+
+
 $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct = {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
@@ -130,11 +148,11 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct = {
         $elementTypes[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $CartesianProduct[$i] -ErrorAction $ErrorActionPreference
     }
 
-    if (@($listLengths | Sort-Object)[0] -lt 1) {
+    if (@($listLengths | Microsoft.PowerShell.Utility\Sort-Object)[0] -lt 1) {
         return
     }
 
-    if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
+    if (@($elementTypes | Microsoft.PowerShell.Utility\Sort-Object -Unique).Length -eq 1) {
         $outputElementType = $elementTypes[0]
     }
     else {
@@ -161,7 +179,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCartesianProduct = {
             }
 
             #output cartesian product
-            New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
                 'Items' = $items
             }
         }
@@ -197,7 +215,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine = {
     }
 
     if ($Size -eq 0) {
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = [System.Array]::CreateInstance($outputElementType, 0)
         }
         return
@@ -228,7 +246,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCombine = {
         }
 
         #output combination
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = $items
         }
 
@@ -291,11 +309,11 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
         $elementTypes[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $CoveringArray[$i] -ErrorAction $ErrorActionPreference
     }
 
-    if (@($listLengths | Sort-Object)[0] -lt 1) {
+    if (@($listLengths | Microsoft.PowerShell.Utility\Sort-Object)[0] -lt 1) {
         return
     }
 
-    if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
+    if (@($elementTypes | Microsoft.PowerShell.Utility\Sort-Object -Unique).Length -eq 1) {
         $outputElementType = $elementTypes[0]
     }
     else {
@@ -306,7 +324,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
     #The important thing is all values in the lists are used 1 or more times.
 
     if ($Strength -eq 1) {
-        $maxListLength = @($listLengths | Sort-Object -Descending)[0]
+        $maxListLength = @($listLengths | Microsoft.PowerShell.Utility\Sort-Object -Descending)[0]
 
         for ($i = 0; $i -lt $maxListLength; $i++) {
             #generate a row in the covering array
@@ -316,7 +334,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
             }
 
             #output the row
-            New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
                 'Items' = $items
             }
         }
@@ -358,7 +376,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
     #with the first number in the string being the index of the combination.
 
     $f = '{0:D} '
-    $s = New-Object -TypeName 'System.Text.StringBuilder'
+    $s = Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Text.StringBuilder'
 
     while ($counter[0] -lt $listLengths[0]) {
         $i = $listCount - 1
@@ -394,7 +412,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemCoveringArray = {
                 }
 
                 #output cartesian product
-                New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+                Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
                     'Items' = $items
                 }
             }
@@ -431,7 +449,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPair = {
         $items[1] = $Pair[$i + 1]
 
         #output pair
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = $items
         }
     }
@@ -460,7 +478,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute = {
     }
 
     if ($Size -eq 0) {
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = [System.Array]::CreateInstance($outputElementType, 0)
         }
         return
@@ -494,7 +512,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute = {
         }
 
         #output permutation
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = $items
         }
 
@@ -546,7 +564,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemWindow = {
     }
 
     if ($Size -eq 0) {
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = [System.Array]::CreateInstance($outputElementType, 0)
         }
         return
@@ -565,7 +583,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemWindow = {
         }
 
         #output window
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = $items
         }
     }
@@ -600,9 +618,9 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip = {
         $elementTypes[$i] = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $Zip[$i] -ErrorAction $ErrorActionPreference
     }
 
-    $minlistlength = @($listLengths | Sort-Object)[0]
+    $minlistlength = @($listLengths | Microsoft.PowerShell.Utility\Sort-Object)[0]
 
-    if (@($elementTypes | Sort-Object -Unique).Length -eq 1) {
+    if (@($elementTypes | Microsoft.PowerShell.Utility\Sort-Object -Unique).Length -eq 1) {
         $outputElementType = $elementTypes[0]
     }
     else {
@@ -620,7 +638,7 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemZip = {
         }
 
         #output the "Zip"
-        New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
             'Items' = $items
         }
     }
@@ -644,8 +662,8 @@ $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError = {
         $value
     )
 
-    New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-        (New-Object -TypeName 'System.Exception' -ArgumentList @($message, $innerException)),
+    Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+        (Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Exception' -ArgumentList @($message, $innerException)),
         'AssertionFailed',
         [System.Management.Automation.ErrorCategory]::OperationStopped,
         $value
@@ -688,8 +706,8 @@ $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError = {
         $argumentValue
     )
 
-    New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-        (New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
+    Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+        (Microsoft.PowerShell.Utility\New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
             "$functionName must take its input from the pipeline.",
             $argumentName
         )),
@@ -712,8 +730,8 @@ $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError = {
         $predicate
     )
 
-    New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-        (New-Object -TypeName 'System.InvalidOperationException' -ArgumentList @('Could not invoke predicate.', $errorRecord.Exception)),
+    Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+        (Microsoft.PowerShell.Utility\New-Object -TypeName 'System.InvalidOperationException' -ArgumentList @('Could not invoke predicate.', $errorRecord.Exception)),
         'PredicateFailed',
         [System.Management.Automation.ErrorCategory]::OperationStopped,
         $predicate
@@ -848,13 +866,13 @@ function Assert-All
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        Write-Verbose -Message $message
+        $PSCmdlet.WriteVerbose($message)
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
         }
     }
@@ -985,13 +1003,13 @@ function Assert-Exists
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        Write-Verbose -Message $message
+        $PSCmdlet.WriteVerbose($message)
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
         }
     }
@@ -1088,13 +1106,13 @@ function Assert-False
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        Write-Verbose -Message $message
+        $PSCmdlet.WriteVerbose($message)
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
@@ -1227,13 +1245,13 @@ function Assert-NotExists
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        Write-Verbose -Message $message
+        $PSCmdlet.WriteVerbose($message)
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
         }
     }
@@ -1328,13 +1346,13 @@ function Assert-NotFalse
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        Write-Verbose -Message $message
+        $PSCmdlet.WriteVerbose($message)
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
@@ -1429,13 +1447,13 @@ function Assert-NotNull
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        Write-Verbose -Message $message
+        $PSCmdlet.WriteVerbose($message)
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
@@ -1530,13 +1548,13 @@ function Assert-NotTrue
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        Write-Verbose -Message $message
+        $PSCmdlet.WriteVerbose($message)
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
@@ -1631,13 +1649,13 @@ function Assert-Null
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        Write-Verbose -Message $message
+        $PSCmdlet.WriteVerbose($message)
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
@@ -1764,7 +1782,7 @@ function Assert-PipelineAll
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
         }
     }
 
@@ -1777,12 +1795,12 @@ function Assert-PipelineAll
         if (-not (($result -is [System.Boolean]) -and $result)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-            Write-Verbose -Message $message
+            $PSCmdlet.WriteVerbose($message)
 
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
@@ -1793,7 +1811,7 @@ function Assert-PipelineAll
     {
         if (([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
-            Write-Verbose -Message $message
+            $PSCmdlet.WriteVerbose($message)
         }
     }
 }
@@ -1893,7 +1911,7 @@ function Assert-PipelineAny
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineAny' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         $fail = $true
@@ -1910,13 +1928,13 @@ function Assert-PipelineAny
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-            Write-Verbose -Message $message
+            $PSCmdlet.WriteVerbose($message)
 
             if ($fail) {
                 if (-not $PSBoundParameters.ContainsKey('Debug')) {
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
-                Write-Debug -Message $message
+                $PSCmdlet.WriteDebug($message)
                 $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
@@ -2057,7 +2075,7 @@ function Assert-PipelineCount
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         #Make sure we can count higher than -Equals, -Minimum, and -Maximum.
@@ -2087,12 +2105,12 @@ function Assert-PipelineCount
 
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-            Write-Verbose -Message $message
+            $PSCmdlet.WriteVerbose($message)
 
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
@@ -2106,13 +2124,13 @@ function Assert-PipelineCount
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-            Write-Verbose -Message $message
+            $PSCmdlet.WriteVerbose($message)
 
             if ($fail) {
                 if (-not $PSBoundParameters.ContainsKey('Debug')) {
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
-                Write-Debug -Message $message
+                $PSCmdlet.WriteDebug($message)
                 $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
@@ -2211,7 +2229,7 @@ function Assert-PipelineEmpty
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineEmpty' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
         }
     }
 
@@ -2222,12 +2240,12 @@ function Assert-PipelineEmpty
 
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-        Write-Verbose -Message $message
+        $PSCmdlet.WriteVerbose($message)
 
         if (-not $PSBoundParameters.ContainsKey('Debug')) {
             $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
         }
-        Write-Debug -Message $message
+        $PSCmdlet.WriteDebug($message)
         $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
     }
 
@@ -2235,7 +2253,7 @@ function Assert-PipelineEmpty
     {
         if (([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
-            Write-Verbose -Message $message
+            $PSCmdlet.WriteVerbose($message)
         }
     }
 }
@@ -2360,7 +2378,7 @@ function Assert-PipelineExists
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         $fail = $true
@@ -2385,13 +2403,13 @@ function Assert-PipelineExists
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-            Write-Verbose -Message $message
+            $PSCmdlet.WriteVerbose($message)
 
             if ($fail) {
                 if (-not $PSBoundParameters.ContainsKey('Debug')) {
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
-                Write-Debug -Message $message
+                $PSCmdlet.WriteDebug($message)
                 $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $null))
             }
         }
@@ -2518,7 +2536,7 @@ function Assert-PipelineNotExists
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineCount' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
         }
     }
 
@@ -2531,12 +2549,12 @@ function Assert-PipelineNotExists
         if (($result -is [System.Boolean]) -and $result) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-            Write-Verbose -Message $message
+            $PSCmdlet.WriteVerbose($message)
 
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
@@ -2547,7 +2565,7 @@ function Assert-PipelineNotExists
     {
         if (([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
-            Write-Verbose -Message $message
+            $PSCmdlet.WriteVerbose($message)
         }
     }
 }
@@ -2648,7 +2666,7 @@ function Assert-PipelineSingle
         }
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
-            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName 'Assert-PipelineSingle' -argumentName 'InputObject' -argumentValue $InputObject))
+            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
         }
 
         $anyItems = $false
@@ -2662,12 +2680,12 @@ function Assert-PipelineSingle
 
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-            Write-Verbose -Message $message
+            $PSCmdlet.WriteVerbose($message)
 
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
@@ -2682,13 +2700,13 @@ function Assert-PipelineSingle
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-            Write-Verbose -Message $message
+            $PSCmdlet.WriteVerbose($message)
 
             if ($fail) {
                 if (-not $PSBoundParameters.ContainsKey('Debug')) {
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
-                Write-Debug -Message $message
+                $PSCmdlet.WriteDebug($message)
                 $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
@@ -2786,13 +2804,13 @@ function Assert-True
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        Write-Verbose -Message $message
+        $PSCmdlet.WriteVerbose($message)
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            Write-Debug -Message $message
+            $PSCmdlet.WriteDebug($message)
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
@@ -3354,8 +3372,8 @@ function Group-ListItem
             return
         }
         default {
-            $errorRecord = New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
-                (New-Object -TypeName 'System.NotImplementedException' -ArgumentList @("The ParameterSetName '$_' was not implemented.")),
+            $errorRecord = Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.ErrorRecord' -ArgumentList @(
+                (Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @("The ParameterSetName '$_' was not implemented.")),
                 'NotImplemented',
                 [System.Management.Automation.ErrorCategory]::NotImplemented,
                 $null
@@ -3836,7 +3854,7 @@ function Test-DateTime
 
         foreach ($item in $Property) {
             if (($validProperties -notcontains $item) -or ($item -notmatch '^[a-zA-Z]+$')) {
-                throw New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
+                throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
                     "Invalid DateTime Property: $item.`r`n" +
                     "Use one of the following values: $($validProperties -join ', ')"
                 )
@@ -3881,58 +3899,75 @@ function Test-DateTime
         return $result
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsDateTime' {
             $result = isDateTime $Value
             if ($PSBoundParameters.ContainsKey('IsDateTime')) {
-                return ($result) -xor (-not $IsDateTime)
+                ($result) -xor (-not $IsDateTime)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpEquals' {
             $result = compareDateTime $Value $Equals
             if ($result -is [System.Int32]) {
-                return ($result -eq 0)
+                ($result -eq 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             $result = compareDateTime $Value $NotEquals
             if ($result -is [System.Int32]) {
-                return ($result -ne 0)
+                ($result -ne 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             $result = compareDateTime $Value $LessThan
             if ($result -is [System.Int32]) {
-                return ($result -lt 0)
+                ($result -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             $result = compareDateTime $Value $LessThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -le 0)
+                ($result -le 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             $result = compareDateTime $Value $GreaterThan
             if ($result -is [System.Int32]) {
-                return ($result -gt 0)
+                ($result -gt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             $result = compareDateTime $Value $GreaterThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -ge 0)
+                ($result -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }
@@ -4439,7 +4474,7 @@ function Test-Guid
 
             foreach ($item in $Version) {
                 if (($item -lt 0) -or ($item -gt 15)) {
-                    throw New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
+                    throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
                         'Version',
                         'The GUID version field can only contain integers between 0 and 15.'
                     )
@@ -4460,7 +4495,7 @@ function Test-Guid
                     'NCS'       {$variantConstraints += '01234567'; break;}
                     'Reserved'  {$variantConstraints += 'EF'; break;}
                     default     {
-                        throw New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
+                        throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
                             "Invalid GUID variant: $item.`r`n" +
                             "Use one of the following values: Standard, Microsoft, NCS, Reserved"
                         )
@@ -4523,58 +4558,75 @@ function Test-Guid
         return $null
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsGuid' {
             $result = isGuid $Value
             if ($PSBoundParameters.ContainsKey('IsGuid')) {
-                return ($result) -xor (-not $IsGuid)
+                ($result) -xor (-not $IsGuid)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpEquals' {
             $result = compareGuid $Value $Equals
             if ($result -is [System.Int32]) {
-                return ($result -eq 0)
+                ($result -eq 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             $result = compareGuid $Value $NotEquals
             if ($result -is [System.Int32]) {
-                return ($result -ne 0)
+                ($result -ne 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             $result = compareGuid $Value $LessThan
             if ($result -is [System.Int32]) {
-                return ($result -lt 0)
+                ($result -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             $result = compareGuid $Value $LessThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -le 0)
+                ($result -le 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             $result = compareGuid $Value $GreaterThan
             if ($result -is [System.Int32]) {
-                return ($result -gt 0)
+                ($result -gt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             $result = compareGuid $Value $GreaterThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -ge 0)
+                ($result -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }
@@ -5295,7 +5347,7 @@ function Test-Number
         else {
             $allowedTypes = [System.String[]]@(
                 $allowedTypes |
-                    Where-Object -FilterScript {($Type -icontains $_) -or ($Type -icontains $_.Split('.')[-1])}
+                    Microsoft.PowerShell.Core\Where-Object -FilterScript {($Type -icontains $_) -or ($Type -icontains $_.Split('.')[-1])}
             )
         }
     }
@@ -5306,7 +5358,7 @@ function Test-Number
             return $false
         }
 
-        $nType = $n.GetType().FullName
+        $nType = (& $_7ddd17460d1743b2b6e683ef649e01b7_getType $n).FullName
         if ($nType -eq 'System.Double') {
             if (([System.Double]::IsNaN($n)) -or ([System.Double]::IsInfinity($n))) {
                 return $false
@@ -5324,57 +5376,74 @@ function Test-Number
     {
         $areNumbers = (isNumber $x) -and (isNumber $y)
         if ($MatchType) {
-            return $areNumbers -and ($x.GetType() -eq $y.GetType())
+            return $areNumbers -and ((& $_7ddd17460d1743b2b6e683ef649e01b7_getType $x) -eq (& $_7ddd17460d1743b2b6e683ef649e01b7_getType $y))
         }
         return $areNumbers
     }
+
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
 
     switch ($PSCmdlet.ParameterSetName) {
         'IsNumber' {
             $result = isNumber $Value
             if ($PSBoundParameters.ContainsKey('IsNumber')) {
-                return ($result) -xor (-not $IsNumber)
+                ($result) -xor (-not $IsNumber)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpEquals' {
             if ((canCompareNumbers $Value $Equals)) {
-                return ($Value -eq $Equals)
+                ($Value -eq $Equals)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             if ((canCompareNumbers $Value $NotEquals)) {
-                return ($Value -ne $NotEquals)
+                ($Value -ne $NotEquals)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             if ((canCompareNumbers $Value $LessThan)) {
-                return ($Value -lt $LessThan)
+                ($Value -lt $LessThan)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             if ((canCompareNumbers $Value $LessThanOrEqualTo)) {
-                return ($Value -le $LessThanOrEqualTo)
+                ($Value -le $LessThanOrEqualTo)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             if ((canCompareNumbers $Value $GreaterThan)) {
-                return ($Value -gt $GreaterThan)
+                ($Value -gt $GreaterThan)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             if ((canCompareNumbers $Value $GreaterThanOrEqualTo)) {
-                return ($Value -ge $GreaterThanOrEqualTo)
+                ($Value -ge $GreaterThanOrEqualTo)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }
@@ -5817,7 +5886,7 @@ function Test-String
     else {
         $allowedNormalizations = [System.Text.NormalizationForm[]]@(
             [System.Enum]::GetValues([System.Text.NormalizationForm]) |
-                Where-Object -FilterScript {$Normalization -contains $_}
+                Microsoft.PowerShell.Core\Where-Object -FilterScript {$Normalization -contains $_}
         )
     }
 
@@ -5851,88 +5920,117 @@ function Test-String
         return $areStrings
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsString' {
             $result = isString $Value
             if ($PSBoundParameters.ContainsKey('IsString')) {
-                return ($result) -xor (-not $IsString)
+                ($result) -xor (-not $IsString)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpContains' {
             if ((canCompareStrings $Value $Contains)) {
-                return ($Value.IndexOf($Contains, $comparisonType) -ge 0)
+                ($Value.IndexOf($Contains, $comparisonType) -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotContains' {
             if ((canCompareStrings $Value $NotContains)) {
-                return ($Value.IndexOf($NotContains, $comparisonType) -lt 0)
+                ($Value.IndexOf($NotContains, $comparisonType) -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpStartsWith' {
             if ((canCompareStrings $Value $StartsWith)) {
-                return ($Value.StartsWith($StartsWith, $comparisonType))
+                ($Value.StartsWith($StartsWith, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotStartsWith' {
             if ((canCompareStrings $Value $NotStartsWith)) {
-                return (-not $Value.StartsWith($NotStartsWith, $comparisonType))
+                (-not $Value.StartsWith($NotStartsWith, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpEndsWith' {
             if ((canCompareStrings $Value $EndsWith)) {
-                return ($Value.EndsWith($EndsWith, $comparisonType))
+                ($Value.EndsWith($EndsWith, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEndsWith' {
             if ((canCompareStrings $Value $NotEndsWith)) {
-                return (-not $Value.EndsWith($NotEndsWith, $comparisonType))
+                (-not $Value.EndsWith($NotEndsWith, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpEquals' {
             if ((canCompareStrings $Value $Equals)) {
-                return ([System.String]::Equals($Value, $Equals, $comparisonType))
+                ([System.String]::Equals($Value, $Equals, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             if ((canCompareStrings $Value $NotEquals)) {
-                return (-not [System.String]::Equals($Value, $NotEquals, $comparisonType))
+                (-not [System.String]::Equals($Value, $NotEquals, $comparisonType))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             if ((canCompareStrings $Value $LessThan)) {
-                return ([System.String]::Compare($Value, $LessThan, $comparisonType) -lt 0)
+                ([System.String]::Compare($Value, $LessThan, $comparisonType) -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             if ((canCompareStrings $Value $LessThanOrEqualTo)) {
-                return ([System.String]::Compare($Value, $LessThanOrEqualTo, $comparisonType) -le 0)
+                ([System.String]::Compare($Value, $LessThanOrEqualTo, $comparisonType) -le 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             if ((canCompareStrings $Value $GreaterThan)) {
-                return ([System.String]::Compare($Value, $GreaterThan, $comparisonType) -gt 0)
+                ([System.String]::Compare($Value, $GreaterThan, $comparisonType) -gt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             if ((canCompareStrings $Value $GreaterThanOrEqualTo)) {
-                return ([System.String]::Compare($Value, $GreaterThanOrEqualTo, $comparisonType) -ge 0)
+                ([System.String]::Compare($Value, $GreaterThanOrEqualTo, $comparisonType) -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }
@@ -6350,100 +6448,133 @@ function Test-Text
         }
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsText' {
             $result = $Value -is [System.String]
             if ($PSBoundParameters.ContainsKey('IsText')) {
-                return ($result) -xor (-not $IsText)
+                ($result) -xor (-not $IsText)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpMatch' {
             if (($Value -is [System.String]) -and ($Match -is [System.String])) {
-                return ([System.Text.RegularExpressions.Regex]::IsMatch($Value, $Match, $options))
+                ([System.Text.RegularExpressions.Regex]::IsMatch($Value, $Match, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotMatch' {
             if (($Value -is [System.String]) -and ($NotMatch -is [System.String])) {
-                return (-not [System.Text.RegularExpressions.Regex]::IsMatch($Value, $NotMatch, $options))
+                (-not [System.Text.RegularExpressions.Regex]::IsMatch($Value, $NotMatch, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpContains' {
             if (($Value -is [System.String]) -and ($Contains -is [System.String])) {
-                return ($Value.IndexOf($Contains, $options) -ge 0)
+                ($Value.IndexOf($Contains, $options) -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotContains' {
             if (($Value -is [System.String]) -and ($NotContains -is [System.String])) {
-                return ($Value.IndexOf($NotContains, $options) -lt 0)
+                ($Value.IndexOf($NotContains, $options) -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpStartsWith' {
             if (($Value -is [System.String]) -and ($StartsWith -is [System.String])) {
-                return ($Value.StartsWith($StartsWith, $options))
+                ($Value.StartsWith($StartsWith, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotStartsWith' {
             if (($Value -is [System.String]) -and ($NotStartsWith -is [System.String])) {
-                return (-not $Value.StartsWith($NotStartsWith, $options))
+                (-not $Value.StartsWith($NotStartsWith, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpEndsWith' {
             if (($Value -is [System.String]) -and ($EndsWith -is [System.String])) {
-                return ($Value.EndsWith($EndsWith, $options))
+                ($Value.EndsWith($EndsWith, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEndsWith' {
             if (($value -is [System.String]) -and ($NotEndsWith -is [System.String])) {
-                return (-not $Value.EndsWith($NotEndsWith, $options))
+                (-not $Value.EndsWith($NotEndsWith, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpEquals' {
             if (($Value -is [System.String]) -and ($Equals -is [System.String])) {
-                return ([System.String]::Equals($Value, $Equals, $options))
+                ([System.String]::Equals($Value, $Equals, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             if (($Value -is [System.String]) -and ($NotEquals -is [System.String])) {
-                return (-not [System.String]::Equals($Value, $NotEquals, $options))
+                (-not [System.String]::Equals($Value, $NotEquals, $options))
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             if (($Value -is [System.String]) -and ($LessThan -is [System.String])) {
-                return ([System.String]::Compare($Value, $LessThan, $options) -lt 0)
+                ([System.String]::Compare($Value, $LessThan, $options) -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             if (($Value -is [System.String]) -and ($LessThanOrEqualTo -is [System.String])) {
-                return ([System.String]::Compare($Value, $LessThanOrEqualTo, $options) -le 0)
+                ([System.String]::Compare($Value, $LessThanOrEqualTo, $options) -le 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             if (($Value -is [System.String]) -and ($GreaterThan -is [System.String])) {
-                return ([System.String]::Compare($Value, $GreaterThan, $options) -gt 0)
+                ([System.String]::Compare($Value, $GreaterThan, $options) -gt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             if (($Value -is [System.String]) -and ($GreaterThanOrEqualTo -is [System.String])) {
-                return ([System.String]::Compare($Value, $GreaterThanOrEqualTo, $options) -ge 0)
+                ([System.String]::Compare($Value, $GreaterThanOrEqualTo, $options) -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }
@@ -6691,7 +6822,7 @@ function Test-TimeSpan
 
         foreach ($item in $Property) {
             if (($validProperties -notcontains $item) -or ($item -notmatch '^[a-zA-Z]+$')) {
-                throw New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
+                throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
                     "Invalid TimeSpan Property: $item.`r`n" +
                     "Use one of the following values: $($validProperties -join ', ')"
                 )
@@ -6724,58 +6855,75 @@ function Test-TimeSpan
         return $result
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsTimeSpan' {
             $result = $Value -is [System.TimeSpan]
             if ($PSBoundParameters.ContainsKey('IsTimeSpan')) {
-                return ($result) -xor (-not $IsTimeSpan)
+                ($result) -xor (-not $IsTimeSpan)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpEquals' {
             $result = compareTimeSpan $Value $Equals
             if ($result -is [System.Int32]) {
-                return ($result -eq 0)
+                ($result -eq 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             $result = compareTimeSpan $Value $NotEquals
             if ($result -is [System.Int32]) {
-                return ($result -ne 0)
+                ($result -ne 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             $result = compareTimeSpan $Value $LessThan
             if ($result -is [System.Int32]) {
-                return ($result -lt 0)
+                ($result -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             $result = compareTimeSpan $Value $LessThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -le 0)
+                ($result -le 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             $result = compareTimeSpan $Value $GreaterThan
             if ($result -is [System.Int32]) {
-                return ($result -gt 0)
+                ($result -gt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             $result = compareTimeSpan $Value $GreaterThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -ge 0)
+                ($result -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }
@@ -7105,7 +7253,7 @@ function Test-Version
 
         foreach ($item in $Property) {
             if (($validProperties -notcontains $item) -or ($item -notmatch '^[a-zA-Z]+$')) {
-                throw New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
+                throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.ArgumentException' -ArgumentList @(
                     "Invalid Version Property: $item.`r`n" +
                     "Use one of the following values: $($validProperties -join ', ')"
                 )
@@ -7138,58 +7286,75 @@ function Test-Version
         return $result
     }
 
+    #Do not use the return keyword to return the value
+    #because PowerShell 2 will not properly set -OutVariable.
+
     switch ($PSCmdlet.ParameterSetName) {
         'IsVersion' {
             $result = $Value -is [System.Version]
             if ($PSBoundParameters.ContainsKey('IsVersion')) {
-                return ($result) -xor (-not $IsVersion)
+                ($result) -xor (-not $IsVersion)
+                return
             }
-            return $result
+            $result
+            return
         }
         'OpEquals' {
             $result = compareVersion $Value $Equals
             if ($result -is [System.Int32]) {
-                return ($result -eq 0)
+                ($result -eq 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpNotEquals' {
             $result = compareVersion $Value $NotEquals
             if ($result -is [System.Int32]) {
-                return ($result -ne 0)
+                ($result -ne 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThan' {
             $result = compareVersion $Value $LessThan
             if ($result -is [System.Int32]) {
-                return ($result -lt 0)
+                ($result -lt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpLessThanOrEqualTo' {
             $result = compareVersion $Value $LessThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -le 0)
+                ($result -le 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThan' {
             $result = compareVersion $Value $GreaterThan
             if ($result -is [System.Int32]) {
-                return ($result -gt 0)
+                ($result -gt 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         'OpGreaterThanOrEqualTo' {
             $result = compareVersion $Value $GreaterThanOrEqualTo
             if ($result -is [System.Int32]) {
-                return ($result -ge 0)
+                ($result -ge 0)
+                return
             }
-            return $null
+            $null
+            return
         }
         default {
-            throw New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
+            throw Microsoft.PowerShell.Utility\New-Object -TypeName 'System.NotImplementedException' -ArgumentList @(
                 "The ParameterSetName '$_' was not implemented."
             )
         }
