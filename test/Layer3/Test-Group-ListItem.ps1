@@ -1,8 +1,95 @@
+#requires -version 2
+
+<#
+.Synopsis
+Test the Group-ListItem cmdlet.
+.Description
+Test the Group-ListItem cmdlet.
+.Inputs
+None
+.Outputs
+None
+.Notes
+=====================================================================
+
+
+#Use an ArrayList as a logger.
+#The log entries will be in $simpleLogger.
+#
+$simpleLogger = new-object -typename system.collections.arraylist
+.\Test-Group-ListItem.ps1 -logger $simpleLogger
+
+
+=====================================================================
+
+
+#Use a custom object as a logger.
+#The log entries will be in $customLogger.Entries.
+#
+$customLogger = new-object -typename psobject -property @{
+    Entries = new-object -typename system.collections.arraylist
+} |
+add-member scriptmethod Add {
+    param($logEntry)
+
+    #Add entry.
+    $this.Entries.Add($logEntry) | out-null
+
+    #Limit the number of entries in the logger to 10.
+    if ($this.Entries.Count -gt 10) {
+        $this.Entries.RemoveAt(0)
+    }
+} -passthru
+.\Test-Group-ListItem.ps1 -logger $customLogger
+
+
+=====================================================================
+
+
+Log Entry Structure
+===================
+All log entries will have the same structure.
+A log entry will not change after it is added to the logger.
+
+[pscustomobject]@{
+    File = #String (full path)
+    Test = #String (test description)
+    Pass = #Boolean (test result, $null if inconclusive)
+    Data = @{
+        err = #ErrorRecord from command that takes in and creates out
+        out = #IList (generated from -OutVariable parameter)
+        in  = #IDictionary (for parameter names/values
+              #list of args, if any, will be in entry with key '')
+    }
+    Time = @{
+        start = #DateTime UTC (test log entry creation time)
+        stop  = #DateTime UTC (test log entry log time)
+        span  = #TimeSpan (test duration)
+    }
+}
+
+
+=====================================================================
+#>
 [CmdletBinding()]
 Param(
+    #A data structure with an "Add" method that will be used to log tests.
+    #
+    #The data structure can be a simple ArrayList or a complicated custom object.
+    #The advantage of using a custom object is that you have full control over the logging behavior such as limiting the number of log entries.
+    #
+    #See the Notes section for more details and examples.
+    $Logger = $null,
+
+    #Suppress all verbose messages.
+    #
+    #The default is to suppress some verbose messages.
+    #Use the -Verbose switch (and turn off this switch) to display all verbose messages.
     [System.Management.Automation.SwitchParameter]
     $Silent
 )
+
+
 
 $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 if ($Silent) {
@@ -12,1274 +99,1333 @@ if ($Silent) {
     $headerVerbosity = [System.Management.Automation.ActionPreference]::Continue
 }
 
-& {
-    Write-Verbose -Message 'Test Group-ListItem with get-help -full' -Verbose:$headerVerbosity
 
-    $err = try {$fullHelp = Get-Help Group-ListItem -Full} catch {$_}
 
-    Assert-Null $err
-    Assert-True ($fullHelp.Name -is [System.String])
-    Assert-True ($fullHelp.Name.Equals('Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($fullHelp.description -is [System.Collections.ICollection])
-    Assert-True ($fullHelp.description.Count -gt 0)
-    Assert-NotNull $fullHelp.examples
-    Assert-True (0 -lt @($fullHelp.examples.example).Count)
-    Assert-True ('' -ne @($fullHelp.examples.example)[0].code)
-}
+$TestScriptFilePath = $MyInvocation.MyCommand.Path
+$TestScriptStopWatch = New-Object -TypeName 'System.Diagnostics.Stopwatch'
 
-& {
-    Write-Verbose -Message 'Test Group-ListItem ParameterSet: Pair' -Verbose:$headerVerbosity
-
-    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
-        Where-Object {'Pair'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    $pairParam = $paramSet.Parameters |
-        Where-Object {'Pair'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    Assert-True ($pairParam.IsMandatory)
-    Assert-True ($pairParam.ParameterType -eq [System.Collections.IList])
-    Assert-False ($pairParam.ValueFromPipeline)
-    Assert-False ($pairParam.ValueFromPipelineByPropertyName)
-    Assert-False ($pairParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $pairParam.Position)
-    Assert-True (0 -eq $pairParam.Aliases.Count)
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem ParameterSet: Window' -Verbose:$headerVerbosity
-
-    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
-        Where-Object {'Window'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    $windowParam = $paramSet.Parameters |
-        Where-Object {'Window'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    $sizeParam = $paramSet.Parameters |
-        Where-Object {'Size'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    Assert-True ($windowParam.IsMandatory)
-    Assert-True ($windowParam.ParameterType -eq [System.Collections.IList])
-    Assert-False ($windowParam.ValueFromPipeline)
-    Assert-False ($windowParam.ValueFromPipelineByPropertyName)
-    Assert-False ($windowParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $windowParam.Position)
-    Assert-True (0 -eq $windowParam.Aliases.Count)
-
-    Assert-False ($sizeParam.IsMandatory)
-    Assert-True ($sizeParam.ParameterType -eq [System.Int32])
-    Assert-False ($sizeParam.ValueFromPipeline)
-    Assert-False ($sizeParam.ValueFromPipelineByPropertyName)
-    Assert-False ($sizeParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $sizeParam.Position)
-    Assert-True (0 -eq $sizeParam.Aliases.Count)
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem ParameterSet: Combine' -Verbose:$headerVerbosity
-
-    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
-        Where-Object {'Combine'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    $combineParam = $paramSet.Parameters |
-        Where-Object {'Combine'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    $sizeParam = $paramSet.Parameters |
-        Where-Object {'Size'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    Assert-True ($combineParam.IsMandatory)
-    Assert-True ($combineParam.ParameterType -eq [System.Collections.IList])
-    Assert-False ($combineParam.ValueFromPipeline)
-    Assert-False ($combineParam.ValueFromPipelineByPropertyName)
-    Assert-False ($combineParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $combineParam.Position)
-    Assert-True (0 -eq $combineParam.Aliases.Count)
-
-    Assert-False ($sizeParam.IsMandatory)
-    Assert-True ($sizeParam.ParameterType -eq [System.Int32])
-    Assert-False ($sizeParam.ValueFromPipeline)
-    Assert-False ($sizeParam.ValueFromPipelineByPropertyName)
-    Assert-False ($sizeParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $sizeParam.Position)
-    Assert-True (0 -eq $sizeParam.Aliases.Count)
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem ParameterSet: Permute' -Verbose:$headerVerbosity
-
-    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
-        Where-Object {'Permute'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    $permuteParam = $paramSet.Parameters |
-        Where-Object {'Permute'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    $sizeParam = $paramSet.Parameters |
-        Where-Object {'Size'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    Assert-True ($permuteParam.IsMandatory)
-    Assert-True ($permuteParam.ParameterType -eq [System.Collections.IList])
-    Assert-False ($permuteParam.ValueFromPipeline)
-    Assert-False ($permuteParam.ValueFromPipelineByPropertyName)
-    Assert-False ($permuteParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $permuteParam.Position)
-    Assert-True (0 -eq $permuteParam.Aliases.Count)
-
-    Assert-False ($sizeParam.IsMandatory)
-    Assert-True ($sizeParam.ParameterType -eq [System.Int32])
-    Assert-False ($sizeParam.ValueFromPipeline)
-    Assert-False ($sizeParam.ValueFromPipelineByPropertyName)
-    Assert-False ($sizeParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $sizeParam.Position)
-    Assert-True (0 -eq $sizeParam.Aliases.Count)
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem ParameterSet: Zip' -Verbose:$headerVerbosity
-
-    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
-        Where-Object {'Zip'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    $zipParam = $paramSet.Parameters |
-        Where-Object {'Zip'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    Assert-True ($zipParam.IsMandatory)
-    Assert-True ($zipParam.ParameterType -eq [System.Collections.IList[]])
-    Assert-False ($zipParam.ValueFromPipeline)
-    Assert-False ($zipParam.ValueFromPipelineByPropertyName)
-    Assert-False ($zipParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $zipParam.Position)
-    Assert-True (0 -eq $zipParam.Aliases.Count)
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem ParameterSet: CartesianProduct' -Verbose:$headerVerbosity
-
-    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
-        Where-Object {'CartesianProduct'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    $cartesianProductParam = $paramSet.Parameters |
-        Where-Object {'CartesianProduct'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    Assert-True ($cartesianProductParam.IsMandatory)
-    Assert-True ($cartesianProductParam.ParameterType -eq [System.Collections.IList[]])
-    Assert-False ($cartesianProductParam.ValueFromPipeline)
-    Assert-False ($cartesianProductParam.ValueFromPipelineByPropertyName)
-    Assert-False ($cartesianProductParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $cartesianProductParam.Position)
-    Assert-True (0 -eq $cartesianProductParam.Aliases.Count)
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem ParameterSet: CoveringArray' -Verbose:$headerVerbosity
-
-    $paramSet = (Get-Command -Name Group-ListItem).ParameterSets |
-        Where-Object {'CoveringArray'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    $coveringArrayParam = $paramSet.Parameters |
-        Where-Object {'CoveringArray'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    $strengthParam = $paramSet.Parameters |
-        Where-Object {'Strength'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineSingle
-
-    Assert-True ($coveringArrayParam.IsMandatory)
-    Assert-True ($coveringArrayParam.ParameterType -eq [System.Collections.IList[]])
-    Assert-False ($coveringArrayParam.ValueFromPipeline)
-    Assert-False ($coveringArrayParam.ValueFromPipelineByPropertyName)
-    Assert-False ($coveringArrayParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $coveringArrayParam.Position)
-    Assert-True (0 -eq $coveringArrayParam.Aliases.Count)
-
-    Assert-False ($strengthParam.IsMandatory)
-    Assert-True ($strengthParam.ParameterType -eq [System.Int32])
-    Assert-False ($strengthParam.ValueFromPipeline)
-    Assert-False ($strengthParam.ValueFromPipelineByPropertyName)
-    Assert-False ($strengthParam.ValueFromRemainingArguments)
-    Assert-True (0 -gt $strengthParam.Position)
-    Assert-True (0 -eq $strengthParam.Aliases.Count)
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with nulls' -Verbose:$headerVerbosity
-
-    $out1 = New-Object -TypeName 'System.Collections.ArrayList'
-    $er1 = try {Group-ListItem -Pair $null -OutVariable out1 | Out-Null} catch {$_}
-
-    Assert-True ($out1.Count -eq 0)
-    Assert-True ($er1 -is [System.Management.Automation.ErrorRecord])
-    Assert-True ($er1.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
-    Assert-True ($er1.Exception.ParameterName.Equals('Pair', [System.StringComparison]::OrdinalIgnoreCase))
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 0' -Verbose:$headerVerbosity
-
-    Group-ListItem -Pair @() | Assert-PipelineEmpty
-    Group-ListItem -Pair (New-Object -TypeName 'System.Collections.ArrayList') | Assert-PipelineEmpty
-    Group-ListItem -Pair (New-Object -TypeName 'System.Collections.Generic.List[System.Double]') | Assert-PipelineEmpty
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 1' -Verbose:$headerVerbosity
-
-    Group-ListItem -Pair @($null) | Assert-PipelineEmpty
-    Group-ListItem -Pair (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))) | Assert-PipelineEmpty
-    Group-ListItem -Pair (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14))) | Assert-PipelineEmpty
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 2' -Verbose:$headerVerbosity
-
-    $list1 = @($null, 5)
-    $list2 = New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', 'world'))
-    $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
+function newTestLogEntry
+{
+    param(
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $testDescription
     )
 
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Double[]]
-        } else {
-            [System.Object[]]
-        }
+    if ([System.Int32]$headerVerbosity) {
+        $VerbosePreference = $headerVerbosity
+        Write-Verbose -Message $testDescription
     }
 
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
-        }
+    $logEntry = New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+        File = $TestScriptFilePath
+        Test = $testDescription
+        Pass = $null
+        Data = @{err = $null; out = $null; in = $null;}
+        Time = @{start = [System.DateTime]::UtcNow; stop = $null; span = $null;}
     }
 
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $actualOutput = New-Object -TypeName 'System.Collections.ArrayList'
+    $TestScriptStopWatch.Reset()
+    $TestScriptStopWatch.Start()
+    return $logEntry
+}
 
-        Group-ListItem -Pair $list -OutVariable actualOutput | Out-Null
+function commitTestLogEntry
+{
+    param(
+        [parameter(Mandatory = $true)]
+        $logEntry,
+        
+        [parameter(Mandatory = $false)]
+        [System.Boolean]
+        $pass
+    )
 
-        Assert-True ($actualOutput.Count -eq 1)
-        @(0) |
-            Assert-PipelineAll {param($row) $actualOutput[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $actualOutput[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $actualOutput[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) areEqual $actualOutput[$row].Items[0] $list[$row + 0]} |
-            Assert-PipelineAll {param($row) areEqual $actualOutput[$row].Items[1] $list[$row + 1]} |
-            Out-Null
+    $logEntry.Pass = if ($PSBoundParameters.ContainsKey('pass')) {$pass} else {$null}
+    $TestScriptStopWatch.Stop()
+    $logEntry.Time.span = $TestScriptStopWatch.Elapsed
+    $logEntry.Time.stop = [System.DateTime]::UtcNow
+
+    if ($null -ne $Logger) {
+        [System.Void]$Logger.Add($logEntry)
     }
 }
 
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 3' -Verbose:$headerVerbosity
 
-    $list1 = @(3.14, 2.72, 0.00)
-    $list2 = New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', $null, 'world'))
-    $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList @(,[System.Object[]]@($null, 'hello', 3.14))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
 
-    function oracleType($list)
-    {
+function eq?([System.Object]$a, [System.Object]$b)
+{
+    [System.Object]::Equals($a, $b)
+}
+function eqListContents?([System.Collections.IList]$a, [System.Collections.IList]$b)
+{
+    (Test-NotNull $a) -and
+    (Test-NotNull $b) -and
+    (eq? $a.Count $b.Count) -and
+    (Test-All @(iota $a.Count) {param($index) eq? $a[$index] $b[$index]})
+}
+function getEquivalentArrayType([System.Collections.IList]$list)
+{
+    $type = if (Test-Null $list) {[System.Void]} else {$list.GetType()}
+    if ($type.IsArray) {
+        $type
+    } elseif ($type.IsGenericType) {
+        [System.Type]::GetType("$($type.GetGenericArguments()[0].FullName)[]")
+    } else {
         [System.Object[]]
     }
+}
+function iota([System.Int32]$count = 0, $start = 0, $step = 1)
+{
+    for (; $count -gt 0; $count--) {$start; $start+=$step}
+}
+function missing?([System.Object]$a)
+{
+    [System.Reflection.Missing]::Value.Equals($a)
+}
 
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
+$listsWithLength0 = @(
+    @(),
+    [System.String[]]@(),
+    [System.Int32[]]@(),
+    (New-Object -TypeName 'System.Collections.ArrayList'),
+    (New-Object -TypeName 'System.Collections.Generic.List[System.Double]')
+)
+$listsWithLength1 = @(
+    @($null),
+    [System.String[]]@('hi'),
+    [System.Int32[]]@(101),
+    (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))),
+    (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14)))
+)
+$listsWithLength2 = @(
+    @($null, 5),
+    [System.String[]]@('hi', 'world'),
+    [System.Int32[]]@(101, 202),
+    (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('Hello', 'World!'))),
+    (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72)))
+)
+$listsWithLength3 = @(
+    @($null, 5, [System.DateTime]::UtcNow),
+    [System.String[]]@('hi', 'world', '!'),
+    [System.Int32[]]@(101, 202, 303),
+    (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('Hello', $null, 'World!'))),
+    (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72, 0.00)))
+)
+$listsWithLength4 = @(
+    @($null, 5, [System.DateTime]::UtcNow, [System.Guid]::NewGuid()),
+    [System.String[]]@('hi', 'world', '!', ''),
+    [System.Int32[]]@(101, 202, 303, 404),
+    (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('Hello', $null, 'World!', [System.String[]]@('how', 'are', 'you', 'today', '?')))),
+    (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72, 0.00, [System.Double]::Epsilon)))
+)
+
+
+
+& {
+    $test = newTestLogEntry 'Group-ListItem help'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Group-ListItem'}
+        $test.Data.err = try {Get-Help -Name $test.Data.in.name -Full -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True ($test.Data.out[0].Name -is [System.String])
+        Assert-True ($test.Data.out[0].Name.Equals('Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out[0].description -is [System.Collections.ICollection])
+        Assert-True ($test.Data.out[0].description.Count -gt 0)
+        Assert-NotNull $test.Data.out[0].examples
+        Assert-True (0 -lt @($test.Data.out[0].examples.example).Count)
+        Assert-True ('' -ne @($test.Data.out[0].examples.example)[0].code)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Group-ListItem'; paramSet = 'Pair'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
+
+        $pairParam = $paramSet.Parameters |
+            Where-Object {'Pair'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $pairParam
+
+        Assert-True ($pairParam.IsMandatory)
+        Assert-True ($pairParam.ParameterType -eq [System.Collections.IList])
+        Assert-False ($pairParam.ValueFromPipeline)
+        Assert-False ($pairParam.ValueFromPipelineByPropertyName)
+        Assert-False ($pairParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $pairParam.Position)
+        Assert-True (0 -eq $pairParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Group-ListItem'; paramSet = 'Window'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
+
+        $windowParam = $paramSet.Parameters |
+            Where-Object {'Window'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $windowParam
+
+        $sizeParam = $paramSet.Parameters |
+            Where-Object {'Size'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $sizeParam
+
+        Assert-True ($windowParam.IsMandatory)
+        Assert-True ($windowParam.ParameterType -eq [System.Collections.IList])
+        Assert-False ($windowParam.ValueFromPipeline)
+        Assert-False ($windowParam.ValueFromPipelineByPropertyName)
+        Assert-False ($windowParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $windowParam.Position)
+        Assert-True (0 -eq $windowParam.Aliases.Count)
+
+        Assert-False ($sizeParam.IsMandatory)
+        Assert-True ($sizeParam.ParameterType -eq [System.Int32])
+        Assert-False ($sizeParam.ValueFromPipeline)
+        Assert-False ($sizeParam.ValueFromPipelineByPropertyName)
+        Assert-False ($sizeParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $sizeParam.Position)
+        Assert-True (0 -eq $sizeParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Group-ListItem'; paramSet = 'Combine'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
+
+        $combineParam = $paramSet.Parameters |
+            Where-Object {'Combine'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $combineParam
+
+        $sizeParam = $paramSet.Parameters |
+            Where-Object {'Size'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $sizeParam
+
+        Assert-True ($combineParam.IsMandatory)
+        Assert-True ($combineParam.ParameterType -eq [System.Collections.IList])
+        Assert-False ($combineParam.ValueFromPipeline)
+        Assert-False ($combineParam.ValueFromPipelineByPropertyName)
+        Assert-False ($combineParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $combineParam.Position)
+        Assert-True (0 -eq $combineParam.Aliases.Count)
+
+        Assert-False ($sizeParam.IsMandatory)
+        Assert-True ($sizeParam.ParameterType -eq [System.Int32])
+        Assert-False ($sizeParam.ValueFromPipeline)
+        Assert-False ($sizeParam.ValueFromPipelineByPropertyName)
+        Assert-False ($sizeParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $sizeParam.Position)
+        Assert-True (0 -eq $sizeParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Group-ListItem'; paramSet = 'Permute'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
+
+        $permuteParam = $paramSet.Parameters |
+            Where-Object {'Permute'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $permuteParam
+
+        $sizeParam = $paramSet.Parameters |
+            Where-Object {'Size'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $sizeParam
+
+        Assert-True ($permuteParam.IsMandatory)
+        Assert-True ($permuteParam.ParameterType -eq [System.Collections.IList])
+        Assert-False ($permuteParam.ValueFromPipeline)
+        Assert-False ($permuteParam.ValueFromPipelineByPropertyName)
+        Assert-False ($permuteParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $permuteParam.Position)
+        Assert-True (0 -eq $permuteParam.Aliases.Count)
+
+        Assert-False ($sizeParam.IsMandatory)
+        Assert-True ($sizeParam.ParameterType -eq [System.Int32])
+        Assert-False ($sizeParam.ValueFromPipeline)
+        Assert-False ($sizeParam.ValueFromPipelineByPropertyName)
+        Assert-False ($sizeParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $sizeParam.Position)
+        Assert-True (0 -eq $sizeParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Group-ListItem'; paramSet = 'Zip'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
+
+        $zipParam = $paramSet.Parameters |
+            Where-Object {'Zip'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $zipParam
+
+        Assert-True ($zipParam.IsMandatory)
+        Assert-True ($zipParam.ParameterType -eq [System.Collections.IList[]])
+        Assert-False ($zipParam.ValueFromPipeline)
+        Assert-False ($zipParam.ValueFromPipelineByPropertyName)
+        Assert-False ($zipParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $zipParam.Position)
+        Assert-True (0 -eq $zipParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Group-ListItem'; paramSet = 'CartesianProduct'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
+
+        $cartesianProductParam = $paramSet.Parameters |
+            Where-Object {'CartesianProduct'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $cartesianProductParam
+
+        Assert-True ($cartesianProductParam.IsMandatory)
+        Assert-True ($cartesianProductParam.ParameterType -eq [System.Collections.IList[]])
+        Assert-False ($cartesianProductParam.ValueFromPipeline)
+        Assert-False ($cartesianProductParam.ValueFromPipelineByPropertyName)
+        Assert-False ($cartesianProductParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $cartesianProductParam.Position)
+        Assert-True (0 -eq $cartesianProductParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Group-ListItem'; paramSet = 'CoveringArray'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
+
+        $coveringArrayParam = $paramSet.Parameters |
+            Where-Object {'CoveringArray'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $coveringArrayParam
+
+        $strengthParam = $paramSet.Parameters |
+            Where-Object {'Strength'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $strengthParam
+
+        Assert-True ($coveringArrayParam.IsMandatory)
+        Assert-True ($coveringArrayParam.ParameterType -eq [System.Collections.IList[]])
+        Assert-False ($coveringArrayParam.ValueFromPipeline)
+        Assert-False ($coveringArrayParam.ValueFromPipelineByPropertyName)
+        Assert-False ($coveringArrayParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $coveringArrayParam.Position)
+        Assert-True (0 -eq $coveringArrayParam.Aliases.Count)
+
+        Assert-False ($strengthParam.IsMandatory)
+        Assert-True ($strengthParam.ParameterType -eq [System.Int32])
+        Assert-False ($strengthParam.ValueFromPipeline)
+        Assert-False ($strengthParam.ValueFromPipelineByPropertyName)
+        Assert-False ($strengthParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $strengthParam.Position)
+        Assert-True (0 -eq $strengthParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem -Pair with null list'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{pair = $null}
+        $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.err.Exception.ParameterName.Equals('Pair', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out.Count -eq 0)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $testDescription = 'Group-ListItem -Pair with list of length 0'
+
+    for ($i = 0; $i -lt $listsWithLength0.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{pair = $listsWithLength0[$i]}
+            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True ($test.Data.out.Count -eq 0)
+
+            $pass = $true
         }
+        finally {commitTestLogEntry $test $pass}
     }
 
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $actualOutput = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Pair $list -OutVariable actualOutput | Out-Null
-
-        Assert-True ($actualOutput.Count -eq 2)
-        @(0, 1) |
-            Assert-PipelineAll {param($row) $actualOutput[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $actualOutput[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $actualOutput[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) areEqual $actualOutput[$row].Items[0] $list[$row + 0]} |
-            Assert-PipelineAll {param($row) areEqual $actualOutput[$row].Items[1] $list[$row + 1]} |
-            Out-Null
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Pair with lists of length 4 or more' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Pair with list of length 1'
 
-    $list1 = @('a', 1, @(), ([System.Int32[]]@(1..5)))
-    $list2 = New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', @($null), 'world', 5))
-    $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.Int32]' -ArgumentList @(,[System.Int32[]]@(100, 200, 300, 400))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
+    for ($i = 0; $i -lt $listsWithLength1.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{pair = $listsWithLength1[$i]}
+            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Int32[]]
-        } else {
-            [System.Object[]]
+            Assert-Null ($test.Data.err)
+            Assert-True ($test.Data.out.Count -eq 0)
+
+            $pass = $true
         }
+        finally {commitTestLogEntry $test $pass}
     }
 
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            return $a.Equals($b)
-        }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $actualOutput = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Pair $list -OutVariable actualOutput | Out-Null
-
-        Assert-True ($actualOutput.Count -eq 3)
-        @(0, 1, 2) |
-            Assert-PipelineAll {param($row) $actualOutput[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $actualOutput[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $actualOutput[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) areEqual $actualOutput[$row].Items[0] $list[$row + 0]} |
-            Assert-PipelineAll {param($row) areEqual $actualOutput[$row].Items[1] $list[$row + 1]} |
-            Out-Null
-    }
-
-    for ($size = 5; $size -lt 10; $size++) {
-        $list = [System.Int32[]]@(1..$size)
-        $expectedType = [System.Int32[]]
-        $actualOutput = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Pair $list -OutVariable actualOutput | Out-Null
-
-        Assert-True ($actualOutput.Count -eq ($size - 1))
-        @(0..$($actualOutput.Count - 1)) |
-            Assert-PipelineAll {param($row) $actualOutput[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $actualOutput[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $actualOutput[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) areEqual $actualOutput[$row].Items[0] $list[$row + 0]} |
-            Assert-PipelineAll {param($row) areEqual $actualOutput[$row].Items[1] $list[$row + 1]} |
-            Out-Null
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Window with nulls' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Pair with list of length 2'
 
-    $outputSize_  = New-Object -TypeName 'System.Collections.ArrayList'
-    $outputSize0  = New-Object -TypeName 'System.Collections.ArrayList'
-    $outputSize1  = New-Object -TypeName 'System.Collections.ArrayList'
-    $outputSize1m = New-Object -TypeName 'System.Collections.ArrayList'
-    $er_  = try {Group-ListItem -Window $null -OutVariable outputSize_ | Out-Null} catch {$_}
-    $er0  = try {Group-ListItem -Window $null -OutVariable outputSize0 | Out-Null} catch {$_}
-    $er1  = try {Group-ListItem -Window $null -OutVariable outputSize1 | Out-Null} catch {$_}
-    $er1m = try {Group-ListItem -Window $null -OutVariable outputSize1m | Out-Null} catch {$_}
+    for ($i = 0; $i -lt $listsWithLength2.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{pair = $listsWithLength2[$i]}
+            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
-    @($outputSize_, $outputSize0, $outputSize1, $outputSize1m) |
-        Assert-PipelineAll {param($output) $output.Count -eq 0} |
-        Out-Null
+            $expectedType = getEquivalentArrayType $test.Data.in.pair
+            $expectedPairs = @(,$test.Data.in.pair)
 
-    @($er_, $er0, $er1, $er1m) |
-        Assert-PipelineAll {param($er) $er -is [System.Management.Automation.ErrorRecord]} |
-        Assert-PipelineAll {param($er) $er.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineAll {param($er) $er.Exception.ParameterName.Equals('Window', [System.StringComparison]::OrdinalIgnoreCase)} |
-        Out-Null
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 0' -Verbose:$headerVerbosity
-
-    $list1 = @()
-    $list2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.Double]'
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
-
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Double[]]
-        } else {
-            [System.Object[]]
-        }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        
-        Group-ListItem -Window $list          -OutVariable outputSize_  | Out-Null
-        Group-ListItem -Window $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Window $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size  1 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size  2 | Assert-PipelineEmpty
-
-        Assert-True ($outputSize_.Count -eq 1)
-        Assert-True ($outputSize0.Count -eq 1)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 0} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Out-Null
-    }
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 1' -Verbose:$headerVerbosity
-
-    $list1 = @($null)
-    $list2 = New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))
-    $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
-
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Double[]]
-        } else {
-            [System.Object[]]
-        }
-    }
-
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
-        }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-        
-        Group-ListItem -Window $list          -OutVariable outputSize_  | Out-Null
-        Group-ListItem -Window $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Window $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Window $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size  2 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size  3 | Assert-PipelineEmpty
-
-        Assert-True ($outputSize_.Count -eq 1)
-        Assert-True ($outputSize0.Count -eq 1)
-        Assert-True ($outputSize1.Count -eq 1)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Out-Null
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize_[$row].Items[$col] $list[$row + $col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $list[$row + $col]}} |
-            Out-Null
-    }
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 2' -Verbose:$headerVerbosity
-
-    $list1 = @($null, 5)
-    $list2 = New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', 'world'))
-    $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
-
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Double[]]
-        } else {
-            [System.Object[]]
-        }
-    }
-
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
-        }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize2 = New-Object -TypeName 'System.Collections.ArrayList'
-        
-        Group-ListItem -Window $list          -OutVariable outputSize_  | Out-Null
-        Group-ListItem -Window $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Window $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Window $list -Size  2 -OutVariable outputSize2 | Out-Null
-        Group-ListItem -Window $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size  3 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size  4 | Assert-PipelineEmpty
-
-        Assert-True ($outputSize_.Count -eq 1)
-        Assert-True ($outputSize0.Count -eq 1)
-        Assert-True ($outputSize1.Count -eq 2)
-        Assert-True ($outputSize2.Count -eq 1)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Out-Null
-
-        @(0, 1) |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $list[$row + $col]}} |
-            Out-Null
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize2[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize_[$row].Items[$col] $list[$row + $col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize2[$row].Items[$col] $list[$row + $col]}} |
-            Out-Null
-    }
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 3' -Verbose:$headerVerbosity
-
-    $list1 = @(3.14, 2.72, 0.00)
-    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', $null, 'world')))
-    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList @(,[System.Object[]]@($null, 'hello', 3.14)))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
-
-    function oracleType($list)
-    {
-        [System.Object[]]
-    }
-
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
-        }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize3 = New-Object -TypeName 'System.Collections.ArrayList'
-        
-        Group-ListItem -Window $list          -OutVariable outputSize_  | Out-Null
-        Group-ListItem -Window $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Window $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Window $list -Size  2 -OutVariable outputSize2 | Out-Null
-        Group-ListItem -Window $list -Size  3 -OutVariable outputSize3 | Out-Null
-        Group-ListItem -Window $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size  4 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size  5 | Assert-PipelineEmpty
-
-        Assert-True ($outputSize_.Count -eq 1)
-        Assert-True ($outputSize0.Count -eq 1)
-        Assert-True ($outputSize1.Count -eq 3)
-        Assert-True ($outputSize2.Count -eq 2)
-        Assert-True ($outputSize3.Count -eq 1)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Out-Null
-
-        @(0, 1, 2) |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $list[$row + $col]}} |
-            Out-Null
-
-        @(0, 1) |
-            Assert-PipelineAll {param($row) $outputSize2[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize2[$row].Items[$col] $list[$row + $col]}} |
-            Out-Null
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize3[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 3} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items.Length -eq 3} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $outputSize_[$row].Items[$col] $list[$row + $col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $outputSize3[$row].Items[$col] $list[$row + $col]}} |
-            Out-Null
-    }
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Window with lists of length 4 or more' -Verbose:$headerVerbosity
-
-    $list1 = @('a', 1, @(), ([System.Int32[]]@(1..5)))
-    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', @($null), 'world', 5)))
-    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Int32]' -ArgumentList @(,[System.Int32[]]@(100, 200, 300, 400)))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
-
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Int32[]]
-        } else {
-            [System.Object[]]
-        }
-    }
-
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
-        }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize4 = New-Object -TypeName 'System.Collections.ArrayList'
-        
-        Group-ListItem -Window $list          -OutVariable outputSize_  | Out-Null
-        Group-ListItem -Window $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Window $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Window $list -Size  2 -OutVariable outputSize2 | Out-Null
-        Group-ListItem -Window $list -Size  3 -OutVariable outputSize3 | Out-Null
-        Group-ListItem -Window $list -Size  4 -OutVariable outputSize4 | Out-Null
-        Group-ListItem -Window $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size  5 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size  6 | Assert-PipelineEmpty
-
-        Assert-True ($outputSize_.Count -eq 1)
-        Assert-True ($outputSize0.Count -eq 1)
-        Assert-True ($outputSize1.Count -eq 4)
-        Assert-True ($outputSize2.Count -eq 3)
-        Assert-True ($outputSize3.Count -eq 2)
-        Assert-True ($outputSize4.Count -eq 1)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Out-Null
-
-        @(0, 1, 2, 3) |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $list[$row + $col]}} |
-            Out-Null
-
-        @(0, 1, 2) |
-            Assert-PipelineAll {param($row) $outputSize2[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize2[$row].Items[$col] $list[$row + $col]}} |
-            Out-Null
-
-        @(0, 1) |
-            Assert-PipelineAll {param($row) $outputSize3[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items.Length -eq 3} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $outputSize3[$row].Items[$col] $list[$row + $col]}} |
-            Out-Null
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize4[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize4[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 4} |
-            Assert-PipelineAll {param($row) $outputSize4[$row].Items.Length -eq 4} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2, 3) {param($col) areEqual $outputSize_[$row].Items[$col] $list[$row + $col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2, 3) {param($col) areEqual $outputSize4[$row].Items[$col] $list[$row + $col]}} |
-            Out-Null
-    }
-
-    for ($len = 5; $len -lt 10; $len++) {
-        $list = [System.Int32[]]@(1..$len)
-        $expectedType = [System.Int32[]]
-
-        Group-ListItem -Window $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size ($len + 1) | Assert-PipelineEmpty
-        Group-ListItem -Window $list -Size 0 |
-            Assert-PipelineAll {param($window) $window -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($window) $window.Items -is $expectedType} |
-            Assert-PipelineAll {param($window) $window.Items.Length -eq 0} |
-            Assert-PipelineSingle |
-            Out-Null
-
-        for ($size = 1; $size -le $len; $size++) {
-            $outputSizeN = New-Object -TypeName 'System.Collections.ArrayList'
-            Group-ListItem -Window $list -Size $size -OutVariable outputSizeN | Out-Null
-            
-            Assert-True ($outputSizeN.Count -eq ($len - $size + 1))
-            @(0..$($outputSizeN.Count - 1)) |
-                Assert-PipelineAll {param($row) $outputSizeN[$row] -isnot [System.Collections.IEnumerable]} |
-                Assert-PipelineAll {param($row) $outputSizeN[$row].Items -is $expectedType} |
-                Assert-PipelineAll {param($row) $outputSizeN[$row].Items.Length -eq $size} |
-                Assert-PipelineAll {param($row) Test-All @(0..$($size - 1)) {param($col) areEqual $outputSizeN[$row].Items[$col] $list[$row + $col]}} |
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedPairs.Count $test.Data.out.Count)
+            iota $expectedPairs.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedPairs[$row]} |
                 Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Pair with list of length 3'
+
+    for ($i = 0; $i -lt $listsWithLength3.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{pair = $listsWithLength3[$i]}
+            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            $expectedType = getEquivalentArrayType $test.Data.in.pair
+            $expectedPairs = @(
+                $test.Data.in.pair[0..1],
+                $test.Data.in.pair[1..2]
+            )
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedPairs.Count $test.Data.out.Count)
+            iota $expectedPairs.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedPairs[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Pair with list of length 4'
+
+    for ($i = 0; $i -lt $listsWithLength4.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{pair = $listsWithLength4[$i]}
+            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            $expectedType = getEquivalentArrayType $test.Data.in.pair
+            $expectedPairs = @(
+                $test.Data.in.pair[0..1],
+                $test.Data.in.pair[1..2],
+                $test.Data.in.pair[2..3]
+            )
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedPairs.Count $test.Data.out.Count)
+            iota $expectedPairs.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedPairs[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Pair with list of length 5 or more'
+
+    foreach ($len in @(5..9)) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{pair = [System.Int64[]]@(1..$len)}
+            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            $expectedType = getEquivalentArrayType $test.Data.in.pair
+            $expectedPairs = @(iota ($len - 1) | ForEach-Object {,$test.Data.in.pair[$_ .. $($_ + 1)]})
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedPairs.Count $test.Data.out.Count)
+            iota $expectedPairs.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedPairs[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Window with null list'
+
+    foreach ($size in @(-1, 0, 1, [System.Reflection.Missing]::Value)) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{window = $null; size = $size;}
+            if (missing? $size) {
+                $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+            } else {
+                $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+            }
+
+            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+            Assert-True ($test.Data.err.Exception.ParameterName.Equals('Window', [System.StringComparison]::OrdinalIgnoreCase))
+            Assert-True ($test.Data.out.Count -eq 0)
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Window with list of length 0'
+
+    for ($i = 0; $i -lt $listsWithLength0.Count; $i++) {
+        $window = $listsWithLength0[$i]
+        $expectedType = getEquivalentArrayType $window
+
+        foreach ($size in @(-2, -1, 0, 1, 2, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{window = $window; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if (missing? $size) {
+                    $expectedWindows = @(,$test.Data.in.window)
+                } elseif ($size -lt 0) {
+                    $expectedWindows = @()
+                } elseif ($size -eq 0) {
+                    $expectedWindows = @(,@())
+                } else {
+                    $expectedWindows = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedWindows.Count $test.Data.out.Count)
+                iota $expectedWindows.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedWindows[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Window with list of length 1'
+
+    for ($i = 0; $i -lt $listsWithLength1.Count; $i++) {
+        $window = $listsWithLength1[$i]
+        $expectedType = getEquivalentArrayType $window
+
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{window = $window; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if (missing? $size) {
+                    $expectedWindows = @(,$test.Data.in.window)
+                } elseif ($size -lt 0) {
+                    $expectedWindows = @()
+                } elseif ($size -eq 0) {
+                    $expectedWindows = @(,@())
+                } elseif ($size -eq 1) {
+                    $expectedWindows = @(,$test.Data.in.window)
+                } else {
+                    $expectedWindows = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedWindows.Count $test.Data.out.Count)
+                iota $expectedWindows.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedWindows[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Window with list of length 2'
+
+    for ($i = 0; $i -lt $listsWithLength2.Count; $i++) {
+        $window = $listsWithLength2[$i]
+        $expectedType = getEquivalentArrayType $window
+
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, 4, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{window = $window; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if (missing? $size) {
+                    $expectedWindows = @(,$test.Data.in.window)
+                } elseif ($size -lt 0) {
+                    $expectedWindows = @()
+                } elseif ($size -eq 0) {
+                    $expectedWindows = @(,@())
+                } elseif ($size -eq 1) {
+                    $expectedWindows = @(
+                        $test.Data.in.window[0..0],
+                        $test.Data.in.window[1..1]
+                    )
+                } elseif ($size -eq 2) {
+                    $expectedWindows = @(,$test.Data.in.window)
+                } else {
+                    $expectedWindows = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedWindows.Count $test.Data.out.Count)
+                iota $expectedWindows.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedWindows[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Window with list of length 3'
+
+    for ($i = 0; $i -lt $listsWithLength3.Count; $i++) {
+        $window = $listsWithLength3[$i]
+        $expectedType = getEquivalentArrayType $window
+
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, 4, 5, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{window = $window; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if (missing? $size) {
+                    $expectedWindows = @(,$test.Data.in.window)
+                } elseif ($size -lt 0) {
+                    $expectedWindows = @()
+                } elseif ($size -eq 0) {
+                    $expectedWindows = @(,@())
+                } elseif ($size -eq 1) {
+                    $expectedWindows = @(
+                        $test.Data.in.window[0..0],
+                        $test.Data.in.window[1..1],
+                        $test.Data.in.window[2..2]
+                    )
+                } elseif ($size -eq 2) {
+                    $expectedWindows = @(
+                        $test.Data.in.window[0..1],
+                        $test.Data.in.window[1..2]
+                    )
+                } elseif ($size -eq 3) {
+                    $expectedWindows = @(,$test.Data.in.window)
+                } else {
+                    $expectedWindows = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedWindows.Count $test.Data.out.Count)
+                iota $expectedWindows.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedWindows[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Window with list of length 4'
+
+    for ($i = 0; $i -lt $listsWithLength4.Count; $i++) {
+        $window = $listsWithLength4[$i]
+        $expectedType = getEquivalentArrayType $window
+
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, 4, 5, 6, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{window = $window; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if (missing? $size) {
+                    $expectedWindows = @(,$test.Data.in.window)
+                } elseif ($size -lt 0) {
+                    $expectedWindows = @()
+                } elseif ($size -eq 0) {
+                    $expectedWindows = @(,@())
+                } elseif ($size -eq 1) {
+                    $expectedWindows = @(
+                        $test.Data.in.window[0..0],
+                        $test.Data.in.window[1..1],
+                        $test.Data.in.window[2..2],
+                        $test.Data.in.window[3..3]
+                    )
+                } elseif ($size -eq 2) {
+                    $expectedWindows = @(
+                        $test.Data.in.window[0..1],
+                        $test.Data.in.window[1..2],
+                        $test.Data.in.window[2..3]
+                    )
+                } elseif ($size -eq 3) {
+                    $expectedWindows = @(
+                        $test.Data.in.window[0..2],
+                        $test.Data.in.window[1..3]
+                    )
+                } elseif ($size -eq 4) {
+                    $expectedWindows = @(,$test.Data.in.window)
+                } else {
+                    $expectedWindows = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedWindows.Count $test.Data.out.Count)
+                iota $expectedWindows.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedWindows[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Window with list of length 5 or more'
+
+    foreach ($len in @(5..9)) {
+        $window = [System.Int64[]]@(1..$len)
+        $expectedType = getEquivalentArrayType $window
+
+        foreach ($size in @(-1..$($len + 1))) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{window = $window; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if (missing? $size) {
+                    $expectedWindows = @(,$test.Data.in.window)
+                } elseif ($size -lt 0) {
+                    $expectedWindows = @()
+                } elseif ($size -eq 0) {
+                    $expectedWindows = @(,@())
+                } else {
+                    $expectedWindows = @(iota ($len - $size + 1) | ForEach-Object {,$test.Data.in.window[@(iota $size -start $_)]})
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedWindows.Count $test.Data.out.Count)
+                iota $expectedWindows.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedWindows[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Combine with nulls' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Combine with null list'
 
-    $outputSize_  = New-Object -TypeName 'System.Collections.ArrayList'
-    $outputSize0  = New-Object -TypeName 'System.Collections.ArrayList'
-    $outputSize1  = New-Object -TypeName 'System.Collections.ArrayList'
-    $outputSize1m = New-Object -TypeName 'System.Collections.ArrayList'
-    $er_  = try {Group-ListItem -Combine $null          -OutVariable outputSize_ | Out-Null} catch {$_}
-    $er0  = try {Group-ListItem -Combine $null -Size  0 -OutVariable outputSize0 | Out-Null} catch {$_}
-    $er1  = try {Group-ListItem -Combine $null -Size  1 -OutVariable outputSize1 | Out-Null} catch {$_}
-    $er1m = try {Group-ListItem -Combine $null -Size -1 -OutVariable outputSize1m | Out-Null} catch {$_}
+    foreach ($size in @(-1, 0, 1, [System.Reflection.Missing]::Value)) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{combine = $null; size = $size;}
+            if (missing? $size) {
+                $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+            } else {
+                $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+            }
 
-    @($outputSize_, $outputSize0, $outputSize1, $outputSize1m) |
-        Assert-PipelineAll {param($output) $output.Count -eq 0} |
-        Out-Null
+            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+            Assert-True ($test.Data.err.Exception.ParameterName.Equals('Combine', [System.StringComparison]::OrdinalIgnoreCase))
+            Assert-True ($test.Data.out.Count -eq 0)
 
-    @($er_, $er0, $er1, $er1m) |
-        Assert-PipelineAll {param($er) $er -is [System.Management.Automation.ErrorRecord]} |
-        Assert-PipelineAll {param($er) $er.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineAll {param($er) $er.Exception.ParameterName.Equals('Combine', [System.StringComparison]::OrdinalIgnoreCase)} |
-        Out-Null
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Combine with lists of length 0' -Verbose:$headerVerbosity
-
-    $list1 = @()
-    $list2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.Double]'
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
-
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Double[]]
-        } else {
-            [System.Object[]]
+            $pass = $true
         }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Combine $list          -OutVariable outputSize_ | Out-Null
-        Group-ListItem -Combine $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Combine $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size  1 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size  2 | Assert-PipelineEmpty
-
-        Assert-True ($outputSize_.Count -eq 1)
-        Assert-True ($outputSize0.Count -eq 1)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 0} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Out-Null
+        finally {commitTestLogEntry $test $pass}
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Combine with lists of length 1' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Combine with list of length 0'
 
-    $list1 = @($null)
-    $list2 = New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))
-    $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
+    for ($i = 0; $i -lt $listsWithLength0.Count; $i++) {
+        $combine = $listsWithLength0[$i]
+        $expectedType = getEquivalentArrayType $combine
 
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Double[]]
-        } else {
-            [System.Object[]]
+        foreach ($size in @(-2, -1, 0, 1, 2, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{combine = $combine; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if (missing? $size) {
+                    $expectedCombinations = @(,$test.Data.in.combine)
+                } elseif ($size -lt 0) {
+                    $expectedCombinations = @()
+                } elseif ($size -eq 0) {
+                    $expectedCombinations = @(,@())
+                } else {
+                    $expectedCombinations = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedCombinations.Count $test.Data.out.Count)
+                iota $expectedCombinations.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedCombinations[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
-        }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Combine $list          -OutVariable outputSize_ | Out-Null
-        Group-ListItem -Combine $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Combine $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Combine $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size  2 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size  3 | Assert-PipelineEmpty
-
-        $expectedOutputSize0 = @(
-            @{'Items' = @()}
-        )
-        $expectedOutputSize1 = @(
-            @{'Items' = @(,$list[0])}
-        )
-
-        Assert-True ($outputSize_.Count -eq $expectedOutputSize1.Count)
-        Assert-True ($outputSize0.Count -eq $expectedOutputSize0.Count)
-        Assert-True ($outputSize1.Count -eq $expectedOutputSize1.Count)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Assert-PipelineAll {param($row) Test-All @() {param($col) areEqual $outputSize0[$row].Items[$col] $expectedOutputSize0[$row].Items[$col]}} |
-            Out-Null
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize_[$row].Items[$col] $expectedOutputSize1[$row].Items[$col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $expectedOutputSize1[$row].Items[$col]}} |
-            Out-Null
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Combine with lists of length 2' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Combine with list of length 1'
 
-    $list1 = @($null, 5)
-    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', 'world')))
-    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72)))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
+    for ($i = 0; $i -lt $listsWithLength1.Count; $i++) {
+        $combine = $listsWithLength1[$i]
+        $expectedType = getEquivalentArrayType $combine
 
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Double[]]
-        } else {
-            [System.Object[]]
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{combine = $combine; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if ((missing? $size) -or ($size -eq 1)) {
+                    $expectedCombinations = @(,$test.Data.in.combine)
+                } elseif ($size -lt 0) {
+                    $expectedCombinations = @()
+                } elseif ($size -eq 0) {
+                    $expectedCombinations = @(,@())
+                } else {
+                    $expectedCombinations = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedCombinations.Count $test.Data.out.Count)
+                iota $expectedCombinations.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedCombinations[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
-        }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize2 = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Combine $list          -OutVariable outputSize_ | Out-Null
-        Group-ListItem -Combine $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Combine $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Combine $list -Size  2 -OutVariable outputSize2 | Out-Null
-        Group-ListItem -Combine $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size  3 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size  4 | Assert-PipelineEmpty
-
-        $expectedOutputSize0 = @(
-            @{'Items' = @()}
-        )
-        $expectedOutputSize1 = @(
-            @{'Items' = @(,$list[0])},
-            @{'Items' = @(,$list[1])}
-        )
-        $expectedOutputSize2 = @(
-            @{'Items' = @($list[0], $list[1])}
-        )
-
-        Assert-True ($outputSize_.Count -eq $expectedOutputSize2.Count)
-        Assert-True ($outputSize0.Count -eq $expectedOutputSize0.Count)
-        Assert-True ($outputSize1.Count -eq $expectedOutputSize1.Count)
-        Assert-True ($outputSize2.Count -eq $expectedOutputSize2.Count)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Assert-PipelineAll {param($row) Test-All @() {param($col) areEqual $outputSize0[$row].Items[$col] $expectedOutputSize0[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1) |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $expectedOutputSize1[$row].Items[$col]}} |
-            Out-Null
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize2[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize_[$row].Items[$col] $expectedOutputSize2[$row].Items[$col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize2[$row].Items[$col] $expectedOutputSize2[$row].Items[$col]}} |
-            Out-Null
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Combine with lists of length 3' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Combine with list of length 2'
 
-    $list1 = @(3.14, 2.72, 0.00)
-    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', $null, 'world')))
-    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList @(,[System.Object[]]@($null, 'hello', 3.14)))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
+    for ($i = 0; $i -lt $listsWithLength2.Count; $i++) {
+        $combine = $listsWithLength2[$i]
+        $expectedType = getEquivalentArrayType $combine
 
-    function oracleType($list)
-    {
-        [System.Object[]]
-    }
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, 4, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{combine = $combine; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
 
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
+                if ((missing? $size) -or ($size -eq 2)) {
+                    $expectedCombinations = @(,$test.Data.in.combine)
+                } elseif ($size -lt 0) {
+                    $expectedCombinations = @()
+                } elseif ($size -eq 0) {
+                    $expectedCombinations = @(,@())
+                } elseif ($size -eq 1) {
+                    $expectedCombinations = @(
+                        $test.Data.in.combine[,0],
+                        $test.Data.in.combine[,1]
+                    )
+                } else {
+                    $expectedCombinations = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedCombinations.Count $test.Data.out.Count)
+                iota $expectedCombinations.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedCombinations[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize3 = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Combine $list          -OutVariable outputSize_ | Out-Null
-        Group-ListItem -Combine $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Combine $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Combine $list -Size  2 -OutVariable outputSize2 | Out-Null
-        Group-ListItem -Combine $list -Size  3 -OutVariable outputSize3 | Out-Null
-        Group-ListItem -Combine $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size  4 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size  5 | Assert-PipelineEmpty
-
-        $expectedOutputSize0 = @(
-            @{'Items' = @()}
-        )
-        $expectedOutputSize1 = @(
-            @{'Items' = @(,$list[0])},
-            @{'Items' = @(,$list[1])},
-            @{'Items' = @(,$list[2])}
-        )
-        $expectedOutputSize2 = @(
-            @{'Items' = @($list[0], $list[1])},
-            @{'Items' = @($list[0], $list[2])},
-            @{'Items' = @($list[1], $list[2])}
-        )
-        $expectedOutputSize3 = @(
-            @{'Items' = @($list[0], $list[1], $list[2])}
-        )
-
-        Assert-True ($outputSize_.Count -eq $expectedOutputSize3.Count)
-        Assert-True ($outputSize0.Count -eq $expectedOutputSize0.Count)
-        Assert-True ($outputSize1.Count -eq $expectedOutputSize1.Count)
-        Assert-True ($outputSize2.Count -eq $expectedOutputSize2.Count)
-        Assert-True ($outputSize3.Count -eq $expectedOutputSize3.Count)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Assert-PipelineAll {param($row) Test-All @() {param($col) areEqual $outputSize0[$row].Items[$col] $expectedOutputSize0[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1, 2) |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $expectedOutputSize1[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1, 2) |
-            Assert-PipelineAll {param($row) $outputSize2[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize2[$row].Items[$col] $expectedOutputSize2[$row].Items[$col]}} |
-            Out-Null
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize3[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 3} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items.Length -eq 3} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $outputSize_[$row].Items[$col] $expectedOutputSize3[$row].Items[$col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $outputSize3[$row].Items[$col] $expectedOutputSize3[$row].Items[$col]}} |
-            Out-Null
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Combine with lists of length 4 or more' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Combine with list of length 3'
 
-    $list1 = @('a', 1, @(), ([System.Int32[]]@(1..5)))
-    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', @($null), 'world', 5)))
-    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Int32]' -ArgumentList @(,[System.Int32[]]@(100, 200, 300, 400)))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
+    for ($i = 0; $i -lt $listsWithLength3.Count; $i++) {
+        $combine = $listsWithLength3[$i]
+        $expectedType = getEquivalentArrayType $combine
 
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Int32[]]
-        } else {
-            [System.Object[]]
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, 4, 5, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{combine = $combine; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if ((missing? $size) -or ($size -eq 3)) {
+                    $expectedCombinations = @(,$test.Data.in.combine)
+                } elseif ($size -lt 0) {
+                    $expectedCombinations = @()
+                } elseif ($size -eq 0) {
+                    $expectedCombinations = @(,@())
+                } elseif ($size -eq 1) {
+                    $expectedCombinations = @(
+                        $test.Data.in.combine[,0],
+                        $test.Data.in.combine[,1],
+                        $test.Data.in.combine[,2]
+                    )
+                } elseif ($size -eq 2) {
+                    $expectedCombinations = @(
+                        $test.Data.in.combine[0, 1],
+                        $test.Data.in.combine[0, 2],
+                        $test.Data.in.combine[1, 2]
+                    )
+                } else {
+                    $expectedCombinations = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedCombinations.Count $test.Data.out.Count)
+                iota $expectedCombinations.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedCombinations[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Combine with list of length 4'
+
+    for ($i = 0; $i -lt $listsWithLength4.Count; $i++) {
+        $combine = $listsWithLength4[$i]
+        $expectedType = getEquivalentArrayType $combine
+
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, 4, 5, 6, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{combine = $combine; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if ((missing? $size) -or ($size -eq 4)) {
+                    $expectedCombinations = @(,$test.Data.in.combine)
+                } elseif ($size -lt 0) {
+                    $expectedCombinations = @()
+                } elseif ($size -eq 0) {
+                    $expectedCombinations = @(,@())
+                } elseif ($size -eq 1) {
+                    $expectedCombinations = @(
+                        $test.Data.in.combine[,0],
+                        $test.Data.in.combine[,1],
+                        $test.Data.in.combine[,2],
+                        $test.Data.in.combine[,3]
+                    )
+                } elseif ($size -eq 2) {
+                    $expectedCombinations = @(
+                        $test.Data.in.combine[0, 1],
+                        $test.Data.in.combine[0, 2],
+                        $test.Data.in.combine[0, 3],
+                        $test.Data.in.combine[1, 2],
+                        $test.Data.in.combine[1, 3],
+                        $test.Data.in.combine[2, 3]
+                    )
+                } elseif ($size -eq 3) {
+                    $expectedCombinations = @(
+                        $test.Data.in.combine[0, 1, 2],
+                        $test.Data.in.combine[0, 1, 3],
+                        $test.Data.in.combine[0, 2, 3],
+                        $test.Data.in.combine[1, 2, 3]
+                    )
+                } else {
+                    $expectedCombinations = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedCombinations.Count $test.Data.out.Count)
+                iota $expectedCombinations.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedCombinations[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize4 = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Combine $list          -OutVariable outputSize_ | Out-Null
-        Group-ListItem -Combine $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Combine $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Combine $list -Size  2 -OutVariable outputSize2 | Out-Null
-        Group-ListItem -Combine $list -Size  3 -OutVariable outputSize3 | Out-Null
-        Group-ListItem -Combine $list -Size  4 -OutVariable outputSize4 | Out-Null
-        Group-ListItem -Combine $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size  5 | Assert-PipelineEmpty
-        Group-ListItem -Combine $list -Size  6 | Assert-PipelineEmpty
-
-        $expectedOutputSize0 = @(
-            @{'Items' = @()}
-        )
-        $expectedOutputSize1 = @(
-            @{'Items' = @(,$list[0])},
-            @{'Items' = @(,$list[1])},
-            @{'Items' = @(,$list[2])},
-            @{'Items' = @(,$list[3])}
-        )
-        $expectedOutputSize2 = @(
-            @{'Items' = @($list[0], $list[1])},
-            @{'Items' = @($list[0], $list[2])},
-            @{'Items' = @($list[0], $list[3])},
-            @{'Items' = @($list[1], $list[2])},
-            @{'Items' = @($list[1], $list[3])},
-            @{'Items' = @($list[2], $list[3])}
-        )
-        $expectedOutputSize3 = @(
-            @{'Items' = @($list[0], $list[1], $list[2])},
-            @{'Items' = @($list[0], $list[1], $list[3])},
-            @{'Items' = @($list[0], $list[2], $list[3])},
-            @{'Items' = @($list[1], $list[2], $list[3])}
-        )
-        $expectedOutputSize4 = @(
-            @{'Items' = @($list[0], $list[1], $list[2], $list[3])}
-        )
-
-        Assert-True ($outputSize_.Count -eq $expectedOutputSize4.Count)
-        Assert-True ($outputSize0.Count -eq $expectedOutputSize0.Count)
-        Assert-True ($outputSize1.Count -eq $expectedOutputSize1.Count)
-        Assert-True ($outputSize2.Count -eq $expectedOutputSize2.Count)
-        Assert-True ($outputSize3.Count -eq $expectedOutputSize3.Count)
-        Assert-True ($outputSize4.Count -eq $expectedOutputSize4.Count)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Assert-PipelineAll {param($row) Test-All @() {param($col) areEqual $outputSize0[$row].Items[$col] $expectedOutputSize0[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1, 2, 3) |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $expectedOutputSize1[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1, 2, 3, 4, 5) |
-            Assert-PipelineAll {param($row) $outputSize2[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize2[$row].Items[$col] $expectedOutputSize2[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1, 2, 3) |
-            Assert-PipelineAll {param($row) $outputSize3[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items.Length -eq 3} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $outputSize3[$row].Items[$col] $expectedOutputSize3[$row].Items[$col]}} |
-            Out-Null
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize4[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize4[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 4} |
-            Assert-PipelineAll {param($row) $outputSize4[$row].Items.Length -eq 4} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2, 3) {param($col) areEqual $outputSize_[$row].Items[$col] $expectedOutputSize4[$row].Items[$col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2, 3) {param($col) areEqual $outputSize4[$row].Items[$col] $expectedOutputSize4[$row].Items[$col]}} |
-            Out-Null
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
+}
 
-    function numCombin($list, $k)
+& {
+    $testDescription = 'Group-ListItem -Combine with list of length 5 or more'
+
+    function numCombin($n, $k)
     {
-        $n = $list.Length
         if ($n -lt $k) {
             return 0
         } elseif ($k -lt 0) {
@@ -1297,540 +1443,433 @@ if ($Silent) {
         }
     }
 
-    for ($n = 5; $n -lt 10; $n++) {
-        $list = [System.Int32[]]@(1..$n)
+    foreach ($len in @(5..7)) {
+        $combine = [System.Int64[]]@(1..$len)
+        $expectedType = getEquivalentArrayType $combine
 
-        for ($k = -1; $k -le $n + 1; $k++) {
-            Group-ListItem -Combine $list -Size $k |
-                Assert-PipelineAll {param($combin) $combin -isnot [System.Collections.IEnumerable]} |
-                Assert-PipelineAll {param($combin) $combin.Items -is [System.Int32[]]} |
-                Assert-PipelineAll {param($combin) $combin.Items.Length -eq $k} |
-                Assert-PipelineCount (numCombin $list $k) |
-                Out-Null
+        foreach ($size in @(-1..$($len + 1))) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{combine = $combine; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                $expectedCombinationCount = numCombin $len $(if (missing? $size) {$test.Data.in.combine.Count} else {$size})
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedCombinationCount $test.Data.out.Count)
+                iota $expectedCombinationCount |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eq? $test.Data.out[$row].Items.Count $size} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Permute with nulls' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Permute with null list'
 
-    $outputSize_  = New-Object -TypeName 'System.Collections.ArrayList'
-    $outputSize0  = New-Object -TypeName 'System.Collections.ArrayList'
-    $outputSize1  = New-Object -TypeName 'System.Collections.ArrayList'
-    $outputSize1m = New-Object -TypeName 'System.Collections.ArrayList'
-    $er_  = try {Group-ListItem -Permute $null          -OutVariable outputSize_ | Out-Null} catch {$_}
-    $er0  = try {Group-ListItem -Permute $null -Size  0 -OutVariable outputSize0 | Out-Null} catch {$_}
-    $er1  = try {Group-ListItem -Permute $null -Size  1 -OutVariable outputSize1 | Out-Null} catch {$_}
-    $er1m = try {Group-ListItem -Permute $null -Size -1 -OutVariable outputSize1m | Out-Null} catch {$_}
+    foreach ($size in @(-1, 0, 1, [System.Reflection.Missing]::Value)) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{permute = $null; size = $size;}
+            if (missing? $size) {
+                $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+            } else {
+                $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+            }
 
-    @($outputSize_, $outputSize0, $outputSize1, $outputSize1m) |
-        Assert-PipelineAll {param($output) $output.Count -eq 0} |
-        Out-Null
+            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+            Assert-True ($test.Data.err.Exception.ParameterName.Equals('Permute', [System.StringComparison]::OrdinalIgnoreCase))
+            Assert-True ($test.Data.out.Count -eq 0)
 
-    @($er_, $er0, $er1, $er1m) |
-        Assert-PipelineAll {param($er) $er -is [System.Management.Automation.ErrorRecord]} |
-        Assert-PipelineAll {param($er) $er.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase)} |
-        Assert-PipelineAll {param($er) $er.Exception.ParameterName.Equals('Permute', [System.StringComparison]::OrdinalIgnoreCase)} |
-        Out-Null
-}
-
-& {
-    Write-Verbose -Message 'Test Group-ListItem -Permute with lists of length 0' -Verbose:$headerVerbosity
-
-    $list1 = @()
-    $list2 = New-Object -TypeName 'System.Collections.ArrayList'
-    $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.Double]'
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
-
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Double[]]
-        } else {
-            [System.Object[]]
+            $pass = $true
         }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Permute $list          -OutVariable outputSize_ | Out-Null
-        Group-ListItem -Permute $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Permute $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size  1 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size  2 | Assert-PipelineEmpty
-
-        Assert-True ($outputSize_.Count -eq 1)
-        Assert-True ($outputSize0.Count -eq 1)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 0} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Out-Null
+        finally {commitTestLogEntry $test $pass}
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Permute with lists of length 1' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Permute with list of length 0'
 
-    $list1 = @($null)
-    $list2 = New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))
-    $list3 = New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
+    for ($i = 0; $i -lt $listsWithLength0.Count; $i++) {
+        $permute = $listsWithLength0[$i]
+        $expectedType = getEquivalentArrayType $permute
 
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Double[]]
-        } else {
-            [System.Object[]]
+        foreach ($size in @(-2, -1, 0, 1, 2, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{permute = $permute; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if (missing? $size) {
+                    $expectedPermutations = @(,$test.Data.in.permute)
+                } elseif ($size -lt 0) {
+                    $expectedPermutations = @()
+                } elseif ($size -eq 0) {
+                    $expectedPermutations = @(,@())
+                } else {
+                    $expectedPermutations = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedPermutations.Count $test.Data.out.Count)
+                iota $expectedPermutations.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedPermutations[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
-        }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Permute $list          -OutVariable outputSize_ | Out-Null
-        Group-ListItem -Permute $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Permute $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Permute $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size  2 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size  3 | Assert-PipelineEmpty
-
-        $expectedOutputSize0 = @(
-            @{'Items' = @()}
-        )
-        $expectedOutputSize1 = @(
-            @{'Items' = @(,$list[0])}
-        )
-
-        Assert-True ($outputSize_.Count -eq $expectedOutputSize1.Count)
-        Assert-True ($outputSize0.Count -eq $expectedOutputSize0.Count)
-        Assert-True ($outputSize1.Count -eq $expectedOutputSize1.Count)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Assert-PipelineAll {param($row) Test-All @() {param($col) areEqual $outputSize0[$row].Items[$col] $expectedOutputSize0[$row].Items[$col]}} |
-            Out-Null
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize_[$row].Items[$col] $expectedOutputSize1[$row].Items[$col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $expectedOutputSize1[$row].Items[$col]}} |
-            Out-Null
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Permute with lists of length 2' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Permute with list of length 1'
 
-    $list1 = @($null, 5)
-    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', 'world')))
-    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72)))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
+    for ($i = 0; $i -lt $listsWithLength1.Count; $i++) {
+        $permute = $listsWithLength1[$i]
+        $expectedType = getEquivalentArrayType $permute
 
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Double[]]
-        } else {
-            [System.Object[]]
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{permute = $permute; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if ((missing? $size) -or ($size -eq 1)) {
+                    $expectedPermutations = @(,$test.Data.in.permute)
+                } elseif ($size -lt 0) {
+                    $expectedPermutations = @()
+                } elseif ($size -eq 0) {
+                    $expectedPermutations = @(,@())
+                } else {
+                    $expectedPermutations = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedPermutations.Count $test.Data.out.Count)
+                iota $expectedPermutations.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedPermutations[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
-        }
-    }
-
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize2 = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Permute $list          -OutVariable outputSize_ | Out-Null
-        Group-ListItem -Permute $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Permute $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Permute $list -Size  2 -OutVariable outputSize2 | Out-Null
-        Group-ListItem -Permute $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size  3 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size  4 | Assert-PipelineEmpty
-
-        $expectedOutputSize0 = @(
-            @{'Items' = @()}
-        )
-        $expectedOutputSize1 = @(
-            @{'Items' = @(,$list[0])},
-            @{'Items' = @(,$list[1])}
-        )
-        $expectedOutputSize2 = @(
-            @{'Items' = @($list[0], $list[1])},
-            @{'Items' = @($list[1], $list[0])}
-        )
-
-        Assert-True ($outputSize_.Count -eq $expectedOutputSize2.Count)
-        Assert-True ($outputSize0.Count -eq $expectedOutputSize0.Count)
-        Assert-True ($outputSize1.Count -eq $expectedOutputSize1.Count)
-        Assert-True ($outputSize2.Count -eq $expectedOutputSize2.Count)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Assert-PipelineAll {param($row) Test-All @() {param($col) areEqual $outputSize0[$row].Items[$col] $expectedOutputSize0[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1) |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $expectedOutputSize1[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize2[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize_[$row].Items[$col] $expectedOutputSize2[$row].Items[$col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize2[$row].Items[$col] $expectedOutputSize2[$row].Items[$col]}} |
-            Out-Null
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Permute with lists of length 3' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Permute with list of length 2'
 
-    $list1 = @(3.14, 2.72, 0.00)
-    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', $null, 'world')))
-    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Object]' -ArgumentList @(,[System.Object[]]@($null, 'hello', 3.14)))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
+    for ($i = 0; $i -lt $listsWithLength2.Count; $i++) {
+        $permute = $listsWithLength2[$i]
+        $expectedType = getEquivalentArrayType $permute
 
-    function oracleType($list)
-    {
-        [System.Object[]]
-    }
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, 4, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{permute = $permute; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
 
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
+                if ((missing? $size) -or ($size -eq 2)) {
+                    $expectedPermutations = @(
+                        $test.Data.in.permute[0, 1],
+                        $test.Data.in.permute[1, 0]
+                    )
+                } elseif ($size -lt 0) {
+                    $expectedPermutations = @()
+                } elseif ($size -eq 0) {
+                    $expectedPermutations = @(,@())
+                } elseif ($size -eq 1) {
+                    $expectedPermutations = @(
+                        $test.Data.in.permute[,0],
+                        $test.Data.in.permute[,1]
+                    )
+                } else {
+                    $expectedPermutations = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedPermutations.Count $test.Data.out.Count)
+                iota $expectedPermutations.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedPermutations[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize3 = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Permute $list          -OutVariable outputSize_ | Out-Null
-        Group-ListItem -Permute $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Permute $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Permute $list -Size  2 -OutVariable outputSize2 | Out-Null
-        Group-ListItem -Permute $list -Size  3 -OutVariable outputSize3 | Out-Null
-        Group-ListItem -Permute $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size  4 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size  5 | Assert-PipelineEmpty
-
-        $expectedOutputSize0 = @(
-            @{'Items' = @()}
-        )
-        $expectedOutputSize1 = @(
-            @{'Items' = @(,$list[0])},
-            @{'Items' = @(,$list[1])},
-            @{'Items' = @(,$list[2])}
-        )
-        $expectedOutputSize2 = @(
-            @{'Items' = @($list[0], $list[1])},
-            @{'Items' = @($list[0], $list[2])},
-            @{'Items' = @($list[1], $list[0])},
-            @{'Items' = @($list[1], $list[2])},
-            @{'Items' = @($list[2], $list[0])},
-            @{'Items' = @($list[2], $list[1])}
-        )
-        $expectedOutputSize3 = @(
-            @{'Items' = @($list[0], $list[1], $list[2])},
-            @{'Items' = @($list[0], $list[2], $list[1])},
-            @{'Items' = @($list[1], $list[0], $list[2])},
-            @{'Items' = @($list[1], $list[2], $list[0])},
-            @{'Items' = @($list[2], $list[0], $list[1])},
-            @{'Items' = @($list[2], $list[1], $list[0])}
-        )
-
-        Assert-True ($outputSize_.Count -eq $expectedOutputSize3.Count)
-        Assert-True ($outputSize0.Count -eq $expectedOutputSize0.Count)
-        Assert-True ($outputSize1.Count -eq $expectedOutputSize1.Count)
-        Assert-True ($outputSize2.Count -eq $expectedOutputSize2.Count)
-        Assert-True ($outputSize3.Count -eq $expectedOutputSize3.Count)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Assert-PipelineAll {param($row) Test-All @() {param($col) areEqual $outputSize0[$row].Items[$col] $expectedOutputSize0[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1, 2) |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $expectedOutputSize1[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1, 2, 3, 4, 5) |
-            Assert-PipelineAll {param($row) $outputSize2[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize2[$row].Items[$col] $expectedOutputSize2[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1, 2, 3, 4, 5) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize3[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 3} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items.Length -eq 3} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $outputSize_[$row].Items[$col] $expectedOutputSize3[$row].Items[$col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $outputSize3[$row].Items[$col] $expectedOutputSize3[$row].Items[$col]}} |
-            Out-Null
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
 }
 
 & {
-    Write-Verbose -Message 'Test Group-ListItem -Permute with lists of length 4 or more' -Verbose:$headerVerbosity
+    $testDescription = 'Group-ListItem -Permute with list of length 3'
 
-    $list1 = @('a', 1, @(), ([System.Int32[]]@(1..5)))
-    $list2 = (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello', @($null), 'world', 5)))
-    $list3 = (New-Object -TypeName 'System.Collections.Generic.List[System.Int32]' -ArgumentList @(,[System.Int32[]]@(100, 200, 300, 400)))
-    $lists = @(
-        $list1,
-        $list2,
-        $list3
-    )
+    for ($i = 0; $i -lt $listsWithLength3.Count; $i++) {
+        $permute = $listsWithLength3[$i]
+        $expectedType = getEquivalentArrayType $permute
 
-    function oracleType($list)
-    {
-        if ($list.Equals($list3)) {
-            [System.Int32[]]
-        } else {
-            [System.Object[]]
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, 4, 5, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{permute = $permute; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if ((missing? $size) -or ($size -eq 3)) {
+                    $expectedPermutations = @(
+                        $test.Data.in.permute[0, 1, 2],
+                        $test.Data.in.permute[0, 2, 1],
+                        $test.Data.in.permute[1, 0, 2],
+                        $test.Data.in.permute[1, 2, 0],
+                        $test.Data.in.permute[2, 0, 1],
+                        $test.Data.in.permute[2, 1, 0]
+                    )
+                } elseif ($size -lt 0) {
+                    $expectedPermutations = @()
+                } elseif ($size -eq 0) {
+                    $expectedPermutations = @(,@())
+                } elseif ($size -eq 1) {
+                    $expectedPermutations = @(
+                        $test.Data.in.permute[,0],
+                        $test.Data.in.permute[,1],
+                        $test.Data.in.permute[,2]
+                    )
+                } elseif ($size -eq 2) {
+                    $expectedPermutations = @(
+                        $test.Data.in.permute[0, 1],
+                        $test.Data.in.permute[0, 2],
+                        $test.Data.in.permute[1, 0],
+                        $test.Data.in.permute[1, 2],
+                        $test.Data.in.permute[2, 0],
+                        $test.Data.in.permute[2, 1]
+                    )
+                } else {
+                    $expectedPermutations = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedPermutations.Count $test.Data.out.Count)
+                iota $expectedPermutations.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedPermutations[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 
-    function areEqual($a, $b)
-    {
-        if ($null -eq $a) {
-            $null -eq $b
-        } else {
-            $a.Equals($b)
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -Permute with list of length 4'
+
+    for ($i = 0; $i -lt $listsWithLength4.Count; $i++) {
+        $permute = $listsWithLength4[$i]
+        $expectedType = getEquivalentArrayType $permute
+
+        foreach ($size in @(-2, -1, 0, 1, 2, 3, 4, 5, 6, [System.Reflection.Missing]::Value)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{permute = $permute; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                if ((missing? $size) -or ($size -eq 4)) {
+                    $expectedPermutations = @(
+                        $test.Data.in.permute[0, 1, 2, 3],
+                        $test.Data.in.permute[0, 1, 3, 2],
+                        $test.Data.in.permute[0, 2, 1, 3],
+                        $test.Data.in.permute[0, 2, 3, 1],
+                        $test.Data.in.permute[0, 3, 1, 2],
+                        $test.Data.in.permute[0, 3, 2, 1],
+                        $test.Data.in.permute[1, 0, 2, 3],
+                        $test.Data.in.permute[1, 0, 3, 2],
+                        $test.Data.in.permute[1, 2, 0, 3],
+                        $test.Data.in.permute[1, 2, 3, 0],
+                        $test.Data.in.permute[1, 3, 0, 2],
+                        $test.Data.in.permute[1, 3, 2, 0],
+                        $test.Data.in.permute[2, 0, 1, 3],
+                        $test.Data.in.permute[2, 0, 3, 1],
+                        $test.Data.in.permute[2, 1, 0, 3],
+                        $test.Data.in.permute[2, 1, 3, 0],
+                        $test.Data.in.permute[2, 3, 0, 1],
+                        $test.Data.in.permute[2, 3, 1, 0],
+                        $test.Data.in.permute[3, 0, 1, 2],
+                        $test.Data.in.permute[3, 0, 2, 1],
+                        $test.Data.in.permute[3, 1, 0, 2],
+                        $test.Data.in.permute[3, 1, 2, 0],
+                        $test.Data.in.permute[3, 2, 0, 1],
+                        $test.Data.in.permute[3, 2, 1, 0]
+                    )
+                } elseif ($size -lt 0) {
+                    $expectedPermutations = @()
+                } elseif ($size -eq 0) {
+                    $expectedPermutations = @(,@())
+                } elseif ($size -eq 1) {
+                    $expectedPermutations = @(
+                        $test.Data.in.permute[,0],
+                        $test.Data.in.permute[,1],
+                        $test.Data.in.permute[,2],
+                        $test.Data.in.permute[,3]
+                    )
+                } elseif ($size -eq 2) {
+                    $expectedPermutations = @(
+                        $test.Data.in.permute[0, 1],
+                        $test.Data.in.permute[0, 2],
+                        $test.Data.in.permute[0, 3],
+                        $test.Data.in.permute[1, 0],
+                        $test.Data.in.permute[1, 2],
+                        $test.Data.in.permute[1, 3],
+                        $test.Data.in.permute[2, 0],
+                        $test.Data.in.permute[2, 1],
+                        $test.Data.in.permute[2, 3],
+                        $test.Data.in.permute[3, 0],
+                        $test.Data.in.permute[3, 1],
+                        $test.Data.in.permute[3, 2]
+                    )
+                } elseif ($size -eq 3) {
+                    $expectedPermutations = @(
+                        $test.Data.in.permute[0, 1, 2],
+                        $test.Data.in.permute[0, 1, 3],
+                        $test.Data.in.permute[0, 2, 1],
+                        $test.Data.in.permute[0, 2, 3],
+                        $test.Data.in.permute[0, 3, 1],
+                        $test.Data.in.permute[0, 3, 2],
+                        $test.Data.in.permute[1, 0, 2],
+                        $test.Data.in.permute[1, 0, 3],
+                        $test.Data.in.permute[1, 2, 0],
+                        $test.Data.in.permute[1, 2, 3],
+                        $test.Data.in.permute[1, 3, 0],
+                        $test.Data.in.permute[1, 3, 2],
+                        $test.Data.in.permute[2, 0, 1],
+                        $test.Data.in.permute[2, 0, 3],
+                        $test.Data.in.permute[2, 1, 0],
+                        $test.Data.in.permute[2, 1, 3],
+                        $test.Data.in.permute[2, 3, 0],
+                        $test.Data.in.permute[2, 3, 1],
+                        $test.Data.in.permute[3, 0, 1],
+                        $test.Data.in.permute[3, 0, 2],
+                        $test.Data.in.permute[3, 1, 0],
+                        $test.Data.in.permute[3, 1, 2],
+                        $test.Data.in.permute[3, 2, 0],
+                        $test.Data.in.permute[3, 2, 1]
+                    )
+                } else {
+                    $expectedPermutations = @()
+                }
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedPermutations.Count $test.Data.out.Count)
+                iota $expectedPermutations.Count |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedPermutations[$row]} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 
-    foreach ($list in $lists) {
-        $expectedType = oracleType $list
-        $outputSize_ = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize0 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize1 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize2 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize3 = New-Object -TypeName 'System.Collections.ArrayList'
-        $outputSize4 = New-Object -TypeName 'System.Collections.ArrayList'
-
-        Group-ListItem -Permute $list          -OutVariable outputSize_ | Out-Null
-        Group-ListItem -Permute $list -Size  0 -OutVariable outputSize0 | Out-Null
-        Group-ListItem -Permute $list -Size  1 -OutVariable outputSize1 | Out-Null
-        Group-ListItem -Permute $list -Size  2 -OutVariable outputSize2 | Out-Null
-        Group-ListItem -Permute $list -Size  3 -OutVariable outputSize3 | Out-Null
-        Group-ListItem -Permute $list -Size  4 -OutVariable outputSize4 | Out-Null
-        Group-ListItem -Permute $list -Size -2 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size -1 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size  5 | Assert-PipelineEmpty
-        Group-ListItem -Permute $list -Size  6 | Assert-PipelineEmpty
-
-        $expectedOutputSize0 = @(
-            @{'Items' = @()}
-        )
-        $expectedOutputSize1 = @(
-            @{'Items' = @(,$list[0])},
-            @{'Items' = @(,$list[1])},
-            @{'Items' = @(,$list[2])},
-            @{'Items' = @(,$list[3])}
-        )
-        $expectedOutputSize2 = @(
-            @{'Items' = @($list[0], $list[1])},
-            @{'Items' = @($list[0], $list[2])},
-            @{'Items' = @($list[0], $list[3])},
-            @{'Items' = @($list[1], $list[0])},
-            @{'Items' = @($list[1], $list[2])},
-            @{'Items' = @($list[1], $list[3])},
-            @{'Items' = @($list[2], $list[0])},
-            @{'Items' = @($list[2], $list[1])},
-            @{'Items' = @($list[2], $list[3])},
-            @{'Items' = @($list[3], $list[0])},
-            @{'Items' = @($list[3], $list[1])},
-            @{'Items' = @($list[3], $list[2])}
-        )
-        $expectedOutputSize3 = @(
-            @{'Items' = @($list[0], $list[1], $list[2])},
-            @{'Items' = @($list[0], $list[1], $list[3])},
-            @{'Items' = @($list[0], $list[2], $list[1])},
-            @{'Items' = @($list[0], $list[2], $list[3])},
-            @{'Items' = @($list[0], $list[3], $list[1])},
-            @{'Items' = @($list[0], $list[3], $list[2])},
-            @{'Items' = @($list[1], $list[0], $list[2])},
-            @{'Items' = @($list[1], $list[0], $list[3])},
-            @{'Items' = @($list[1], $list[2], $list[0])},
-            @{'Items' = @($list[1], $list[2], $list[3])},
-            @{'Items' = @($list[1], $list[3], $list[0])},
-            @{'Items' = @($list[1], $list[3], $list[2])},
-            @{'Items' = @($list[2], $list[0], $list[1])},
-            @{'Items' = @($list[2], $list[0], $list[3])},
-            @{'Items' = @($list[2], $list[1], $list[0])},
-            @{'Items' = @($list[2], $list[1], $list[3])},
-            @{'Items' = @($list[2], $list[3], $list[0])},
-            @{'Items' = @($list[2], $list[3], $list[1])},
-            @{'Items' = @($list[3], $list[0], $list[1])},
-            @{'Items' = @($list[3], $list[0], $list[2])},
-            @{'Items' = @($list[3], $list[1], $list[0])},
-            @{'Items' = @($list[3], $list[1], $list[2])},
-            @{'Items' = @($list[3], $list[2], $list[0])},
-            @{'Items' = @($list[3], $list[2], $list[1])}
-        )
-        $expectedOutputSize4 = @(
-            @{'Items' = @($list[0], $list[1], $list[2], $list[3])},
-            @{'Items' = @($list[0], $list[1], $list[3], $list[2])},
-            @{'Items' = @($list[0], $list[2], $list[1], $list[3])},
-            @{'Items' = @($list[0], $list[2], $list[3], $list[1])},
-            @{'Items' = @($list[0], $list[3], $list[1], $list[2])},
-            @{'Items' = @($list[0], $list[3], $list[2], $list[1])},
-            @{'Items' = @($list[1], $list[0], $list[2], $list[3])},
-            @{'Items' = @($list[1], $list[0], $list[3], $list[2])},
-            @{'Items' = @($list[1], $list[2], $list[0], $list[3])},
-            @{'Items' = @($list[1], $list[2], $list[3], $list[0])},
-            @{'Items' = @($list[1], $list[3], $list[0], $list[2])},
-            @{'Items' = @($list[1], $list[3], $list[2], $list[0])},
-            @{'Items' = @($list[2], $list[0], $list[1], $list[3])},
-            @{'Items' = @($list[2], $list[0], $list[3], $list[1])},
-            @{'Items' = @($list[2], $list[1], $list[0], $list[3])},
-            @{'Items' = @($list[2], $list[1], $list[3], $list[0])},
-            @{'Items' = @($list[2], $list[3], $list[0], $list[1])},
-            @{'Items' = @($list[2], $list[3], $list[1], $list[0])},
-            @{'Items' = @($list[3], $list[0], $list[1], $list[2])},
-            @{'Items' = @($list[3], $list[0], $list[2], $list[1])},
-            @{'Items' = @($list[3], $list[1], $list[0], $list[2])},
-            @{'Items' = @($list[3], $list[1], $list[2], $list[0])},
-            @{'Items' = @($list[3], $list[2], $list[0], $list[1])},
-            @{'Items' = @($list[3], $list[2], $list[1], $list[0])}
-        )
-
-        Assert-True ($outputSize_.Count -eq $expectedOutputSize4.Count)
-        Assert-True ($outputSize0.Count -eq $expectedOutputSize0.Count)
-        Assert-True ($outputSize1.Count -eq $expectedOutputSize1.Count)
-        Assert-True ($outputSize2.Count -eq $expectedOutputSize2.Count)
-        Assert-True ($outputSize3.Count -eq $expectedOutputSize3.Count)
-        Assert-True ($outputSize4.Count -eq $expectedOutputSize4.Count)
-
-        @(0) |
-            Assert-PipelineAll {param($row) $outputSize0[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize0[$row].Items.Length -eq 0} |
-            Assert-PipelineAll {param($row) Test-All @() {param($col) areEqual $outputSize0[$row].Items[$col] $expectedOutputSize0[$row].Items[$col]}} |
-            Out-Null
-
-        @(0, 1, 2, 3) |
-            Assert-PipelineAll {param($row) $outputSize1[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize1[$row].Items.Length -eq 1} |
-            Assert-PipelineAll {param($row) Test-All @(0) {param($col) areEqual $outputSize1[$row].Items[$col] $expectedOutputSize1[$row].Items[$col]}} |
-            Out-Null
-
-        @(0..11) |
-            Assert-PipelineAll {param($row) $outputSize2[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize2[$row].Items.Length -eq 2} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1) {param($col) areEqual $outputSize2[$row].Items[$col] $expectedOutputSize2[$row].Items[$col]}} |
-            Out-Null
-
-        @(0..23) |
-            Assert-PipelineAll {param($row) $outputSize3[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize3[$row].Items.Length -eq 3} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2) {param($col) areEqual $outputSize3[$row].Items[$col] $expectedOutputSize3[$row].Items[$col]}} |
-            Out-Null
-
-        @(0..23) |
-            Assert-PipelineAll {param($row) $outputSize_[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize4[$row] -isnot [System.Collections.IEnumerable]} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize4[$row].Items -is $expectedType} |
-            Assert-PipelineAll {param($row) $outputSize_[$row].Items.Length -eq 4} |
-            Assert-PipelineAll {param($row) $outputSize4[$row].Items.Length -eq 4} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2, 3) {param($col) areEqual $outputSize_[$row].Items[$col] $expectedOutputSize4[$row].Items[$col]}} |
-            Assert-PipelineAll {param($row) Test-All @(0, 1, 2, 3) {param($col) areEqual $outputSize4[$row].Items[$col] $expectedOutputSize4[$row].Items[$col]}} |
-            Out-Null
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
     }
+}
 
-    function numPermut($list, $k)
+& {
+    $testDescription = 'Group-ListItem -Permute with list of length 5 or more'
+
+    function numPermut($n, $k)
     {
-        $n = $list.Length
         if ($n -lt $k) {
             return 0
         } elseif ($k -lt 0) {
@@ -1848,16 +1887,37 @@ if ($Silent) {
         }
     }
 
-    for ($n = 5; $n -lt 7; $n++) {
-        $list = [System.Int32[]]@(1..$n)
+    foreach ($len in @(5..7)) {
+        $permute = [System.Int64[]]@(1..$len)
+        $expectedType = getEquivalentArrayType $permute
 
-        for ($k = -1; $k -le $n + 1; $k++) {
-            Group-ListItem -Permute $list -Size $k |
-                Assert-PipelineAll {param($permut) $permut -isnot [System.Collections.IEnumerable]} |
-                Assert-PipelineAll {param($permut) $permut.Items -is [System.Int32[]]} |
-                Assert-PipelineAll {param($permut) $permut.Items.Length -eq $k} |
-                Assert-PipelineCount (numPermut $list $k) |
-                Out-Null
+        foreach ($size in @(-1..$($len + 1))) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{permute = $permute; size = $size;}
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
+                $expectedPermutationCount = numPermut $len $(if (missing? $size) {$test.Data.in.permute.Count} else {$size})
+
+                Assert-Null ($test.Data.err)
+                Assert-True (eq? $expectedPermutationCount $test.Data.out.Count)
+                iota $expectedPermutationCount |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                    Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                    Assert-PipelineAll {param($row) eq? $test.Data.out[$row].Items.Count $size} |
+                    Out-Null
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
         }
     }
 }
