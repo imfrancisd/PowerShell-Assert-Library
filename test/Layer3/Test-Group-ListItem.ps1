@@ -166,6 +166,11 @@ function eqListContents?([System.Collections.IList]$a, [System.Collections.IList
 }
 function getEquivalentArrayType([System.Collections.IList]$list)
 {
+    #WARNING:
+    #This function may not work as intended on all types that implement IList.
+    #This function should work as intended on arrays and IList types defined
+    #in System.Collections and System.Collections.Generic.
+
     $type = if (Test-Null $list) {[System.Void]} else {$list.GetType()}
     if ($type.IsArray) {
         $type
@@ -186,35 +191,35 @@ function missing?([System.Object]$a)
 
 $listsWithLength0 = @(
     @(),
-    [System.String[]]@(),
+    (New-Object -TypeName 'System.Collections.ObjectModel.ReadOnlyCollection[System.String]' -ArgumentList (,[System.String[]]@())),
     [System.Int32[]]@(),
     (New-Object -TypeName 'System.Collections.ArrayList'),
     (New-Object -TypeName 'System.Collections.Generic.List[System.Double]')
 )
 $listsWithLength1 = @(
     @($null),
-    [System.String[]]@('hi'),
+    (New-Object -TypeName 'System.Collections.ObjectModel.ReadOnlyCollection[System.String]' -ArgumentList (,[System.String[]]@('hi'))),
     [System.Int32[]]@(101),
     (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('hello world'))),
     (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14)))
 )
 $listsWithLength2 = @(
     @($null, 5),
-    [System.String[]]@('hi', 'world'),
+    (New-Object -TypeName 'System.Collections.ObjectModel.ReadOnlyCollection[System.String]' -ArgumentList (,[System.String[]]@('hi', 'world'))),
     [System.Int32[]]@(101, 202),
     (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('Hello', 'World!'))),
     (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72)))
 )
 $listsWithLength3 = @(
     @($null, 5, [System.DateTime]::UtcNow),
-    [System.String[]]@('hi', 'world', '!'),
+    (New-Object -TypeName 'System.Collections.ObjectModel.ReadOnlyCollection[System.String]' -ArgumentList (,[System.String[]]@('hi', 'world', '!'))),
     [System.Int32[]]@(101, 202, 303),
     (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('Hello', $null, 'World!'))),
     (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72, 0.00)))
 )
 $listsWithLength4 = @(
     @($null, 5, [System.DateTime]::UtcNow, [System.Guid]::NewGuid()),
-    [System.String[]]@('hi', 'world', '!', ''),
+    (New-Object -TypeName 'System.Collections.ObjectModel.ReadOnlyCollection[System.String]' -ArgumentList (,[System.String[]]@('hi', 'world', '!', ''))),
     [System.Int32[]]@(101, 202, 303, 404),
     (New-Object -TypeName 'System.Collections.ArrayList' -ArgumentList @(,@('Hello', $null, 'World!', [System.String[]]@('how', 'are', 'you', 'today', '?')))),
     (New-Object -TypeName 'System.Collections.Generic.List[System.Double]' -ArgumentList @(,[System.Double[]]@(3.14, 2.72, 0.00, [System.Double]::Epsilon)))
@@ -598,11 +603,12 @@ $listsWithLength4 = @(
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{pair = $listsWithLength2[$i]}
-            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
-            $test.Data.out = $out
 
             $expectedType = getEquivalentArrayType $test.Data.in.pair
             $expectedPairs = @(,$test.Data.in.pair)
+
+            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
             Assert-True (eq? $expectedPairs.Count $test.Data.out.Count)
@@ -632,14 +638,15 @@ $listsWithLength4 = @(
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{pair = $listsWithLength3[$i]}
-            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
-            $test.Data.out = $out
 
             $expectedType = getEquivalentArrayType $test.Data.in.pair
             $expectedPairs = @(
                 $test.Data.in.pair[0..1],
                 $test.Data.in.pair[1..2]
             )
+
+            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
             Assert-True (eq? $expectedPairs.Count $test.Data.out.Count)
@@ -669,8 +676,6 @@ $listsWithLength4 = @(
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{pair = $listsWithLength4[$i]}
-            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
-            $test.Data.out = $out
 
             $expectedType = getEquivalentArrayType $test.Data.in.pair
             $expectedPairs = @(
@@ -678,6 +683,9 @@ $listsWithLength4 = @(
                 $test.Data.in.pair[1..2],
                 $test.Data.in.pair[2..3]
             )
+
+            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
             Assert-True (eq? $expectedPairs.Count $test.Data.out.Count)
@@ -707,11 +715,12 @@ $listsWithLength4 = @(
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{pair = [System.Int64[]]@(1..$len)}
-            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
-            $test.Data.out = $out
 
             $expectedType = getEquivalentArrayType $test.Data.in.pair
-            $expectedPairs = @(iota ($len - 1) | ForEach-Object {,$test.Data.in.pair[$_ .. $($_ + 1)]})
+            $expectedPairs = @(iota ($len - 1) | ForEach-Object {,$test.Data.in.pair[@(iota 2 -start $_)]})
+
+            $test.Data.err = try {Group-ListItem -Pair $test.Data.in.pair -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
             Assert-True (eq? $expectedPairs.Count $test.Data.out.Count)
@@ -736,6 +745,7 @@ $listsWithLength4 = @(
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{window = $null; size = $size;}
+
             if (missing? $size) {
                 $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
                 $test.Data.out = $out
@@ -768,13 +778,6 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{window = $window; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if (missing? $size) {
                     $expectedWindows = @(,$test.Data.in.window)
@@ -784,6 +787,14 @@ $listsWithLength4 = @(
                     $expectedWindows = @(,@())
                 } else {
                     $expectedWindows = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -819,24 +830,23 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{window = $window; size = $size;}
+
+                if ((missing? $size) -or ($size -eq 1)) {
+                    $expectedWindows = @(,$test.Data.in.window)
+                } elseif ($size -lt 0) {
+                    $expectedWindows = @()
+                } elseif ($size -eq 0) {
+                    $expectedWindows = @(,@())
+                } else {
+                    $expectedWindows = @()
+                }
+
                 if (missing? $size) {
                     $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
                     $test.Data.out = $out
                 } else {
                     $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
                     $test.Data.out = $out
-                }
-
-                if (missing? $size) {
-                    $expectedWindows = @(,$test.Data.in.window)
-                } elseif ($size -lt 0) {
-                    $expectedWindows = @()
-                } elseif ($size -eq 0) {
-                    $expectedWindows = @(,@())
-                } elseif ($size -eq 1) {
-                    $expectedWindows = @(,$test.Data.in.window)
-                } else {
-                    $expectedWindows = @()
                 }
 
                 Assert-Null ($test.Data.err)
@@ -872,15 +882,8 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{window = $window; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
-                if (missing? $size) {
+                if ((missing? $size) -or ($size -eq 2)) {
                     $expectedWindows = @(,$test.Data.in.window)
                 } elseif ($size -lt 0) {
                     $expectedWindows = @()
@@ -891,10 +894,16 @@ $listsWithLength4 = @(
                         $test.Data.in.window[0..0],
                         $test.Data.in.window[1..1]
                     )
-                } elseif ($size -eq 2) {
-                    $expectedWindows = @(,$test.Data.in.window)
                 } else {
                     $expectedWindows = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -930,15 +939,8 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{window = $window; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
-                if (missing? $size) {
+                if ((missing? $size) -or ($size -eq 3)) {
                     $expectedWindows = @(,$test.Data.in.window)
                 } elseif ($size -lt 0) {
                     $expectedWindows = @()
@@ -955,10 +957,16 @@ $listsWithLength4 = @(
                         $test.Data.in.window[0..1],
                         $test.Data.in.window[1..2]
                     )
-                } elseif ($size -eq 3) {
-                    $expectedWindows = @(,$test.Data.in.window)
                 } else {
                     $expectedWindows = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -994,15 +1002,8 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{window = $window; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
-                if (missing? $size) {
+                if ((missing? $size) -or ($size -eq 4)) {
                     $expectedWindows = @(,$test.Data.in.window)
                 } elseif ($size -lt 0) {
                     $expectedWindows = @()
@@ -1026,10 +1027,16 @@ $listsWithLength4 = @(
                         $test.Data.in.window[0..2],
                         $test.Data.in.window[1..3]
                     )
-                } elseif ($size -eq 4) {
-                    $expectedWindows = @(,$test.Data.in.window)
                 } else {
                     $expectedWindows = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -1059,19 +1066,12 @@ $listsWithLength4 = @(
         $window = [System.Int64[]]@(1..$len)
         $expectedType = getEquivalentArrayType $window
 
-        foreach ($size in @(-1..$($len + 1))) {
+        foreach ($size in @(-1..$($len + 1)) + @([System.Reflection.Missing]::Value)) {
             $test = newTestLogEntry $testDescription
             $pass = $false
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{window = $window; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if (missing? $size) {
                     $expectedWindows = @(,$test.Data.in.window)
@@ -1081,6 +1081,14 @@ $listsWithLength4 = @(
                     $expectedWindows = @(,@())
                 } else {
                     $expectedWindows = @(iota ($len - $size + 1) | ForEach-Object {,$test.Data.in.window[@(iota $size -start $_)]})
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Window $test.Data.in.window -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -1107,6 +1115,7 @@ $listsWithLength4 = @(
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{combine = $null; size = $size;}
+
             if (missing? $size) {
                 $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
                 $test.Data.out = $out
@@ -1139,13 +1148,6 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{combine = $combine; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if (missing? $size) {
                     $expectedCombinations = @(,$test.Data.in.combine)
@@ -1155,6 +1157,14 @@ $listsWithLength4 = @(
                     $expectedCombinations = @(,@())
                 } else {
                     $expectedCombinations = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -1190,13 +1200,6 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{combine = $combine; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if ((missing? $size) -or ($size -eq 1)) {
                     $expectedCombinations = @(,$test.Data.in.combine)
@@ -1206,6 +1209,14 @@ $listsWithLength4 = @(
                     $expectedCombinations = @(,@())
                 } else {
                     $expectedCombinations = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -1241,13 +1252,6 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{combine = $combine; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if ((missing? $size) -or ($size -eq 2)) {
                     $expectedCombinations = @(,$test.Data.in.combine)
@@ -1262,6 +1266,14 @@ $listsWithLength4 = @(
                     )
                 } else {
                     $expectedCombinations = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -1297,13 +1309,6 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{combine = $combine; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if ((missing? $size) -or ($size -eq 3)) {
                     $expectedCombinations = @(,$test.Data.in.combine)
@@ -1325,6 +1330,14 @@ $listsWithLength4 = @(
                     )
                 } else {
                     $expectedCombinations = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -1360,13 +1373,6 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{combine = $combine; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if ((missing? $size) -or ($size -eq 4)) {
                     $expectedCombinations = @(,$test.Data.in.combine)
@@ -1399,6 +1405,14 @@ $listsWithLength4 = @(
                     )
                 } else {
                     $expectedCombinations = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -1447,28 +1461,33 @@ $listsWithLength4 = @(
         $combine = [System.Int64[]]@(1..$len)
         $expectedType = getEquivalentArrayType $combine
 
-        foreach ($size in @(-1..$($len + 1))) {
+        foreach ($size in @(-1..$($len + 1)) + @([System.Reflection.Missing]::Value)) {
             $test = newTestLogEntry $testDescription
             $pass = $false
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{combine = $combine; size = $size;}
+
                 if (missing? $size) {
+                    $expectedCombinationSize = $test.Data.in.combine.Count
+                    $expectedCombinationCount = numCombin $len $expectedCombinationSize
+
                     $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -OutVariable out | Out-Null} catch {$_}
                     $test.Data.out = $out
                 } else {
+                    $expectedCombinationSize = $size
+                    $expectedCombinationCount = numCombin $len $expectedCombinationSize
+
                     $test.Data.err = try {Group-ListItem -Combine $test.Data.in.combine -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
                     $test.Data.out = $out
                 }
-
-                $expectedCombinationCount = numCombin $len $(if (missing? $size) {$test.Data.in.combine.Count} else {$size})
 
                 Assert-Null ($test.Data.err)
                 Assert-True (eq? $expectedCombinationCount $test.Data.out.Count)
                 iota $expectedCombinationCount |
                     Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
                     Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
-                    Assert-PipelineAll {param($row) eq? $test.Data.out[$row].Items.Count $size} |
+                    Assert-PipelineAll {param($row) eq? $test.Data.out[$row].Items.Count $expectedCombinationSize} |
                     Out-Null
 
                 $pass = $true
@@ -1487,6 +1506,7 @@ $listsWithLength4 = @(
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{permute = $null; size = $size;}
+
             if (missing? $size) {
                 $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
                 $test.Data.out = $out
@@ -1519,13 +1539,6 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{permute = $permute; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if (missing? $size) {
                     $expectedPermutations = @(,$test.Data.in.permute)
@@ -1535,6 +1548,14 @@ $listsWithLength4 = @(
                     $expectedPermutations = @(,@())
                 } else {
                     $expectedPermutations = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -1570,13 +1591,6 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{permute = $permute; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if ((missing? $size) -or ($size -eq 1)) {
                     $expectedPermutations = @(,$test.Data.in.permute)
@@ -1586,6 +1600,14 @@ $listsWithLength4 = @(
                     $expectedPermutations = @(,@())
                 } else {
                     $expectedPermutations = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -1621,13 +1643,6 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{permute = $permute; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if ((missing? $size) -or ($size -eq 2)) {
                     $expectedPermutations = @(
@@ -1645,6 +1660,14 @@ $listsWithLength4 = @(
                     )
                 } else {
                     $expectedPermutations = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -1680,13 +1703,6 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{permute = $permute; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if ((missing? $size) -or ($size -eq 3)) {
                     $expectedPermutations = @(
@@ -1718,6 +1734,14 @@ $listsWithLength4 = @(
                     )
                 } else {
                     $expectedPermutations = @()
+                }
+
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
                 }
 
                 Assert-Null ($test.Data.err)
@@ -1753,13 +1777,6 @@ $listsWithLength4 = @(
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{permute = $permute; size = $size;}
-                if (missing? $size) {
-                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                } else {
-                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
-                    $test.Data.out = $out
-                }
 
                 if ((missing? $size) -or ($size -eq 4)) {
                     $expectedPermutations = @(
@@ -1845,6 +1862,14 @@ $listsWithLength4 = @(
                     $expectedPermutations = @()
                 }
 
+                if (missing? $size) {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                } else {
+                    $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
+                    $test.Data.out = $out
+                }
+
                 Assert-Null ($test.Data.err)
                 Assert-True (eq? $expectedPermutations.Count $test.Data.out.Count)
                 iota $expectedPermutations.Count |
@@ -1891,28 +1916,33 @@ $listsWithLength4 = @(
         $permute = [System.Int64[]]@(1..$len)
         $expectedType = getEquivalentArrayType $permute
 
-        foreach ($size in @(-1..$($len + 1))) {
+        foreach ($size in @(-1..$($len + 1)) + @([System.Reflection.Missing]::Value)) {
             $test = newTestLogEntry $testDescription
             $pass = $false
             try {
                 $test.Data.out = $out = @()
                 $test.Data.in  = @{permute = $permute; size = $size;}
+
                 if (missing? $size) {
+                    $expectedPermutationSize = $test.Data.in.permute.Count
+                    $expectedPermutationCount = numPermut $len $expectedPermutationSize
+
                     $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -OutVariable out | Out-Null} catch {$_}
                     $test.Data.out = $out
                 } else {
+                    $expectedPermutationSize = $size
+                    $expectedPermutationCount = numPermut $len $expectedPermutationSize
+
                     $test.Data.err = try {Group-ListItem -Permute $test.Data.in.permute -Size $test.Data.in.size -OutVariable out | Out-Null} catch {$_}
                     $test.Data.out = $out
                 }
-
-                $expectedPermutationCount = numPermut $len $(if (missing? $size) {$test.Data.in.permute.Count} else {$size})
 
                 Assert-Null ($test.Data.err)
                 Assert-True (eq? $expectedPermutationCount $test.Data.out.Count)
                 iota $expectedPermutationCount |
                     Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
                     Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
-                    Assert-PipelineAll {param($row) eq? $test.Data.out[$row].Items.Count $size} |
+                    Assert-PipelineAll {param($row) eq? $test.Data.out[$row].Items.Count $expectedPermutationSize} |
                     Out-Null
 
                 $pass = $true
