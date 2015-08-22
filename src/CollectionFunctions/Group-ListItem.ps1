@@ -3,6 +3,16 @@ function Group-ListItem
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'RotateLeft')]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $RotateLeft,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'RotateRight')]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $RotateRight,
+
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'Pair')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
@@ -55,8 +65,9 @@ function Group-ListItem
     #NOTE about [ValidateNotNull()]
     #
     #The ValidateNotNull() attribute validates that a list and its contents are not $null.
-    #The -Combine, -Permute, -Pair, and -Window parameters NOT having this attribute and
-    #-CartesianProduct, -CoveringArray and -Zip having this attribute, is intentional.
+    #The -RotateLeft, -RotateRight, -Combine, -Permute, -Pair, and -Window parameters
+    #NOT having this attribute
+    #and -CartesianProduct, -CoveringArray and -Zip having this attribute, is intentional.
     #
     #Mandatory = $true will make sure -Combine, -Permute, -Pair, and -Window are not $null.
 
@@ -64,6 +75,14 @@ function Group-ListItem
     $PSBoundParameters['ErrorAction'] = $ErrorActionPreference
 
     switch ($PSCmdlet.ParameterSetName) {
+        'RotateLeft' {
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemRotateLeft @PSBoundParameters
+            return
+        }
+        'RotateRight' {
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemRotateRight @PSBoundParameters
+            return
+        }
         'Pair' {
             & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPair @PSBoundParameters
             return
