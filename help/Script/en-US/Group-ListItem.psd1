@@ -6,8 +6,9 @@ Generates groups of items from lists that can be used to create test input data,
 
 Here are the names of the list processing functions:
 
+    Pair, Window,
     RotateLeft, RotateRight,
-    Pair, Window, Combine, Permute,
+    Combine, Permute,
     CartesianProduct, CoveringArray, and Zip.
 
 With these functions, many tasks that would require nested loops can be simplified to a single loop or a single pipeline. Here is an example of testing multiple scripts using different PowerShell configurations.
@@ -25,6 +26,29 @@ With these functions, many tasks that would require nested loops can be simplifi
     }
 
 This kind of task typically requires nested loops (one loop for each parameter), but this example uses Group-ListItem -CartesianProduct to generate the parameter values for powershell.exe.
+.Parameter Pair
+Groups adjacent items inside a list.
+Each group has two items.
+
+Note:
+This function does not return any groups if:
+    *the length of the list is less than 2.
+
+The input list is never modified by this function.
+.Parameter Window
+Groups adjacent items inside a list.
+The number of items in each group is specified with the -Size parameter.
+If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
+
+Note:
+This function does not return any groups if:
+    *the value of the -Size parameter is less than 0
+    *the value of the -Size parameter is greater than the length of the list.
+
+This function will return 1 group with 0 items if:
+    *the value of the -Size parameter is 0.
+
+The input list is never modified by this function.
 .Parameter RotateLeft
 Groups items in a list by rotating them to the left until they return to their original position.
 
@@ -63,29 +87,6 @@ This function will return 1 group with 0 items if:
     *the length of the list is 0.
 
 The input list is never modified by this function.
-.Parameter Pair
-Groups adjacent items inside a list.
-Each group has two items.
-
-Note:
-This function does not return any groups if:
-    *the length of the list is less than 2.
-
-The input list is never modified by this function.
-.Parameter Window
-Groups adjacent items inside a list.
-The number of items in each group is specified with the -Size parameter.
-If the -Size parameter is not specified, the number of items in each group is the same as the length of the list.
-
-Note:
-This function does not return any groups if:
-    *the value of the -Size parameter is less than 0
-    *the value of the -Size parameter is greater than the length of the list.
-
-This function will return 1 group with 0 items if:
-    *the value of the -Size parameter is 0.
-
-The input list is never modified by this function.
 .Parameter Combine
 Groups items inside a list into combinations.
 The number of items in each group is specified with the -Size parameter.
@@ -114,8 +115,18 @@ This function will return 1 group with 0 items if:
     *the value of the -Size parameter is 0.
 
 The input list is never modified by this function.
-.Parameter Size
-The number of items per group for combinations, permutations, and windows.
+.Parameter CartesianProduct
+Groups items from 0 or more lists into cartesian products.
+Each group has the same number of items as the number of lists specified.
+
+Note:
+This function does not return any groups if:
+    *no lists are specified
+    *any of the specified lists are empty.
+
+The lists do not need to have the same number of items.
+
+The lists (and the list that contains them) are never modified by this function.
 .Parameter CoveringArray
 Groups items from 0 or more lists into a filtered output of cartesian product for t-way testing.
 Each group has the same number of items as the number of lists specified.
@@ -152,6 +163,20 @@ See nist.gov for more details about covering arrays:
     NIST Covering Array Tables - What is a covering array?
     http://math.nist.gov/coveringarrays/coveringarray.html
 =======================================================================
+.Parameter Zip
+Groups items from 0 or more lists that have the same index.
+Each group has the same number of items as the number of lists specified.
+
+Note:
+This function does not return any groups if:
+    *no lists are specified
+    *any of the specified lists are empty.
+
+If the lists do not have the same number of items, the number of groups in the output is equal to the number of items in the list with the fewest items.
+
+The lists (and the list that contains them) are never modified by this function.
+.Parameter Size
+The number of items per group for combinations, permutations, and windows.
 .Parameter Strength
 The strength of the covering array.
 
@@ -212,30 +237,6 @@ See nist.gov for more details about covering arrays:
     NIST Covering Array Tables - What is a covering array?
     http://math.nist.gov/coveringarrays/coveringarray.html
 =======================================================================
-.Parameter CartesianProduct
-Groups items from 0 or more lists into cartesian products.
-Each group has the same number of items as the number of lists specified.
-
-Note:
-This function does not return any groups if:
-    *no lists are specified
-    *any of the specified lists are empty.
-
-The lists do not need to have the same number of items.
-
-The lists (and the list that contains them) are never modified by this function.
-.Parameter Zip
-Groups items from 0 or more lists that have the same index.
-Each group has the same number of items as the number of lists specified.
-
-Note:
-This function does not return any groups if:
-    *no lists are specified
-    *any of the specified lists are empty.
-
-If the lists do not have the same number of items, the number of groups in the output is equal to the number of items in the list with the fewest items.
-
-The lists (and the list that contains them) are never modified by this function.
 .Example
 group-listItem -pair @(10, 20, 30, 40, 50)
 Outputs the following arrays:
@@ -247,7 +248,7 @@ Outputs the following arrays:
     {30, 40}
     {40, 50}
 .Example
-group-listItem -pair $numbers | foreach-object {$a, $b = $_.Items; assert-true ($a -le $b)}
+group-listItem -pair $numbers | assert-pipelineall {param($pair) $a, $b = $pair.Items; $a -le $b} | out-null
 Asserts that the items in $numbers are sorted in ascending order using the PowerShell -le operator for comparisons.
 
 If $numbers were defined as
@@ -272,7 +273,7 @@ Outputs the following arrays:
     {5, 8, 13}
     {8, 13, 21}
 .Example
-group-listItem -window $numbers -size 3 | foreach-object {$a, $b, $c = $_.Items; assert-true (($a + $b) -eq $c)}
+group-listItem -window $numbers -size 3 | assert-pipelineall {param($window) $a, $b, $c = $window.Items; ($a + $b) -eq $c} | out-null
 Asserts that the numbers in the sequence is the sum of the two previous numbers in the sequence (Fibonacci sequence) using the PowerShell -eq operator for comparisons.
 
 If $numbers were defined as
@@ -286,6 +287,35 @@ then the example is equivalent to
     assert-true ((3 + 5) -eq 8)
     assert-true ((5 + 8) -eq 13)
     assert-true ((8 + 13) -eq 21)
+.Example
+group-listItem -rotateLeft @('a', 'b', 'c', $null)
+Outputs the following arrays:
+
+    Items
+    -----
+    {a, b, c, $null}
+    {b, c, $null, a}
+    {c, $null, a, b}
+    {$null, a, b, c}
+
+See also the -RotateRight parameter.
+.Example
+group-listItem -rotateLeft $strings | assert-pipelineall {param($rotations) (sortedJoin $rotations.Items) -eq 'abc'} | out-null
+Asserts that the result of "sortedJoin" will be equal to "abc", regardless of the order items in $strings, using the PowerShell -eq operator for comparisons.
+
+If $strings and sortedJoin were defined as
+
+    $strings = @('a', 'b', 'c', $null)
+    function sortedJoin($list) {return ($list | sort-object) -join ''}
+
+then the example is equivalent to
+
+    assert-true ((sortedJoin @('a', 'b', 'c', $null)) -eq 'abc')
+    assert-true ((sortedJoin @('b', 'c', $null, 'a')) -eq 'abc')
+    assert-true ((sortedJoin @('c', $null, 'a', 'b')) -eq 'abc')
+    assert-true ((sortedJoin @($null, 'a', 'b', 'c')) -eq 'abc')
+
+See also the -RotateRight parameter.
 .Example
 group-listItem -combine @('a', 'b', 'c', 'd', 'e') -size 3
 Outputs the following arrays:
@@ -303,7 +333,7 @@ Outputs the following arrays:
     {b, d, e}
     {c, d, e}
 .Example
-group-listItem -combine $words -size 3 | foreach-object {assert-true (($_.items -join ' ').length -lt 10)}
+group-listItem -combine $words -size 3 | assert-pipelineall {param($combinations) ($combinations.Items -join ' ').length -lt 10} | out-null
 Asserts that if any 3 items from $words are joined, the length of the string is less than 10, using the PowerShell -lt operator for comparisons.
 
 If $words were defined as
@@ -335,7 +365,7 @@ Outputs the following arrays:
     {30, 10, 20}
     {30, 20, 10}
 .Example
-group-listItem -permute $numbers | foreach-object {assert-true ((add $_.items) -eq 60)}
+group-listItem -permute $numbers | assert-pipelineall {param($permutations) (add $permutations.Items) -eq 60} | out-null
 Asserts that the result of "add" will be equal to 60, regardless of the order of the items in $numbers, using the PowerShell -eq operator for comparisons.
 
 If $numbers and add were defined as
@@ -351,35 +381,6 @@ then the example is equivalent to
     assert-true ((add @(20, 30, 10)) -eq 60)
     assert-true ((add @(30, 10, 20)) -eq 60)
     assert-true ((add @(30, 20, 10)) -eq 60)
-.Example
-group-listItem -rotateLeft @('a', 'b', 'c', $null)
-Outputs the following arrays:
-
-    Items
-    -----
-    {a, b, c, $null}
-    {b, c, $null, a}
-    {c, $null, a, b}
-    {$null, a, b, c}
-
-See also the -RotateRight parameter.
-.Example
-group-listItem -rotateLeft $strings | foreach-object {assert-true ((sortedJoin $_.items) -eq 'abc')}
-Asserts that the result of "sortedJoin" will be equal to "abc", regardless of the order items in $strings, using the PowerShell -eq operator for comparisons.
-
-If $strings and sortedJoin were defined as
-
-    $strings = @('a', 'b', 'c', $null)
-    function sortedJoin($list) {return ($list | sort-object) -join ''}
-
-then the example is equivalent to
-
-    assert-true ((sortedJoin @('a', 'b', 'c', $null)) -eq 'abc')
-    assert-true ((sortedJoin @('b', 'c', $null, 'a')) -eq 'abc')
-    assert-true ((sortedJoin @('c', $null, 'a', 'b')) -eq 'abc')
-    assert-true ((sortedJoin @($null, 'a', 'b', 'c')) -eq 'abc')
-
-See also the -RotateRight parameter.
 .Example
 group-listItem -cartesianProduct @(0), @(-2, -1, 0, 1, 2), @('stop', 'silentlycontinue')
 Outputs the following arrays:
@@ -397,7 +398,7 @@ Outputs the following arrays:
     {0, 2, stop}
     {0, 2, silentlycontinue}
 .Example
-group-listItem -cartesianProduct @(0), $numbers, $ea | foreach-object {$a, $b, $c = $_.Items; assert-true ((add $a $b -erroraction $c) -eq $b)}
+group-listItem -cartesianProduct @(0), $numbers, $ea | assert-pipelineall {param($cProduct) $a, $b, $c = $cProduct.Items; (add $a $b -erroraction $c) -eq $b} | out-null
 Asserts that the result of (add 0 $number) is equal to $number, using the PowerShell -eq operator for comparisons.
 
 If $numbers, $ea, and add were defined as
@@ -437,7 +438,7 @@ Notice the following:
 
 See the -Strength parameter for more details.
 .Example
-group-listItem -coveringArray $aList, $bList, $cList -strength 1 | foreach-object {$a, $b, $c = $_.Items; assert-notnull (f $a $b $c)}
+group-listItem -coveringArray $aList, $bList, $cList -strength 1 | assert-pipelineall {param($cArray) $a, $b, $c = $cArray.Items; $null -ne (f $a $b $c)} | out-null
 Asserts that the result of (f $a $b $c) is never $null, using the covering array of strength 1 generated from the lists.
 
 If $aList, $bList, $cList, and f were defined as
@@ -449,13 +450,11 @@ If $aList, $bList, $cList, and f were defined as
 
 then the example is equivalent to
 
-    assert-notnull (f 'a1' 'b1' 'c1')
-    assert-notnull (f 'a2' 'b2' 'c2')
-    assert-notnull (f 'a3' 'b3' 'c1')
-    assert-notnull (f 'a1' 'b4' 'c2')
-    assert-notnull (f 'a2' 'b5' 'c1')
-
-
+    assert-true ($null -ne (f 'a1' 'b1' 'c1'))
+    assert-true ($null -ne (f 'a2' 'b2' 'c2'))
+    assert-true ($null -ne (f 'a3' 'b3' 'c1'))
+    assert-true ($null -ne (f 'a1' 'b4' 'c2'))
+    assert-true ($null -ne (f 'a2' 'b5' 'c1'))
 .Example
 group-listItem -zip @('a', 'b', 'c'), @(1, 2, 3, 4, 5)
 Outputs the following arrays:
@@ -471,7 +470,7 @@ Zip takes 0 or more lists, and the list with the fewest items determines the num
 
 In this example, the list with the fewest items (@('a', 'b', 'c')) only has 3 items, so zip outputs 3 arrays.
 .Example
-group-listItem -zip $aList, $bList | foreach-object {$a, $b = $_.Items; assert-true ($a -eq $b)}
+group-listItem -zip $aList, $bList | assert-pipelineall {param($zipped) $a, $b = $zipped.Items; $a -eq $b} | out-null
 Asserts that the first items in $aList are equal to the first items in $bList using the PowerShell -eq operator for comparisons.
 
 If $aList and $bList were defined as
@@ -486,11 +485,6 @@ then the example is equivalent to
     assert-true (3 -eq 3)
     assert-true (4 -eq 4)
     assert-true (5 -eq 5)
-
-Assert that two lists are equal
--------------------------------
-assert-true ($aList.count -eq $bList.count)
-group-listItem -zip $aList, $bList | foreach-object {$a, $b = $_.Items; assert-true ($a -eq $b)}
 .Inputs
 None
 
@@ -499,6 +493,10 @@ This function does not accept input from the pipeline.
 System.Management.Automation.PSCustomObject
 
 The PSCustomObject has a property called 'Items' which will always be an array.
+
+None of the input lists are ever used as the 'Items' property in any of the outputs.
+
+None of the outputs will ever have an 'Items' property that is referentially equal to another 'Items' property from another output.
 
 The array in the 'Items' property has a type of [System.Object[]] by default. However, the 'Items' property may be constrained with a specific type, such as [System.Int32[]], if the list input to -RotateLeft, -RotateRight, -Pair, -Window, -Combine, or -Permute is constrained to a specific type, or if the list inputs to -CartesianProduct or -Zip are constrained to the same specific type.
 .Notes
@@ -520,4 +518,28 @@ If you want the output to be a list of lists, then I suggest you create wrapper 
     }
 
 Note that using nested lists in the PowerShell pipeline will cause subtle bugs, so these wrapper functions should never be used in a pipeline and their implementations should never use the pipeline.
+.Link
+Test-True
+.Link
+Test-All
+.Link
+Test-Exists
+.Link
+Test-NotExists
+.Link
+Assert-True
+.Link
+Assert-All
+.Link
+Assert-Exists
+.Link
+Assert-NotExists
+.Link
+Assert-PipelineAll
+.Link
+Assert-PipelineExists
+.Link
+Assert-PipelineNotExists
+.Link
+Assert-PipelineCount
 #>

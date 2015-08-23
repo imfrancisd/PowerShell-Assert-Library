@@ -3,16 +3,6 @@ function Group-ListItem
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param(
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'RotateLeft')]
-        [AllowEmptyCollection()]
-        [System.Collections.IList]
-        $RotateLeft,
-
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'RotateRight')]
-        [AllowEmptyCollection()]
-        [System.Collections.IList]
-        $RotateRight,
-
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'Pair')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
@@ -22,6 +12,16 @@ function Group-ListItem
         [AllowEmptyCollection()]
         [System.Collections.IList]
         $Window,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'RotateLeft')]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $RotateLeft,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'RotateRight')]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $RotateRight,
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'Combine')]
         [AllowEmptyCollection()]
@@ -33,11 +33,11 @@ function Group-ListItem
         [System.Collections.IList]
         $Permute,
 
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Combine')]
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Permute')]
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Window')]
-        [System.Int32]
-        $Size,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'CartesianProduct')]
+        [AllowEmptyCollection()]
+        [ValidateNotNull()]
+        [System.Collections.IList[]]
+        $CartesianProduct,
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'CoveringArray')]
         [AllowEmptyCollection()]
@@ -45,21 +45,21 @@ function Group-ListItem
         [System.Collections.IList[]]
         $CoveringArray,
 
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'CoveringArray')]
-        [System.Int32]
-        $Strength,
-
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'CartesianProduct')]
-        [AllowEmptyCollection()]
-        [ValidateNotNull()]
-        [System.Collections.IList[]]
-        $CartesianProduct,
-
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'Zip')]
         [AllowEmptyCollection()]
         [ValidateNotNull()]
         [System.Collections.IList[]]
-        $Zip
+        $Zip,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Combine')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Permute')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Window')]
+        [System.Int32]
+        $Size,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'CoveringArray')]
+        [System.Int32]
+        $Strength
     )
 
     #NOTE about [ValidateNotNull()]
