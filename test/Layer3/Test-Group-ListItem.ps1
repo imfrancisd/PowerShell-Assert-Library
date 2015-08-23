@@ -182,7 +182,7 @@ function getEquivalentArrayType([System.Collections.IList]$list)
 }
 function iota([System.Int32]$count = 0, $start = 0, $step = 1)
 {
-    for (; $count -gt 0; $count--) {$start; $start+=$step}
+    for (; $count -gt 0; $count--) {,$start; $start+=$step}
 }
 function missing?([System.Object]$a)
 {
@@ -321,6 +321,70 @@ $listsWithLength4 = @(
         Assert-False ($sizeParam.ValueFromRemainingArguments)
         Assert-True (0 -gt $sizeParam.Position)
         Assert-True (0 -eq $sizeParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Group-ListItem'; paramSet = 'RotateLeft'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
+
+        $rotateLeftParam = $paramSet.Parameters |
+            Where-Object {'RotateLeft'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $rotateLeftParam
+
+        Assert-True ($rotateLeftParam.IsMandatory)
+        Assert-True ($rotateLeftParam.ParameterType -eq [System.Collections.IList])
+        Assert-False ($rotateLeftParam.ValueFromPipeline)
+        Assert-False ($rotateLeftParam.ValueFromPipelineByPropertyName)
+        Assert-False ($rotateLeftParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $rotateLeftParam.Position)
+        Assert-True (0 -eq $rotateLeftParam.Aliases.Count)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Group-ListItem'; paramSet = 'RotateRight'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
+
+        $rotateRightParam = $paramSet.Parameters |
+            Where-Object {'RotateRight'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $rotateRightParam
+
+        Assert-True ($rotateRightParam.IsMandatory)
+        Assert-True ($rotateRightParam.ParameterType -eq [System.Collections.IList])
+        Assert-False ($rotateRightParam.ValueFromPipeline)
+        Assert-False ($rotateRightParam.ValueFromPipelineByPropertyName)
+        Assert-False ($rotateRightParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $rotateRightParam.Position)
+        Assert-True (0 -eq $rotateRightParam.Aliases.Count)
 
         $pass = $true
     }
@@ -1103,6 +1167,478 @@ $listsWithLength4 = @(
             }
             finally {commitTestLogEntry $test $pass}
         }
+    }
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem -RotateLeft with null list'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{rotateLeft = $null}
+        $test.Data.err = try {Group-ListItem -RotateLeft $test.Data.in.rotateLeft -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.err.Exception.ParameterName.Equals('RotateLeft', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out.Count -eq 0)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateLeft with list of length 0'
+
+    for ($i = 0; $i -lt $listsWithLength0.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateLeft = $listsWithLength0[$i]}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateLeft
+            $expectedRotations = @(,$test.Data.in.rotateLeft)
+
+            $test.Data.err = try {Group-ListItem -RotateLeft $test.Data.in.rotateLeft -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateLeft with list of length 1'
+
+    for ($i = 0; $i -lt $listsWithLength1.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateLeft = $listsWithLength1[$i]}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateLeft
+            $expectedRotations = @(,$test.Data.in.rotateLeft)
+
+            $test.Data.err = try {Group-ListItem -RotateLeft $test.Data.in.rotateLeft -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateLeft with list of length 2'
+
+    for ($i = 0; $i -lt $listsWithLength2.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateLeft = $listsWithLength2[$i]}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateLeft
+            $expectedRotations = @(
+                $test.Data.in.rotateLeft[0, 1],
+                $test.Data.in.rotateLeft[1, 0]
+            )
+
+            $test.Data.err = try {Group-ListItem -RotateLeft $test.Data.in.rotateLeft -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateLeft with list of length 3'
+
+    for ($i = 0; $i -lt $listsWithLength3.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateLeft = $listsWithLength3[$i]}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateLeft
+            $expectedRotations = @(
+                $test.Data.in.rotateLeft[0, 1, 2],
+                $test.Data.in.rotateLeft[1, 2, 0],
+                $test.Data.in.rotateLeft[2, 0, 1]
+            )
+
+            $test.Data.err = try {Group-ListItem -RotateLeft $test.Data.in.rotateLeft -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateLeft with list of length 4'
+
+    for ($i = 0; $i -lt $listsWithLength4.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateLeft = $listsWithLength4[$i]}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateLeft
+            $expectedRotations = @(
+                $test.Data.in.rotateLeft[0, 1, 2, 3],
+                $test.Data.in.rotateLeft[1, 2, 3, 0],
+                $test.Data.in.rotateLeft[2, 3, 0, 1],
+                $test.Data.in.rotateLeft[3, 0, 1, 2]
+            )
+
+            $test.Data.err = try {Group-ListItem -RotateLeft $test.Data.in.rotateLeft -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateLeft with list of length 5 or more'
+
+    foreach ($len in @(5..9)) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateLeft = [System.Int64[]]@(1..$len)}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateLeft
+            $expectedRotations = @(iota $len | ForEach-Object {,$test.Data.in.rotateLeft[@(iota $len -start $_ | ForEach-Object {$_ % $len})]})
+
+            $test.Data.err = try {Group-ListItem -RotateLeft $test.Data.in.rotateLeft -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+}
+
+& {
+    $test = newTestLogEntry 'Group-ListItem -RotateRight with null list'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
+        $test.Data.in  = @{rotateRight = $null}
+        $test.Data.err = try {Group-ListItem -RotateRight $test.Data.in.rotateRight -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Group-ListItem', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.err.Exception.ParameterName.Equals('RotateRight', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out.Count -eq 0)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateRight with list of length 0'
+
+    for ($i = 0; $i -lt $listsWithLength0.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateRight = $listsWithLength0[$i]}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateRight
+            $expectedRotations = @(,$test.Data.in.rotateRight)
+
+            $test.Data.err = try {Group-ListItem -RotateRight $test.Data.in.rotateRight -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateRight with list of length 1'
+
+    for ($i = 0; $i -lt $listsWithLength1.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateRight = $listsWithLength1[$i]}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateRight
+            $expectedRotations = @(,$test.Data.in.rotateRight)
+
+            $test.Data.err = try {Group-ListItem -RotateRight $test.Data.in.rotateRight -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateRight with list of length 2'
+
+    for ($i = 0; $i -lt $listsWithLength2.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateRight = $listsWithLength2[$i]}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateRight
+            $expectedRotations = @(
+                $test.Data.in.rotateRight[0, 1],
+                $test.Data.in.rotateRight[1, 0]
+            )
+
+            $test.Data.err = try {Group-ListItem -RotateRight $test.Data.in.rotateRight -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateRight with list of length 3'
+
+    for ($i = 0; $i -lt $listsWithLength3.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateRight = $listsWithLength3[$i]}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateRight
+            $expectedRotations = @(
+                $test.Data.in.rotateRight[0, 1, 2],
+                $test.Data.in.rotateRight[2, 0, 1],
+                $test.Data.in.rotateRight[1, 2, 0]
+            )
+
+            $test.Data.err = try {Group-ListItem -RotateRight $test.Data.in.rotateRight -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateRight with list of length 4'
+
+    for ($i = 0; $i -lt $listsWithLength4.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateRight = $listsWithLength4[$i]}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateRight
+            $expectedRotations = @(
+                $test.Data.in.rotateRight[0, 1, 2, 3],
+                $test.Data.in.rotateRight[3, 0, 1, 2],
+                $test.Data.in.rotateRight[2, 3, 0, 1],
+                $test.Data.in.rotateRight[1, 2, 3, 0]
+            )
+
+            $test.Data.err = try {Group-ListItem -RotateRight $test.Data.in.rotateRight -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Group-ListItem -RotateRight with list of length 5 or more'
+
+    foreach ($len in @(5..9)) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{rotateRight = [System.Int64[]]@(1..$len)}
+
+            $expectedType = getEquivalentArrayType $test.Data.in.rotateRight
+            $expectedRotations = @(iota $len -start $len -step (-1) | ForEach-Object {,$test.Data.in.rotateRight[@(iota $len -start $_ | ForEach-Object {$_ % $len})]})
+
+            $test.Data.err = try {Group-ListItem -RotateRight $test.Data.in.rotateRight -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True (eq? $expectedRotations.Count $test.Data.out.Count)
+            iota $expectedRotations.Count |
+                Assert-PipelineAll {param($row) $test.Data.out[$row] -isnot [System.Collections.IEnumerable]} |
+                Assert-PipelineAll {param($row) $test.Data.out[$row].Items -is $expectedType} |
+                Assert-PipelineAll {param($row) eqListContents? $test.Data.out[$row].Items $expectedRotations[$row]} |
+                Out-Null
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
     }
 }
 
