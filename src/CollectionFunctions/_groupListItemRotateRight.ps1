@@ -18,20 +18,14 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemRotateRight = {
         return
     }
 
-    for ($offset = $listLength; $offset -gt 0; $offset--) {
+    for ($offset = 0; $offset -lt $listLength; $offset++) {
         #generate group
         $items = [System.Array]::CreateInstance($outputElementType, $listLength)
 
-        $i = 0
-
-        $j = $offset % $listLength
-        while ($j -lt $listLength) {
-            $items[$i++] = $RotateRight[$j++]
-        }
-
-        $j = 0
-        while ($i -lt $listLength) {
-            $items[$i++] = $RotateRight[$j++]
+        $i = $offset
+        foreach ($srcItem in $RotateRight) {
+            $items[$i] = $srcItem
+            $i = ($i + 1) % $listLength
         }
 
         #output group
