@@ -50,15 +50,15 @@ LONG DESCRIPTION
         #EXAMPLES
 
         #assert that a list is sorted
-        $pairs = Group-ListItem -Pair $listOfNumbers
+        $pairs = @(Group-ListItem -Pair $listOfNumbers)
         Assert-All $pairs {param($p) $p.Items[0] -le $p.Items[1]}
 
         #assert that joining any 3 words from a list will have < 10 chars
-        $combinations = Group-ListItem -Combine $words -Size 3
+        $combinations = @(Group-ListItem -Combine $words -Size 3)
         Assert-All $combinations {param($c) ($c.Items -join ' ').Length -lt 10}
 
         #run scripts using different configurations
-        $configurations = Group-ListItem -CartesianProduct $versions, $files
+        $configurations = @(Group-ListItem -CartesianProduct $versions, $files)
         foreach ($c in $configurations) {
             powershell -version $c.Items[0] -noninteractive -file $c.Items[1]
         }
@@ -77,7 +77,7 @@ LONG DESCRIPTION
         Test-Text $greeting -eq 'hello' -caseSensitive -useCurrentCulture
 
         #compare the year and month of two dates only if they are both UTC
-        Test-DateTime $a -eq $b -kind utc
+        Test-DateTime $a -eq $b -property year, month -kind utc
 
         #compare two numbers only if their types are Int32, Int64 or Double
         #and both numbers must have the same type
