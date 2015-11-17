@@ -3647,21 +3647,16 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
       <dev:version />
     </command:details>
     <maml:description>
-      <maml:para>The following list processing functions can be used to generate test data, to run functions and scripts with different parameter values, or even to generate parts of test scripts.
+      <maml:para>Generates groups of items from lists that can be used to create test input data, or to analyze test output data.
 
-Function            Description
---------            -----------
-Pair                groups adjacent items in a list into groups of 2 items
-Window              groups adjacent items in a list into groups of 0 or more items
-Combine             groups items in a list into combinations of 0 or more items
-Permute             groups items in a list into permutations of 0 or more items
-CoveringArray       groups items from n lists into a covering array for t-way tests
-CartesianProduct    groups items from n lists into cartesian products of n items
-Zip                 groups items from n lists with the same index into groups of n items
+Here are the names of the list processing functions:
 
-With these functions, many tasks that would require nested loops can be simplified to a single loop or a single pipeline.
+    Pair, Window,
+    RotateLeft, RotateRight,
+    Combine, Permute,
+    CartesianProduct, CoveringArray, and Zip.
 
-Here is an example of testing multiple scripts using different PowerShell configurations. This kind of task typically requires nested loops (one loop for each parameter), but this example uses Group-ListItem -CartesianProduct to generate the parameter values for powershell.exe.
+With these functions, many tasks that would require nested loops can be simplified to a single loop or a single pipeline. Here is an example of testing multiple scripts using different PowerShell configurations.
 
     $versions     = @(2, 4)
     $apStates     = @('-sta', '-mta')
@@ -3673,7 +3668,9 @@ Here is an example of testing multiple scripts using different PowerShell config
         if (($ver -le 2) -and ($aps -eq '-mta')) {$aps = ''}    #PS2 has no -mta switch
 
         powershell -version $ver $aps -noprofile -noninteractive -executionpolicy $exp -file $file
-    }</maml:para>
+    }
+
+This kind of task typically requires nested loops (one loop for each parameter), but this example uses Group-ListItem -CartesianProduct to generate the parameter values for powershell.exe.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -3686,7 +3683,9 @@ Each group has two items.
 
 Note:
 This function does not return any groups if:
-    *the length of the list is less than 2</maml:para>
+    *the length of the list is less than 2.
+
+The input list is never modified by this function.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         </command:parameter>
@@ -3703,10 +3702,12 @@ If the -Size parameter is not specified, the number of items in each group is th
 Note:
 This function does not return any groups if:
     *the value of the -Size parameter is less than 0
-    *the value of the -Size parameter is greater than the length of the list
+    *the value of the -Size parameter is greater than the length of the list.
 
 This function will return 1 group with 0 items if:
-    *the value of the -Size parameter is 0</maml:para>
+    *the value of the -Size parameter is 0.
+
+The input list is never modified by this function.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         </command:parameter>
@@ -3721,6 +3722,60 @@ This function will return 1 group with 0 items if:
       <command:syntaxItem>
         <maml:name>Group-ListItem</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
+          <maml:name>RotateLeft</maml:name>
+          <maml:description>
+            <maml:para>Groups items in a list by rotating them to the left until they return to their original position.
+
+    Example:
+    Group-ListItem -RotateLeft @(1, 2, 3)
+
+    Items
+    -----
+    {1, 2, 3}
+    {2, 3, 1}
+    {3, 1, 2}
+
+    Notice how the last item (3) moves to the left.
+
+Note:
+This function will return 1 group with 0 items if:
+    *the length of the list is 0.
+
+The input list is never modified by this function.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Group-ListItem</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
+          <maml:name>RotateRight</maml:name>
+          <maml:description>
+            <maml:para>Groups items in a list by rotating them to the right until they return to their original position.
+
+    Example:
+    Group-ListItem -RotateRight @(1, 2, 3)
+
+    Items
+    -----
+    {1, 2, 3}
+    {3, 1, 2}
+    {2, 3, 1}
+
+    Notice how the first item (1) moves to the right.
+
+Note:
+This function will return 1 group with 0 items if:
+    *the length of the list is 0.
+
+The input list is never modified by this function.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Group-ListItem</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Combine</maml:name>
           <maml:description>
             <maml:para>Groups items inside a list into combinations.
@@ -3730,10 +3785,12 @@ If the -Size parameter is not specified, the number of items in each group is th
 Note:
 This function does not return any groups if:
     *the value of the -Size parameter is less than 0
-    *the value of the -Size parameter is greater than the length of the list
+    *the value of the -Size parameter is greater than the length of the list.
 
 This function will return 1 group with 0 items if:
-    *the value of the -Size parameter is 0</maml:para>
+    *the value of the -Size parameter is 0.
+
+The input list is never modified by this function.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         </command:parameter>
@@ -3757,10 +3814,12 @@ If the -Size parameter is not specified, the number of items in each group is th
 Note:
 This function does not return any groups if:
     *the value of the -Size parameter is less than 0
-    *the value of the -Size parameter is greater than the length of the list
+    *the value of the -Size parameter is greater than the length of the list.
 
 This function will return 1 group with 0 items if:
-    *the value of the -Size parameter is 0</maml:para>
+    *the value of the -Size parameter is 0.
+
+The input list is never modified by this function.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         </command:parameter>
@@ -3770,6 +3829,26 @@ This function will return 1 group with 0 items if:
             <maml:para>The number of items per group for combinations, permutations, and windows.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Group-ListItem</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
+          <maml:name>CartesianProduct</maml:name>
+          <maml:description>
+            <maml:para>Groups items from 0 or more lists into cartesian products.
+Each group has the same number of items as the number of lists specified.
+
+Note:
+This function does not return any groups if:
+    *no lists are specified
+    *any of the specified lists are empty.
+
+The lists do not need to have the same number of items.
+
+The lists (and the list that contains them) are never modified by this function.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
@@ -3786,13 +3865,15 @@ Note:
 This function does not return any groups if:
     *no lists are specified
     *any of the specified lists are empty
-    *the value of the -Strength parameter is negative or 0
+    *the value of the -Strength parameter is negative or 0.
 
 This function will return the cartesian product if:
     *the -Strength parameter is not specified
-    *the value of the -Strength parameter is greater than or equal to the number of lists
+    *the value of the -Strength parameter is greater than or equal to the number of lists.
 
 The lists do not need to have the same number of items.
+
+The lists (and the list that contains them) are never modified by this function.
 
 
 Implementation Notes:
@@ -3882,24 +3963,6 @@ See nist.gov for more details about covering arrays:
       <command:syntaxItem>
         <maml:name>Group-ListItem</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
-          <maml:name>CartesianProduct</maml:name>
-          <maml:description>
-            <maml:para>Groups items from 0 or more lists into cartesian products.
-Each group has the same number of items as the number of lists specified.
-
-Note:
-This function does not return any groups if:
-    *no lists are specified
-    *any of the specified lists are empty
-
-The lists do not need to have the same number of items.</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
-        </command:parameter>
-      </command:syntaxItem>
-      <command:syntaxItem>
-        <maml:name>Group-ListItem</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
           <maml:name>Zip</maml:name>
           <maml:description>
             <maml:para>Groups items from 0 or more lists that have the same index.
@@ -3908,9 +3971,11 @@ Each group has the same number of items as the number of lists specified.
 Note:
 This function does not return any groups if:
     *no lists are specified
-    *any of the specified lists are empty
+    *any of the specified lists are empty.
 
-If the lists do not have the same number of items, the number of groups in the output is equal to the number of items in the list with the fewest items.</maml:para>
+If the lists do not have the same number of items, the number of groups in the output is equal to the number of items in the list with the fewest items.
+
+The lists (and the list that contains them) are never modified by this function.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
         </command:parameter>
@@ -3925,7 +3990,9 @@ Each group has two items.
 
 Note:
 This function does not return any groups if:
-    *the length of the list is less than 2</maml:para>
+    *the length of the list is less than 2.
+
+The input list is never modified by this function.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         <dev:type>
@@ -3944,10 +4011,70 @@ If the -Size parameter is not specified, the number of items in each group is th
 Note:
 This function does not return any groups if:
     *the value of the -Size parameter is less than 0
-    *the value of the -Size parameter is greater than the length of the list
+    *the value of the -Size parameter is greater than the length of the list.
 
 This function will return 1 group with 0 items if:
-    *the value of the -Size parameter is 0</maml:para>
+    *the value of the -Size parameter is 0.
+
+The input list is never modified by this function.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
+        <dev:type>
+          <maml:name>IList</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue />
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <maml:name>RotateLeft</maml:name>
+        <maml:description>
+          <maml:para>Groups items in a list by rotating them to the left until they return to their original position.
+
+    Example:
+    Group-ListItem -RotateLeft @(1, 2, 3)
+
+    Items
+    -----
+    {1, 2, 3}
+    {2, 3, 1}
+    {3, 1, 2}
+
+    Notice how the last item (3) moves to the left.
+
+Note:
+This function will return 1 group with 0 items if:
+    *the length of the list is 0.
+
+The input list is never modified by this function.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
+        <dev:type>
+          <maml:name>IList</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue />
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <maml:name>RotateRight</maml:name>
+        <maml:description>
+          <maml:para>Groups items in a list by rotating them to the right until they return to their original position.
+
+    Example:
+    Group-ListItem -RotateRight @(1, 2, 3)
+
+    Items
+    -----
+    {1, 2, 3}
+    {3, 1, 2}
+    {2, 3, 1}
+
+    Notice how the first item (1) moves to the right.
+
+Note:
+This function will return 1 group with 0 items if:
+    *the length of the list is 0.
+
+The input list is never modified by this function.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         <dev:type>
@@ -3966,10 +4093,12 @@ If the -Size parameter is not specified, the number of items in each group is th
 Note:
 This function does not return any groups if:
     *the value of the -Size parameter is less than 0
-    *the value of the -Size parameter is greater than the length of the list
+    *the value of the -Size parameter is greater than the length of the list.
 
 This function will return 1 group with 0 items if:
-    *the value of the -Size parameter is 0</maml:para>
+    *the value of the -Size parameter is 0.
+
+The input list is never modified by this function.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         <dev:type>
@@ -3988,10 +4117,12 @@ If the -Size parameter is not specified, the number of items in each group is th
 Note:
 This function does not return any groups if:
     *the value of the -Size parameter is less than 0
-    *the value of the -Size parameter is greater than the length of the list
+    *the value of the -Size parameter is greater than the length of the list.
 
 This function will return 1 group with 0 items if:
-    *the value of the -Size parameter is 0</maml:para>
+    *the value of the -Size parameter is 0.
+
+The input list is never modified by this function.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="true">IList</command:parameterValue>
         <dev:type>
@@ -4000,17 +4131,27 @@ This function will return 1 group with 0 items if:
         </dev:type>
         <dev:defaultValue />
       </command:parameter>
-      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
-        <maml:name>Size</maml:name>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <maml:name>CartesianProduct</maml:name>
         <maml:description>
-          <maml:para>The number of items per group for combinations, permutations, and windows.</maml:para>
+          <maml:para>Groups items from 0 or more lists into cartesian products.
+Each group has the same number of items as the number of lists specified.
+
+Note:
+This function does not return any groups if:
+    *no lists are specified
+    *any of the specified lists are empty.
+
+The lists do not need to have the same number of items.
+
+The lists (and the list that contains them) are never modified by this function.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
         <dev:type>
-          <maml:name>Int32</maml:name>
+          <maml:name>IList[]</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>0</dev:defaultValue>
+        <dev:defaultValue />
       </command:parameter>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>CoveringArray</maml:name>
@@ -4024,13 +4165,15 @@ Note:
 This function does not return any groups if:
     *no lists are specified
     *any of the specified lists are empty
-    *the value of the -Strength parameter is negative or 0
+    *the value of the -Strength parameter is negative or 0.
 
 This function will return the cartesian product if:
     *the -Strength parameter is not specified
-    *the value of the -Strength parameter is greater than or equal to the number of lists
+    *the value of the -Strength parameter is greater than or equal to the number of lists.
 
 The lists do not need to have the same number of items.
+
+The lists (and the list that contains them) are never modified by this function.
 
 
 Implementation Notes:
@@ -4055,6 +4198,40 @@ See nist.gov for more details about covering arrays:
           <maml:uri />
         </dev:type>
         <dev:defaultValue />
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
+        <maml:name>Zip</maml:name>
+        <maml:description>
+          <maml:para>Groups items from 0 or more lists that have the same index.
+Each group has the same number of items as the number of lists specified.
+
+Note:
+This function does not return any groups if:
+    *no lists are specified
+    *any of the specified lists are empty.
+
+If the lists do not have the same number of items, the number of groups in the output is equal to the number of items in the list with the fewest items.
+
+The lists (and the list that contains them) are never modified by this function.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
+        <dev:type>
+          <maml:name>IList[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue />
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <maml:name>Size</maml:name>
+        <maml:description>
+          <maml:para>The number of items per group for combinations, permutations, and windows.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
         <maml:name>Strength</maml:name>
@@ -4126,46 +4303,6 @@ See nist.gov for more details about covering arrays:
         </dev:type>
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
-        <maml:name>CartesianProduct</maml:name>
-        <maml:description>
-          <maml:para>Groups items from 0 or more lists into cartesian products.
-Each group has the same number of items as the number of lists specified.
-
-Note:
-This function does not return any groups if:
-    *no lists are specified
-    *any of the specified lists are empty
-
-The lists do not need to have the same number of items.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
-        <dev:type>
-          <maml:name>IList[]</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue />
-      </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="false" position="named" aliases="">
-        <maml:name>Zip</maml:name>
-        <maml:description>
-          <maml:para>Groups items from 0 or more lists that have the same index.
-Each group has the same number of items as the number of lists specified.
-
-Note:
-This function does not return any groups if:
-    *no lists are specified
-    *any of the specified lists are empty
-
-If the lists do not have the same number of items, the number of groups in the output is equal to the number of items in the list with the fewest items.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="true">IList[]</command:parameterValue>
-        <dev:type>
-          <maml:name>IList[]</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue />
-      </command:parameter>
     </command:parameters>
     <command:inputTypes>
       <command:inputType>
@@ -4187,7 +4324,11 @@ This function does not accept input from the pipeline.</maml:name>
 
 The PSCustomObject has a property called 'Items' which will always be an array.
 
-The array in the 'Items' property has a type of [System.Object[]] by default. However, the 'Items' property may be constrained with a specific type, such as [System.Int32[]], if the list input to -Pair, -Window, -Combine, or -Permute is constrained to a specific type, or if the list inputs to -CartesianProduct or -Zip are constrained to the same specific type.</maml:name>
+None of the input lists are ever used as the 'Items' property in any of the outputs.
+
+None of the outputs will ever have an 'Items' property that is referentially equal to another 'Items' property from another output.
+
+The array in the 'Items' property has a type of [System.Object[]] by default. However, the 'Items' property may be constrained with a specific type, such as [System.Int32[]], if the list input to -RotateLeft, -RotateRight, -Pair, -Window, -Combine, or -Permute is constrained to a specific type, or if the list inputs to -CartesianProduct or -Zip are constrained to the same specific type.</maml:name>
           <maml:uri />
         </dev:type>
         <maml:description>
@@ -4201,7 +4342,7 @@ The array in the 'Items' property has a type of [System.Object[]] by default. Ho
       <maml:alert>
         <maml:para>Why not output a list of lists?
 
-The ideal output for this function is a list of lists. That would allow, for example, to take the output of (Group-ListItem -Zip ...) and later on, feed it directly as input to (Group-ListItem -Zip ...). This is useful because if you look at multiple lists of the same length as rows and columns of data, then -Zip can be used to transpose the rows into columns, and calling -Zip a second time allows you to "undo" the transposition.
+The ideal output for this function is a list of lists. That would allow, for example, to take the output of (Group-ListItem -Zip ...) and later on, feed it directly as input to (Group-ListItem -Zip ...). This is useful because if you look at multiple lists of the same length as rows and columns of data, then -Zip can be used to transpose the rows into columns, and calling -Zip a second time allows you to "undo" the transpose operation.
 
 This was not done for this function because in PowerShell, functions returning lists can be error-prone when used in a pipeline. Also, by convention, public functions in PowerShell do not return lists, but return the contents of the list one at a time.
 
@@ -4246,7 +4387,7 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>group-listItem -pair $numbers | foreach-object {$a, $b = $_.Items; assert-true ($a -le $b)}</dev:code>
+        <dev:code>group-listItem -pair $numbers | assert-pipelineall {param($pair) $a, $b = $pair.Items; $a -le $b} | out-null</dev:code>
         <dev:remarks>
           <maml:para>Asserts that the items in $numbers are sorted in ascending order using the PowerShell -le operator for comparisons.
 
@@ -4293,7 +4434,7 @@ then the this example is equivalent to
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>group-listItem -window $numbers -size 3 | foreach-object {$a, $b, $c = $_.Items; assert-true (($a + $b) -eq $c)}</dev:code>
+        <dev:code>group-listItem -window $numbers -size 3 | assert-pipelineall {param($window) $a, $b, $c = $window.Items; ($a + $b) -eq $c} | out-null</dev:code>
         <dev:remarks>
           <maml:para>Asserts that the numbers in the sequence is the sum of the two previous numbers in the sequence (Fibonacci sequence) using the PowerShell -eq operator for comparisons.
 
@@ -4316,6 +4457,57 @@ then the example is equivalent to
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>group-listItem -rotateLeft @('a', 'b', 'c', $null)</dev:code>
+        <dev:remarks>
+          <maml:para>Outputs the following arrays:
+
+    Items
+    -----
+    {a, b, c, $null}
+    {b, c, $null, a}
+    {c, $null, a, b}
+    {$null, a, b, c}
+
+See also the -RotateRight parameter.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>C:\PS&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>group-listItem -rotateLeft $strings | assert-pipelineall {param($rotations) (sortedJoin $rotations.Items) -eq 'abc'} | out-null</dev:code>
+        <dev:remarks>
+          <maml:para>Asserts that the result of "sortedJoin" will be equal to "abc", regardless of the order items in $strings, using the PowerShell -eq operator for comparisons.
+
+If $strings and sortedJoin were defined as
+
+    $strings = @('a', 'b', 'c', $null)
+    function sortedJoin($list) {return ($list | sort-object) -join ''}
+
+then the example is equivalent to
+
+    assert-true ((sortedJoin @('a', 'b', 'c', $null)) -eq 'abc')
+    assert-true ((sortedJoin @('b', 'c', $null, 'a')) -eq 'abc')
+    assert-true ((sortedJoin @('c', $null, 'a', 'b')) -eq 'abc')
+    assert-true ((sortedJoin @($null, 'a', 'b', 'c')) -eq 'abc')
+
+See also the -RotateRight parameter.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 7 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
@@ -4342,11 +4534,11 @@ then the example is equivalent to
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 8 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>group-listItem -combine $words -size 3 | foreach-object {assert-true (($_.items -join ' ').length -lt 10)}</dev:code>
+        <dev:code>group-listItem -combine $words -size 3 | assert-pipelineall {param($combinations) ($combinations.Items -join ' ').length -lt 10} | out-null</dev:code>
         <dev:remarks>
           <maml:para>Asserts that if any 3 items from $words are joined, the length of the string is less than 10, using the PowerShell -lt operator for comparisons.
 
@@ -4373,7 +4565,7 @@ then the example is equivalent to
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 7 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 9 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
@@ -4396,11 +4588,11 @@ then the example is equivalent to
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 8 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 10 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>group-listItem -permute $numbers | foreach-object {assert-true ((add $_.items) -eq 60)}</dev:code>
+        <dev:code>group-listItem -permute $numbers | assert-pipelineall {param($permutations) (add $permutations.Items) -eq 60} | out-null</dev:code>
         <dev:remarks>
           <maml:para>Asserts that the result of "add" will be equal to 60, regardless of the order of the items in $numbers, using the PowerShell -eq operator for comparisons.
 
@@ -4424,7 +4616,7 @@ then the example is equivalent to
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 9 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 11 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
@@ -4451,11 +4643,11 @@ then the example is equivalent to
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 10 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 12 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>group-listItem -cartesianProduct @(0), $numbers, $ea | foreach-object {$a, $b, $c = $_.Items; assert-true ((add $a $b -erroraction $c) -eq $b)}</dev:code>
+        <dev:code>group-listItem -cartesianProduct @(0), $numbers, $ea | assert-pipelineall {param($cProduct) $a, $b, $c = $cProduct.Items; (add $a $b -erroraction $c) -eq $b} | out-null</dev:code>
         <dev:remarks>
           <maml:para>Asserts that the result of (add 0 $number) is equal to $number, using the PowerShell -eq operator for comparisons.
 
@@ -4484,7 +4676,7 @@ then the example is equivalent to
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 11 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 13 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
@@ -4513,11 +4705,11 @@ See the -Strength parameter for more details.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 12 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 14 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>group-listItem -coveringArray $aList, $bList, $cList -strength 1 | foreach-object {$a, $b, $c = $_.Items; assert-notnull (f $a $b $c)}</dev:code>
+        <dev:code>group-listItem -coveringArray $aList, $bList, $cList -strength 1 | assert-pipelineall {param($cArray) $a, $b, $c = $cArray.Items; $null -ne (f $a $b $c)} | out-null</dev:code>
         <dev:remarks>
           <maml:para>Asserts that the result of (f $a $b $c) is never $null, using the covering array of strength 1 generated from the lists.
 
@@ -4530,11 +4722,11 @@ If $aList, $bList, $cList, and f were defined as
 
 then the example is equivalent to
 
-    assert-notnull (f 'a1' 'b1' 'c1')
-    assert-notnull (f 'a2' 'b2' 'c2')
-    assert-notnull (f 'a3' 'b3' 'c1')
-    assert-notnull (f 'a1' 'b4' 'c2')
-    assert-notnull (f 'a2' 'b5' 'c1')</maml:para>
+    assert-true ($null -ne (f 'a1' 'b1' 'c1'))
+    assert-true ($null -ne (f 'a2' 'b2' 'c2'))
+    assert-true ($null -ne (f 'a3' 'b3' 'c1'))
+    assert-true ($null -ne (f 'a1' 'b4' 'c2'))
+    assert-true ($null -ne (f 'a2' 'b5' 'c1'))</maml:para>
           <maml:para />
           <maml:para />
           <maml:para />
@@ -4542,7 +4734,7 @@ then the example is equivalent to
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 13 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 15 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
@@ -4567,11 +4759,11 @@ In this example, the list with the fewest items (@('a', 'b', 'c')) only has 3 it
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 14 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 16 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>C:\PS&gt;</maml:para>
         </maml:introduction>
-        <dev:code>group-listItem -zip $aList, $bList | foreach-object {$a, $b = $_.Items; assert-true ($a -eq $b)}</dev:code>
+        <dev:code>group-listItem -zip $aList, $bList | assert-pipelineall {param($zipped) $a, $b = $zipped.Items; $a -eq $b} | out-null</dev:code>
         <dev:remarks>
           <maml:para>Asserts that the first items in $aList are equal to the first items in $bList using the PowerShell -eq operator for comparisons.
 
@@ -4586,12 +4778,7 @@ then the example is equivalent to
     assert-true (2 -eq 2)
     assert-true (3 -eq 3)
     assert-true (4 -eq 4)
-    assert-true (5 -eq 5)
-
-Assert that two lists are equal
--------------------------------
-assert-true ($aList.count -eq $bList.count)
-group-listItem -zip $aList, $bList | foreach-object {$a, $b = $_.Items; assert-true ($a -eq $b)}</maml:para>
+    assert-true (5 -eq 5)</maml:para>
           <maml:para />
           <maml:para />
           <maml:para />
@@ -4601,7 +4788,51 @@ group-listItem -zip $aList, $bList | foreach-object {$a, $b = $_.Items; assert-t
     </command:examples>
     <maml:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText />
+        <maml:linkText>Test-True</maml:linkText>
+        <maml:uri />
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-All</maml:linkText>
+        <maml:uri />
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-Exists</maml:linkText>
+        <maml:uri />
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-NotExists</maml:linkText>
+        <maml:uri />
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-True</maml:linkText>
+        <maml:uri />
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-All</maml:linkText>
+        <maml:uri />
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-Exists</maml:linkText>
+        <maml:uri />
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-NotExists</maml:linkText>
+        <maml:uri />
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineAll</maml:linkText>
+        <maml:uri />
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineExists</maml:linkText>
+        <maml:uri />
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineNotExists</maml:linkText>
+        <maml:uri />
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-PipelineCount</maml:linkText>
         <maml:uri />
       </maml:navigationLink>
     </maml:relatedLinks>

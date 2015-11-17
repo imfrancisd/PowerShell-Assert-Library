@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.7.3.0
+#Assert Library version 1.7.4.0
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -534,6 +534,82 @@ $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPermute = {
                 }
                 break
             }
+        }
+    }
+}
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemRotateLeft = {
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $RotateLeft
+    )
+
+    $listLength = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $RotateLeft -ErrorAction $ErrorActionPreference
+    $outputElementType = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $RotateLeft -ErrorAction $ErrorActionPreference
+
+    if ($listLength -eq 0) {
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = [System.Array]::CreateInstance($outputElementType, 0)
+        }
+        return
+    }
+
+    for ($offset = $listLength; $offset -gt 0; $offset--) {
+        #generate group
+        $items = [System.Array]::CreateInstance($outputElementType, $listLength)
+
+        $i = $offset % $listLength
+        foreach ($srcItem in $RotateLeft) {
+            $items[$i] = $srcItem
+            $i = ($i + 1) % $listLength
+        }
+
+        #output group
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = $items
+        }
+    }
+}
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_groupListItemRotateRight = {
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $RotateRight
+    )
+
+    $listLength = & $_7ddd17460d1743b2b6e683ef649e01b7_getListLength -List $RotateRight -ErrorAction $ErrorActionPreference
+    $outputElementType = & $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType -List $RotateRight -ErrorAction $ErrorActionPreference
+
+    if ($listLength -eq 0) {
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = [System.Array]::CreateInstance($outputElementType, 0)
+        }
+        return
+    }
+
+    for ($offset = 0; $offset -lt $listLength; $offset++) {
+        #generate group
+        $items = [System.Array]::CreateInstance($outputElementType, $listLength)
+
+        $i = $offset
+        foreach ($srcItem in $RotateRight) {
+            $items[$i] = $srcItem
+            $i = ($i + 1) % $listLength
+        }
+
+        #output group
+        Microsoft.PowerShell.Utility\New-Object -TypeName 'System.Management.Automation.PSObject' -Property @{
+            'Items' = $items
         }
     }
 }
@@ -1554,6 +1630,16 @@ function Group-ListItem
         [System.Collections.IList]
         $Window,
 
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'RotateLeft')]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $RotateLeft,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'RotateRight')]
+        [AllowEmptyCollection()]
+        [System.Collections.IList]
+        $RotateRight,
+
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'Combine')]
         [AllowEmptyCollection()]
         [System.Collections.IList]
@@ -1564,11 +1650,11 @@ function Group-ListItem
         [System.Collections.IList]
         $Permute,
 
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Combine')]
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Permute')]
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Window')]
-        [System.Int32]
-        $Size,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'CartesianProduct')]
+        [AllowEmptyCollection()]
+        [ValidateNotNull()]
+        [System.Collections.IList[]]
+        $CartesianProduct,
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'CoveringArray')]
         [AllowEmptyCollection()]
@@ -1576,28 +1662,29 @@ function Group-ListItem
         [System.Collections.IList[]]
         $CoveringArray,
 
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'CoveringArray')]
-        [System.Int32]
-        $Strength,
-
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'CartesianProduct')]
-        [AllowEmptyCollection()]
-        [ValidateNotNull()]
-        [System.Collections.IList[]]
-        $CartesianProduct,
-
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ParameterSetName = 'Zip')]
         [AllowEmptyCollection()]
         [ValidateNotNull()]
         [System.Collections.IList[]]
-        $Zip
+        $Zip,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Combine')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Permute')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'Window')]
+        [System.Int32]
+        $Size,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ParameterSetName = 'CoveringArray')]
+        [System.Int32]
+        $Strength
     )
 
     #NOTE about [ValidateNotNull()]
     #
     #The ValidateNotNull() attribute validates that a list and its contents are not $null.
-    #The -Combine, -Permute, -Pair, and -Window parameters NOT having this attribute and
-    #-CartesianProduct, -CoveringArray and -Zip having this attribute, is intentional.
+    #The -RotateLeft, -RotateRight, -Combine, -Permute, -Pair, and -Window parameters
+    #NOT having this attribute
+    #and -CartesianProduct, -CoveringArray and -Zip having this attribute, is intentional.
     #
     #Mandatory = $true will make sure -Combine, -Permute, -Pair, and -Window are not $null.
 
@@ -1605,6 +1692,14 @@ function Group-ListItem
     $PSBoundParameters['ErrorAction'] = $ErrorActionPreference
 
     switch ($PSCmdlet.ParameterSetName) {
+        'RotateLeft' {
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemRotateLeft @PSBoundParameters
+            return
+        }
+        'RotateRight' {
+            & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemRotateRight @PSBoundParameters
+            return
+        }
         'Pair' {
             & $_7ddd17460d1743b2b6e683ef649e01b7_groupListItemPair @PSBoundParameters
             return
