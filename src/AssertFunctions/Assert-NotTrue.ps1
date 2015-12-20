@@ -18,13 +18,13 @@ function Assert-NotTrue
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        $PSCmdlet.WriteVerbose($message)
+        Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }

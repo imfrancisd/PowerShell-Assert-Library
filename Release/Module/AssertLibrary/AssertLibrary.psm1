@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.7.4.0
+#Assert Library version 1.7.5.0
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -851,13 +851,13 @@ function Assert-All
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        $PSCmdlet.WriteVerbose($message)
+        Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
         }
     }
@@ -901,13 +901,13 @@ function Assert-Exists
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        $PSCmdlet.WriteVerbose($message)
+        Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
         }
     }
@@ -935,13 +935,13 @@ function Assert-False
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        $PSCmdlet.WriteVerbose($message)
+        Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
@@ -987,13 +987,13 @@ function Assert-NotExists
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        $PSCmdlet.WriteVerbose($message)
+        Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Collection))
         }
     }
@@ -1021,13 +1021,13 @@ function Assert-NotFalse
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        $PSCmdlet.WriteVerbose($message)
+        Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
@@ -1055,13 +1055,13 @@ function Assert-NotNull
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        $PSCmdlet.WriteVerbose($message)
+        Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
@@ -1089,13 +1089,13 @@ function Assert-NotTrue
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        $PSCmdlet.WriteVerbose($message)
+        Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
@@ -1123,13 +1123,13 @@ function Assert-Null
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        $PSCmdlet.WriteVerbose($message)
+        Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
@@ -1173,12 +1173,12 @@ function Assert-PipelineAll
         if (-not (($result -is [System.Boolean]) -and $result)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-            $PSCmdlet.WriteVerbose($message)
+            Write-Verbose -Message $message
 
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
@@ -1189,7 +1189,7 @@ function Assert-PipelineAll
     {
         if (([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
-            $PSCmdlet.WriteVerbose($message)
+            Write-Verbose -Message $message
         }
     }
 }
@@ -1232,13 +1232,13 @@ function Assert-PipelineAny
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-            $PSCmdlet.WriteVerbose($message)
+            Write-Verbose -Message $message
 
             if ($fail) {
                 if (-not $PSBoundParameters.ContainsKey('Debug')) {
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
-                $PSCmdlet.WriteDebug($message)
+                Write-Debug -Message $message
                 $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
@@ -1308,12 +1308,12 @@ function Assert-PipelineCount
 
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-            $PSCmdlet.WriteVerbose($message)
+            Write-Verbose -Message $message
 
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
@@ -1327,13 +1327,13 @@ function Assert-PipelineCount
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-            $PSCmdlet.WriteVerbose($message)
+            Write-Verbose -Message $message
 
             if ($fail) {
                 if (-not $PSBoundParameters.ContainsKey('Debug')) {
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
-                $PSCmdlet.WriteDebug($message)
+                Write-Debug -Message $message
                 $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
@@ -1371,12 +1371,12 @@ function Assert-PipelineEmpty
 
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-        $PSCmdlet.WriteVerbose($message)
+        Write-Verbose -Message $message
 
         if (-not $PSBoundParameters.ContainsKey('Debug')) {
             $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
         }
-        $PSCmdlet.WriteDebug($message)
+        Write-Debug -Message $message
         $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
     }
 
@@ -1384,7 +1384,7 @@ function Assert-PipelineEmpty
     {
         if (([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
-            $PSCmdlet.WriteVerbose($message)
+            Write-Verbose -Message $message
         }
     }
 }
@@ -1439,13 +1439,13 @@ function Assert-PipelineExists
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-            $PSCmdlet.WriteVerbose($message)
+            Write-Verbose -Message $message
 
             if ($fail) {
                 if (-not $PSBoundParameters.ContainsKey('Debug')) {
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
-                $PSCmdlet.WriteDebug($message)
+                Write-Debug -Message $message
                 $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $null))
             }
         }
@@ -1490,12 +1490,12 @@ function Assert-PipelineNotExists
         if (($result -is [System.Boolean]) -and $result) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-            $PSCmdlet.WriteVerbose($message)
+            Write-Verbose -Message $message
 
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
@@ -1506,7 +1506,7 @@ function Assert-PipelineNotExists
     {
         if (([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
-            $PSCmdlet.WriteVerbose($message)
+            Write-Verbose -Message $message
         }
     }
 }
@@ -1546,12 +1546,12 @@ function Assert-PipelineSingle
 
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-            $PSCmdlet.WriteVerbose($message)
+            Write-Verbose -Message $message
 
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
         }
 
@@ -1566,13 +1566,13 @@ function Assert-PipelineSingle
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-            $PSCmdlet.WriteVerbose($message)
+            Write-Verbose -Message $message
 
             if ($fail) {
                 if (-not $PSBoundParameters.ContainsKey('Debug')) {
                     $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
                 }
-                $PSCmdlet.WriteDebug($message)
+                Write-Debug -Message $message
                 $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
             }
         }
@@ -1601,13 +1601,13 @@ function Assert-True
     if ($fail -or ([System.Int32]$VerbosePreference)) {
         $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
-        $PSCmdlet.WriteVerbose($message)
+        Write-Verbose -Message $message
 
         if ($fail) {
             if (-not $PSBoundParameters.ContainsKey('Debug')) {
                 $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
             }
-            $PSCmdlet.WriteDebug($message)
+            Write-Debug -Message $message
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $Value))
         }
     }
