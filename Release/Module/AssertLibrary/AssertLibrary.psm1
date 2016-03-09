@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.7.5.0
+#Assert Library version 1.7.6.0
 #
 #PowerShell requirements
 #requires -version 2.0
@@ -1161,6 +1161,15 @@ function Assert-PipelineAll
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
+        } else {
+            #NOTE
+            #
+            #If StrictMode is on, and the $InputObject pipeline variable has no value (because process block does not run),
+            #then using the $InputObject variable in the end block will generate an error.
+            #Specifying a default value for $InputObject in the param block does not work.
+            #Specifying a default value for $InputObject in the begin block is the least confusing option.
+            #Even if the $InputObject pipeline variable is not used in the end block, just set it anyway so StrictMode will definitely work.
+            $InputObject = $null
         }
     }
 
@@ -1216,6 +1225,15 @@ function Assert-PipelineAny
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
+        } else {
+            #NOTE
+            #
+            #If StrictMode is on, and the $InputObject pipeline variable has no value (because process block does not run),
+            #then using the $InputObject variable in the end block will generate an error.
+            #Specifying a default value for $InputObject in the param block does not work.
+            #Specifying a default value for $InputObject in the begin block is the least confusing option.
+            #Even if the $InputObject pipeline variable is not used in the end block, just set it anyway so StrictMode will definitely work.
+            $InputObject = $null
         }
 
         $fail = $true
@@ -1279,6 +1297,15 @@ function Assert-PipelineCount
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
+        } else {
+            #NOTE
+            #
+            #If StrictMode is on, and the $InputObject pipeline variable has no value (because process block does not run),
+            #then using the $InputObject variable in the end block will generate an error.
+            #Specifying a default value for $InputObject in the param block does not work.
+            #Specifying a default value for $InputObject in the begin block is the least confusing option.
+            #Even if the $InputObject pipeline variable is not used in the end block, just set it anyway so StrictMode will definitely work.
+            $InputObject = $null
         }
 
         #Make sure we can count higher than -Equals, -Minimum, and -Maximum.
@@ -1361,6 +1388,15 @@ function Assert-PipelineEmpty
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
+        } else {
+            #NOTE
+            #
+            #If StrictMode is on, and the $InputObject pipeline variable has no value (because process block does not run),
+            #then using the $InputObject variable in the end block will generate an error.
+            #Specifying a default value for $InputObject in the param block does not work.
+            #Specifying a default value for $InputObject in the begin block is the least confusing option.
+            #Even if the $InputObject pipeline variable is not used in the end block, just set it anyway so StrictMode will definitely work.
+            $InputObject = $null
         }
     }
 
@@ -1415,6 +1451,15 @@ function Assert-PipelineExists
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
+        } else {
+            #NOTE
+            #
+            #If StrictMode is on, and the $InputObject pipeline variable has no value (because process block does not run),
+            #then using the $InputObject variable in the end block will generate an error.
+            #Specifying a default value for $InputObject in the param block does not work.
+            #Specifying a default value for $InputObject in the begin block is the least confusing option.
+            #Even if the $InputObject pipeline variable is not used in the end block, just set it anyway so StrictMode will definitely work.
+            $InputObject = $null
         }
 
         $fail = $true
@@ -1478,6 +1523,15 @@ function Assert-PipelineNotExists
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
+        } else {
+            #NOTE
+            #
+            #If StrictMode is on, and the $InputObject pipeline variable has no value (because process block does not run),
+            #then using the $InputObject variable in the end block will generate an error.
+            #Specifying a default value for $InputObject in the param block does not work.
+            #Specifying a default value for $InputObject in the begin block is the least confusing option.
+            #Even if the $InputObject pipeline variable is not used in the end block, just set it anyway so StrictMode will definitely work.
+            $InputObject = $null
         }
     }
 
@@ -1533,6 +1587,15 @@ function Assert-PipelineSingle
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
+        } else {
+            #NOTE
+            #
+            #If StrictMode is on, and the $InputObject pipeline variable has no value (because process block does not run),
+            #then using the $InputObject variable in the end block will generate an error.
+            #Specifying a default value for $InputObject in the param block does not work.
+            #Specifying a default value for $InputObject in the begin block is the least confusing option.
+            #Even if the $InputObject pipeline variable is not used in the end block, just set it anyway so StrictMode will definitely work.
+            $InputObject = $null
         }
 
         $anyItems = $false
