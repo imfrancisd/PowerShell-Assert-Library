@@ -192,6 +192,7 @@ function buildModule
     $psm1 = Join-Path -Path $buildModuleDir -ChildPath 'AssertLibrary.psm1'
     $psd1 = Join-Path -Path $buildModuleDir -ChildPath 'AssertLibrary.psd1'
     $null = New-Item -Path $buildModuleDir -ItemType Directory -Force -Verbose:$VerbosePreference
+    $publicFunctions = New-Object -TypeName 'System.Collections.Generic.List[System.String]'
 
     Copy-Item -LiteralPath $licenseFile -Destination $buildModuleDir -Verbose:$VerbosePreference
 
@@ -200,6 +201,7 @@ function buildModule
         foreach ($item in $functionFiles) {
             ''
             if (-not $item.BaseName.StartsWith('_', [System.StringComparison]::OrdinalIgnoreCase)) {
+                $publicFunctions.Add($item.BaseName)
                 '#.ExternalHelp AssertLibrary.psm1-help.xml'
             }
             Get-Content -LiteralPath $item.PSPath
@@ -232,6 +234,18 @@ function buildModule
         ""
         "# Minimum version of the Windows PowerShell engine required by this module"
         "PowerShellVersion = '$($PowerShellVersion.ToString(2))'"
+        ""
+        "# Functions to export from this module"
+        "FunctionsToExport = @($(@($publicFunctions | ForEach-Object {"'$_'"}) -join ', '))"
+        ""
+        "# Cmdlets to export from this module"
+        "CmdletsToExport = @()"
+        ""
+        "# Variables to export from this module"
+        "VariablesToExport = @()"
+        ""
+        "# Aliases to export from this module"
+        "AliasesToExport = @()"
         ""
         "}"
     ) | Out-File -FilePath $psd1 -Encoding utf8 -Verbose:$VerbosePreference
