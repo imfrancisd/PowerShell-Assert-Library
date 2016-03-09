@@ -18,6 +18,15 @@ function Assert-PipelineAny
 
         if ($PSBoundParameters.ContainsKey('InputObject')) {
             $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPipelineArgumentOnlyError -functionName $PSCmdlet.MyInvocation.MyCommand.Name -argumentName 'InputObject' -argumentValue $InputObject))
+        } else {
+            #NOTE
+            #
+            #If StrictMode is on, and the $InputObject pipeline variable has no value (because process block does not run),
+            #then using the $InputObject variable in the end block will generate an error.
+            #Specifying a default value for $InputObject in the param block does not work.
+            #Specifying a default value for $InputObject in the begin block is the least confusing option.
+            #Even if the $InputObject pipeline variable is not used in the end block, just set it anyway so StrictMode will definitely work.
+            $InputObject = $null
         }
 
         $fail = $true
