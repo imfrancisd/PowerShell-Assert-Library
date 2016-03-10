@@ -77,6 +77,7 @@ $buildModuleDir = Join-Path -Path $buildDir -ChildPath 'Module\AssertLibrary'
 $licenseFile   = Join-Path -Path $basePath -ChildPath 'LICENSE.txt'
 $scriptHelpDir = Join-Path -Path $basePath -ChildPath 'help\Script'
 $moduleHelpDir = Join-Path -Path $basePath -ChildPath 'help\Module'
+$suppressMsgDir = Join-Path -Path $basePath -ChildPath 'scriptanalyzer\suppressMessage'
 
 $functionFiles = @(
     Get-ChildItem -LiteralPath (Join-Path -Path $basePath -ChildPath 'src') -Filter *.ps1 -Recurse |
@@ -153,14 +154,20 @@ function buildHeader
     "#requires -version $($PowerShellVersion.ToString(2))"
 }
 
+function buildScriptAnalysisSuppressBlock
+{
+    Get-ChildItem -LiteralPath $suppressMsgDir -Filter '*.psd1' -Recurse |
+        Get-Content
+}
+
 function buildStrictMode
 {
     switch ($StrictMode) {
-        'Off'       {'Set-StrictMode -Off', ''}
-        '1.0'       {"Set-StrictMode -Version '1.0'", ''}
-        '2.0'       {"Set-StrictMode -Version '2.0'", ''}
-        'Latest'    {"Set-StrictMode -Version 'Latest'", ''}
-        'Scope'     {}
+        'Off'       {'Set-StrictMode -Off'}
+        '1.0'       {"Set-StrictMode -Version '1.0'"}
+        '2.0'       {"Set-StrictMode -Version '2.0'"}
+        'Latest'    {"Set-StrictMode -Version 'Latest'"}
+        'Scope'     {'#WARNING: StrictMode setting is inherited from a higher scope.'}
         default     {throw "Unknown Strict Mode '$StrictMode'."}
     }
 }
@@ -176,9 +183,16 @@ function buildScript
             buildHeader
             ''
             ''
+            ''
             'New-Module -Name {0} -ScriptBlock {{' -f "'AssertLibrary_$($dir.BaseName)_v$LibraryVersion'"
             ''
+            buildScriptAnalysisSuppressBlock
+            '[CmdletBinding()]'
+            'Param()'
+            ''
             buildStrictMode
+            ''
+            ''
             foreach ($item in $functionFiles) {
                 ''
                 if (-not $item.BaseName.StartsWith('_', [System.StringComparison]::OrdinalIgnoreCase)) {
@@ -218,7 +232,15 @@ function buildModule
     $(& {
         buildHeader
         ''
+        ''
+        ''
+        buildScriptAnalysisSuppressBlock
+        '[CmdletBinding()]'
+        'Param()'
+        ''
         buildStrictMode
+        ''
+        ''
         foreach ($item in $functionFiles) {
             ''
             if (-not $item.BaseName.StartsWith('_', [System.StringComparison]::OrdinalIgnoreCase)) {
