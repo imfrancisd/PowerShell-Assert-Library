@@ -55,6 +55,12 @@ Param(
     [System.Version]
     $PowerShellVersion = '2.0',
 
+    #Which version of Strict Mode should be used for this library.
+    [Parameter(Mandatory=$false)]
+    [ValidateSet('Off', '1.0', '2.0', 'Latest', 'Scope')]
+    [System.String]
+    $StrictMode = 'Scope',
+
     #Perform actions on "Release\" directory.
     [System.Management.Automation.SwitchParameter]
     $Release
@@ -145,7 +151,18 @@ function buildHeader
     '#'
     '#PowerShell requirements'
     "#requires -version $($PowerShellVersion.ToString(2))"
-    ''
+}
+
+function buildStrictMode
+{
+    switch ($StrictMode) {
+        'Off'       {'Set-StrictMode -Off', ''}
+        '1.0'       {"Set-StrictMode -Version '1.0'", ''}
+        '2.0'       {"Set-StrictMode -Version '2.0'", ''}
+        'Latest'    {"Set-StrictMode -Version 'Latest'", ''}
+        'Scope'     {}
+        default     {throw "Unknown Strict Mode '$StrictMode'."}
+    }
 }
 
 function buildScript
@@ -158,8 +175,10 @@ function buildScript
         $lines = @(& {
             buildHeader
             ''
+            ''
             'New-Module -Name {0} -ScriptBlock {{' -f "'AssertLibrary_$($dir.BaseName)_v$LibraryVersion'"
             ''
+            buildStrictMode
             foreach ($item in $functionFiles) {
                 ''
                 if (-not $item.BaseName.StartsWith('_', [System.StringComparison]::OrdinalIgnoreCase)) {
@@ -198,6 +217,8 @@ function buildModule
 
     $(& {
         buildHeader
+        ''
+        buildStrictMode
         foreach ($item in $functionFiles) {
             ''
             if (-not $item.BaseName.StartsWith('_', [System.StringComparison]::OrdinalIgnoreCase)) {
