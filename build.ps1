@@ -158,7 +158,7 @@ function buildScriptAnalysisSuppressBlock
 {
     Get-ChildItem -LiteralPath $suppressMsgDir -Filter '*.psd1' -Recurse |
         Get-Content |
-	Sort-Object
+        Sort-Object
 }
 
 function buildStrictMode
