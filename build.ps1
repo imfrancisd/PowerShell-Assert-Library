@@ -59,7 +59,7 @@ Param(
     [Parameter(Mandatory=$false)]
     [ValidateSet('Off', '1.0', '2.0', 'Latest', 'Scope')]
     [System.String]
-    $StrictMode = 'Scope',
+    $StrictMode = 'Off',
 
     #Perform actions on "Release\" directory.
     [System.Management.Automation.SwitchParameter]
