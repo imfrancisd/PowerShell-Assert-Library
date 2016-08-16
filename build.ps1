@@ -45,6 +45,17 @@ Param(
     [System.Management.Automation.SwitchParameter]
     $Clean,
 
+    #The tags applied to the module version of this library.
+    #The tags help with module discovery in online galleries.
+    [Parameter(Mandatory=$false)]
+    [System.String[]]
+    $LibraryTags = @('Assert', 'Test', 'List Processing', 'Combinatorial'),
+
+    #The URL to the main website for this project.
+    [Parameter(Mandatory=$false)]
+    [System.Uri]
+    $LibraryUri = 'https://github.com/imfrancisd/PowerShell-Assert-Library',
+
     #The version number to attach to the built script and module.
     [Parameter(Mandatory=$false)]
     [System.Version]
@@ -149,6 +160,7 @@ function buildHeader
     '#>'
     ''
     "#Assert Library version $($LibraryVersion.ToString())"
+    "#$LibraryUri"
     '#'
     '#PowerShell requirements'
     "#requires -version $($PowerShellVersion.ToString(2))"
@@ -164,10 +176,10 @@ function buildScriptAnalysisSuppressBlock
 function buildStrictMode
 {
     switch ($StrictMode) {
-        'Off'       {'Set-StrictMode -Off'}
-        '1.0'       {"Set-StrictMode -Version '1.0'"}
-        '2.0'       {"Set-StrictMode -Version '2.0'"}
-        'Latest'    {"Set-StrictMode -Version 'Latest'"}
+        'Off'       {'Microsoft.PowerShell.Core\Set-StrictMode -Off'}
+        '1.0'       {"Microsoft.PowerShell.Core\Set-StrictMode -Version '1.0'"}
+        '2.0'       {"Microsoft.PowerShell.Core\Set-StrictMode -Version '2.0'"}
+        'Latest'    {"Microsoft.PowerShell.Core\Set-StrictMode -Version 'Latest'"}
         'Scope'     {'#WARNING: StrictMode setting is inherited from a higher scope.'}
         default     {throw "Unknown Strict Mode '$StrictMode'."}
     }
@@ -185,14 +197,15 @@ function buildScript
             ''
             ''
             ''
-            'New-Module -Name {0} -ScriptBlock {{' -f "'AssertLibrary_$($dir.BaseName)_v$LibraryVersion'"
-            ''
             buildScriptAnalysisSuppressBlock
             '[CmdletBinding()]'
             'Param()'
             ''
-            buildStrictMode
             ''
+            ''
+            'New-Module -Name {0} -ScriptBlock {{' -f "'AssertLibrary_$($dir.BaseName)_v$LibraryVersion'"
+            ''
+            buildStrictMode
             ''
             foreach ($item in $functionFiles) {
                 ''
@@ -239,8 +252,9 @@ function buildModule
         '[CmdletBinding()]'
         'Param()'
         ''
-        buildStrictMode
         ''
+        ''
+        buildStrictMode
         ''
         foreach ($item in $functionFiles) {
             ''
@@ -291,6 +305,21 @@ function buildModule
         "# Aliases to export from this module"
         "AliasesToExport = @()"
         ""
+        "# Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell."
+        "PrivateData = @{"
+        ""
+        "    PSData = @{"
+        ""
+        "        # Tags applied to this module. These help with module discovery in online galleries."
+        "        Tags = @($(($LibraryTags | Where-Object {($null -ne $_) -and ('' -ne $_.Trim())} | ForEach-Object {"'$($_.Trim())'"}) -join ', '))"
+        ""
+        "        # A URL to the main website for this project."
+        "        ProjectUri = '$LibraryUri'"
+        ""
+        "    } # End of PSData hashtable"
+        ""
+        "} # End of PrivateData hashtable"
+
         "}"
     ) | Out-File -FilePath $psd1 -Encoding utf8 -Verbose:$VerbosePreference
 
