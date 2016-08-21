@@ -223,7 +223,8 @@ $nonBooleanTrue = @(
         Assert-False ($equalsParam.ValueFromPipelineByPropertyName)
         Assert-False ($equalsParam.ValueFromRemainingArguments)
         Assert-True (0 -eq $equalsParam.Position)
-        Assert-True (0 -eq $equalsParam.Aliases.Count)
+        Assert-True (1 -eq $equalsParam.Aliases.Count)
+        Assert-True ('eq'.Equals($equalsParam.Aliases[0], [System.StringComparison]::OrdinalIgnoreCase))
 
         $pass = $true
     }
@@ -267,7 +268,8 @@ $nonBooleanTrue = @(
         Assert-False ($minParam.ValueFromPipelineByPropertyName)
         Assert-False ($minParam.ValueFromRemainingArguments)
         Assert-True (0 -gt $minParam.Position)
-        Assert-True (0 -eq $minParam.Aliases.Count)
+        Assert-True (1 -eq $minParam.Aliases.Count)
+        Assert-True ('min'.Equals($minParam.Aliases[0], [System.StringComparison]::OrdinalIgnoreCase))
 
         $pass = $true
     }
@@ -311,7 +313,8 @@ $nonBooleanTrue = @(
         Assert-False ($maxParam.ValueFromPipelineByPropertyName)
         Assert-False ($maxParam.ValueFromRemainingArguments)
         Assert-True (0 -gt $maxParam.Position)
-        Assert-True (0 -eq $maxParam.Aliases.Count)
+        Assert-True (1 -eq $maxParam.Aliases.Count)
+        Assert-True ('max'.Equals($maxParam.Aliases[0], [System.StringComparison]::OrdinalIgnoreCase))
 
         $pass = $true
     }

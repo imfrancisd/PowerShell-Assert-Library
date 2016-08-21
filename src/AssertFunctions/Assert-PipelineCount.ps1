@@ -9,14 +9,17 @@ function Assert-PipelineCount
         $InputObject,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'Equals', Position = 0)]
+        [Alias('eq')]
         [System.Int64]
         $Equals,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'Minimum')]
+        [Alias('min')]
         [System.Int64]
         $Minimum,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'Maximum')]
+        [Alias('max')]
         [System.Int64]
         $Maximum
     )
