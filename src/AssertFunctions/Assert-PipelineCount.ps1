@@ -13,15 +13,20 @@ function Assert-PipelineCount
         [System.Int64]
         $Equals,
 
+        [Parameter(Mandatory = $true, ParameterSetName = 'Maximum')]
+        [Alias('max')]
+        [System.Int64]
+        $Maximum,
+
         [Parameter(Mandatory = $true, ParameterSetName = 'Minimum')]
         [Alias('min')]
         [System.Int64]
         $Minimum,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'Maximum')]
-        [Alias('max')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'NotEquals')]
+        [Alias('ne')]
         [System.Int64]
-        $Maximum
+        $NotEquals
     )
 
     begin
@@ -50,6 +55,10 @@ function Assert-PipelineCount
         if ($PSCmdlet.ParameterSetName -eq 'Equals') {
             $failEarly  = {$inputCount -gt $Equals}
             $failAssert = {$inputCount -ne $Equals}
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq 'NotEquals') {
+            $failEarly  = {$false}
+            $failAssert = {$inputCount -eq $NotEquals}
         }
         elseif ($PSCmdlet.ParameterSetName -eq 'Maximum') {
             $failEarly  = {$inputCount -gt $Maximum}

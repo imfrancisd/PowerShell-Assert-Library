@@ -4,7 +4,7 @@ Assert the number of objects in the pipeline.
 .Description
 This function is useful for asserting that a function outputs the correct number of objects.
 
-See the -Equals, -Minimum, and -Maximum parameters for more details.
+See the -Equals, -Maximum, -Minimum, and -NotEquals parameters for more details.
 
 Note:
 This function will output all pipeline objects it receives until an error is thrown, or until there are no more objects left in the pipeline.
@@ -16,18 +16,31 @@ The argument for this parameter must come from the pipeline.
 .Parameter Equals
 This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
 
+The -Equals parameter has the alias -eq.
+
+Note:
+A negative number will always cause this assertion to fail.
+.Parameter Maximum
+This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+
+The -Maximum parameter has the alias -max.
+
 Note:
 A negative number will always cause this assertion to fail.
 .Parameter Minimum
 This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
 
-Note:
-A negative number will always cause this assertion to pass.
-.Parameter Maximum
-This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+The -Minimum parameter has the alias -min.
 
 Note:
-A negative number will always cause this assertion to fail.
+A negative number will always cause this assertion to pass.
+.Parameter NotEquals
+This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+The -NotEquals parameter has the alias -ne.
+
+Note:
+A negative number will always cause this assertion to pass.
 .Example
 $nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount 10
 Throws an error if Get-Random -Count 10 does not return exactly ten objects.
@@ -37,6 +50,9 @@ Throws an error if Get-Random -Count 10 returns more than ten objects.
 .Example
 $nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount -Minimum 10
 Throws an error if Get-Random -Count 10 returns less than ten objects.
+.Example
+$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount -NotEquals 100
+Throws an error if Get-Random -Count 10 returns exactly one hundred objects.
 .Example
 $nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount 10 -Verbose
 Throws an error if Get-Random -Count 10 does not return exactly ten objects.

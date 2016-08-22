@@ -236,6 +236,51 @@ $nonBooleanTrue = @(
     $pass = $false
     try {
         $test.Data.out = $out = @()
+        $test.Data.in  = @{name = 'Assert-PipelineCount'; paramSet = 'NotEquals'}
+        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+
+        $paramSet = $test.Data.out[0].ParameterSets |
+            Where-Object {$test.Data.in.paramSet.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $paramSet
+
+        $inputObject = $paramSet.Parameters |
+            Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $inputObject
+
+        $notEqualsParam = $paramSet.Parameters |
+            Where-Object {'NotEquals'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
+        Assert-NotNull $notEqualsParam
+
+        Assert-True ($inputObject.IsMandatory)
+        Assert-True ($inputObject.ParameterType -eq [System.Object])
+        Assert-True ($inputObject.ValueFromPipeline)
+        Assert-False ($inputObject.ValueFromPipelineByPropertyName)
+        Assert-False ($inputObject.ValueFromRemainingArguments)
+        Assert-True (0 -gt $inputObject.Position)
+        Assert-True (0 -eq $inputObject.Aliases.Count)
+
+        Assert-True ($notEqualsParam.IsMandatory)
+        Assert-True ($notEqualsParam.ParameterType -eq [System.Int64])
+        Assert-False ($notEqualsParam.ValueFromPipeline)
+        Assert-False ($notEqualsParam.ValueFromPipelineByPropertyName)
+        Assert-False ($notEqualsParam.ValueFromRemainingArguments)
+        Assert-True (0 -gt $notEqualsParam.Position)
+        Assert-True (1 -eq $notEqualsParam.Aliases.Count)
+        Assert-True ('ne'.Equals($notEqualsParam.Aliases[0], [System.StringComparison]::OrdinalIgnoreCase))
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Assert-PipelineCount parameters'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
         $test.Data.in  = @{name = 'Assert-PipelineCount'; paramSet = 'Minimum'}
         $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
@@ -344,6 +389,24 @@ $nonBooleanTrue = @(
     $pass = $false
     try {
         $test.Data.out = $out = @()
+        $test.Data.in  = @{inputObject = @(1..3); notequals = 5;}
+        $test.Data.err = try {Assert-PipelineCount -InputObject $test.Data.in.inputObject -NotEquals $test.Data.in.notequals -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PipelineArgumentOnly,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.out.Count -eq 0)
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Assert-PipelineCount with non-pipeline input'
+    $pass = $false
+    try {
+        $test.Data.out = $out = @()
         $test.Data.in  = @{inputObject = @(1..3); minimum = 2;}
         $test.Data.err = try {Assert-PipelineCount -InputObject $test.Data.in.inputObject -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
@@ -386,6 +449,31 @@ $nonBooleanTrue = @(
             $test.Data.out = $out
 
             if ($i -eq 0) {
+                Assert-Null ($test.Data.err)
+                Assert-True ($test.Data.out.Count -eq 0)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                Assert-True ($test.Data.out.Count -eq 0)
+            }
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+}
+
+& {
+    foreach ($i in @(-1..1)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing nothing'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @(); notequals = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -NotEquals $test.Data.in.notequals -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            if ($i -ne 0) {
                 Assert-Null ($test.Data.err)
                 Assert-True ($test.Data.out.Count -eq 0)
             } else {
@@ -486,6 +574,32 @@ $nonBooleanTrue = @(
         $pass = $false
         try {
             $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($true); notequals = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -NotEquals $test.Data.in.notequals -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            if ($i -ne 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
+
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True ($test.Data.out[0])
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+}
+
+& {
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $true'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @($true); minimum = $i;}
             $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
@@ -559,6 +673,32 @@ $nonBooleanTrue = @(
                 Assert-True ($test.Data.out.Count -eq 1)
                 Assert-False ($test.Data.out[0])
             }
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+}
+
+& {
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $false'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($false); notequals = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -NotEquals $test.Data.in.notequals -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            if ($i -ne 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
+
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-False ($test.Data.out[0])
 
             $pass = $true
         }
@@ -658,6 +798,32 @@ $nonBooleanTrue = @(
         $pass = $false
         try {
             $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($null); notequals = $i;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -NotEquals $test.Data.in.notequals -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            if ($i -ne 1) {
+                Assert-Null ($test.Data.err)
+            } else {
+                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+            }
+
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null ($test.Data.out[0])
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+}
+
+& {
+    foreach ($i in @(-1..2)) {
+        $test = newTestLogEntry 'Assert-PipelineCount with pipeline containing $null'
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @($null); minimum = $i;}
             $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
@@ -734,6 +900,41 @@ $nonBooleanTrue = @(
                     Assert-True ($test.Data.out.Count -eq 1)
                     Assert-True ($test.Data.in.inputObject[0].Equals($test.Data.out[0]))
                 }
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing Non-Boolean that is convertible to $true'
+
+    for ($i = 0; $i -lt $nonBooleanTrue.Count; $i++) {
+        foreach ($j in @(-1..2)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = @(,$nonBooleanTrue[$i]); notequals = $j;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -NotEquals $test.Data.in.notequals -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($j -ne 1) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                Assert-True ($test.Data.out.Count -eq 1)
+                Assert-True ($test.Data.in.inputObject[0].Equals($test.Data.out[0]))
 
                 $pass = $true
             }
@@ -869,6 +1070,41 @@ $nonBooleanTrue = @(
             $pass = $false
             try {
                 $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = @(,$nonBooleanFalse[$i]); notequals = $j;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -NotEquals $test.Data.in.notequals -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($j -ne 1) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                Assert-True ($test.Data.out.Count -eq 1)
+                Assert-True ($test.Data.in.inputObject[0].Equals($test.Data.out[0]))
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing Non-Boolean that is convertible to $false'
+
+    for ($i = 0; $i -lt $nonBooleanFalse.Count; $i++) {
+        foreach ($j in @(-1..2)) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
                 $test.Data.in  = @{inputObject = @(,$nonBooleanFalse[$i]); minimum = $j;}
                 $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -Minimum $test.Data.in.minimum -OutVariable out | Out-Null} catch {$_}
                 $test.Data.out = $out
@@ -966,6 +1202,47 @@ $nonBooleanTrue = @(
                     Assert-True ($test.Data.out.Count -eq $test.Data.in.inputObject.Count)
                     Assert-All @(0..$i) {param($index) $test.Data.in.inputObject[$index].Equals($test.Data.out[$index])}
                 }
+
+                $pass = $true
+            }
+            finally {commitTestLogEntry $test $pass}
+        }
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineCount with pipeline containing multiple items'
+
+    $items = @(
+        'hello', 0, 1.0, $true, $false, @(), @('hi', $null, 'world'), @{}, (New-Object -TypeName 'System.Collections.ArrayList')
+    )
+
+    for ($i = 0; $i -lt $items.Count; $i++) {
+        $inputObject = @($items[0..$i])
+
+        foreach ($notEquals in @(-1..$($inputObject.Count + 1))) {
+            $test = newTestLogEntry $testDescription
+            $pass = $false
+            try {
+                $test.Data.out = $out = @()
+                $test.Data.in  = @{inputObject = $inputObject; notequals = $notEquals;}
+                $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineCount -NotEquals $test.Data.in.notequals -OutVariable out | Out-Null} catch {$_}
+                $test.Data.out = $out
+
+                if ($notEquals -ne $inputObject.Count) {
+                    Assert-Null ($test.Data.err)
+                } else {
+                    Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+                    Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineCount', [System.StringComparison]::OrdinalIgnoreCase))
+                }
+
+                Assert-True ($test.Data.out.Count -eq $test.Data.in.inputObject.Count)
+                Assert-All @(0..$i) {param($index) $test.Data.in.inputObject[$index].Equals($test.Data.out[$index])}
 
                 $pass = $true
             }
