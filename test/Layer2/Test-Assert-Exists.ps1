@@ -838,7 +838,7 @@ $predicates = @{
 
     try {
         $badArrayList = new-object system.collections.arraylist -argumentlist (,@(0, 1, 2, 3, 2, 1, 0))
-        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name GetEnumerator -Value {@().GetEnumerator()} -Force
+        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name GetEnumerator -Value {,(new-object system.collections.arraylist).GetEnumerator()} -Force
         Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name Clone -Value {,(new-object system.collections.arraylist)} -Force
         Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name Contains -Value {$false} -Force
         Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name CopyTo -Value {return} -Force
