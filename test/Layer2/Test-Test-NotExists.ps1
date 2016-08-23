@@ -833,3 +833,118 @@ $predicates = @{
     }
     finally {commitTestLogEntry $test $pass}
 }
+
+& {
+    $test = newTestLogEntry 'Test-NotExists with an arraylist that has its .NET members overriden'
+    $pass = $false
+
+    try {
+        $badArrayList = new-object system.collections.arraylist -argumentlist (,@(0, 1, 2, 3, 2, 1, 0))
+        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name GetEnumerator -Value {@().GetEnumerator()} -Force
+        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name Clone -Value {,(new-object system.collections.arraylist)} -Force
+        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name Contains -Value {$false} -Force
+        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name CopyTo -Value {return} -Force
+        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name ForEach -Value {return} -Force
+        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name GetRange -Value {if (0 -ne $args[0] -or 0 -ne $args[1]) {throw} else {,(new-object system.collections.arraylist)}} -Force
+        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name IndexOf -Value {-1} -Force
+        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name LastIndexOf -Value {-1} -Force
+        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name ToArray -Value {,@()} -Force
+        Add-Member -InputObject $badArrayList -MemberType ScriptMethod -Name Where -Value {return} -Force
+        Add-Member -InputObject $badArrayList -MemberType NoteProperty -Name Count -Value 0 -Force
+        Add-Member -InputObject $badArrayList -MemberType NoteProperty -Name Values -Value @() -Force
+
+        $test.Data.out = $out = @()
+        $test.Data.in = @{
+            collection     = $badArrayList
+            examinedValues   = new-object system.collections.arraylist
+            expectedCalls  = 7
+            remainingCalls = 7
+            predicate = {
+                param($n)
+
+                $test.Data.in.remainingCalls--
+                $test.Data.in.examinedValues.Add($n) | out-null
+                $false
+            }
+        }
+        $test.Data.err = try {Test-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
+        Assert-True (0 -eq $test.Data.in.remainingCalls)
+
+        Assert-True (7 -eq $test.Data.in.examinedValues.Count)
+        Assert-True (0 -eq $test.Data.in.examinedValues[0])
+        Assert-True (1 -eq $test.Data.in.examinedValues[1])
+        Assert-True (2 -eq $test.Data.in.examinedValues[2])
+        Assert-True (3 -eq $test.Data.in.examinedValues[3])
+        Assert-True (2 -eq $test.Data.in.examinedValues[4])
+        Assert-True (1 -eq $test.Data.in.examinedValues[5])
+        Assert-True (0 -eq $test.Data.in.examinedValues[6])
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
+
+& {
+    $test = newTestLogEntry 'Test-NotExists with a hashtable that has its .NET members overriden'
+    $pass = $false
+
+    try {
+        $badHashtable = @{
+            count = 0
+            keys = @()
+            psadapted = @{}.psadapted
+            psbase = @{}.psbase
+            psextended = @{}.psextended
+            psobject = @{}.psobject
+            values = @()
+        }
+        Add-Member -InputObject $badHashtable -MemberType ScriptMethod -Name GetEnumerator -Value {@{}.GetEnumerator()} -Force
+        Add-Member -InputObject $badHashtable -MemberType ScriptMethod -Name Contains -Value {$false} -Force
+        Add-Member -InputObject $badHashtable -MemberType ScriptMethod -Name ContainsKey -Value {$false} -Force
+        Add-Member -InputObject $badHashtable -MemberType ScriptMethod -Name ContainsValue -Value {$false} -Force
+        Add-Member -InputObject $badHashtable -MemberType NoteProperty -Name Count -Value 0 -Force
+        Add-Member -InputObject $badHashtable -MemberType NoteProperty -Name Keys -Value @() -Force
+        Add-Member -InputObject $badHashtable -MemberType NoteProperty -Name Values -Value @() -Force
+
+        $test.Data.out = $out = @()
+        $test.Data.in = @{
+            collection     = $badHashtable
+            examinedKeys   = new-object system.collections.arraylist
+            expectedCalls  = 7
+            remainingCalls = 7
+            predicate = {
+                param($entry)
+
+                $test.Data.in.remainingCalls--
+                $test.Data.in.examinedKeys.Add($entry.Key) | out-null
+                $false
+            }
+        }
+        $test.Data.err = try {Test-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.out = $out
+
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
+        Assert-True (0 -eq $test.Data.in.remainingCalls)
+
+        $test.Data.in.examinedKeys = @($test.Data.in.examinedKeys | Sort-Object)
+
+        Assert-True (7 -eq $test.Data.in.examinedKeys.Length)
+        Assert-True ('count' -eq $test.Data.in.examinedKeys[0])
+        Assert-True ('keys' -eq $test.Data.in.examinedKeys[1])
+        Assert-True ('psadapted' -eq $test.Data.in.examinedKeys[2])
+        Assert-True ('psbase' -eq $test.Data.in.examinedKeys[3])
+        Assert-True ('psextended' -eq $test.Data.in.examinedKeys[4])
+        Assert-True ('psobject' -eq $test.Data.in.examinedKeys[5])
+        Assert-True ('values' -eq $test.Data.in.examinedKeys[6])
+
+        $pass = $true
+    }
+    finally {commitTestLogEntry $test $pass}
+}
