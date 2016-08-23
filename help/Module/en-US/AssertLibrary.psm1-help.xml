@@ -2190,7 +2190,7 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
     <maml:description>
       <maml:para>This function is useful for asserting that a function outputs the correct number of objects.
 
-See the -Equals, -Minimum, and -Maximum parameters for more details.
+See the -Equals, -Maximum, -Minimum, and -NotEquals parameters for more details.
 
 Note:
 This function will output all pipeline objects it receives until an error is thrown, or until there are no more objects left in the pipeline.</maml:para>
@@ -2208,10 +2208,12 @@ The argument for this parameter must come from the pipeline.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="eq">
           <maml:name>Equals</maml:name>
           <maml:description>
             <maml:para>This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+The -Equals parameter has the alias -eq.
 
 Note:
 A negative number will always cause this assertion to fail.</maml:para>
@@ -2231,10 +2233,37 @@ The argument for this parameter must come from the pipeline.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="max">
+          <maml:name>Maximum</maml:name>
+          <maml:description>
+            <maml:para>This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+
+The -Maximum parameter has the alias -max.
+
+Note:
+A negative number will always cause this assertion to fail.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Assert-PipelineCount</maml:name>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
+          <maml:name>InputObject</maml:name>
+          <maml:description>
+            <maml:para>The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="min">
           <maml:name>Minimum</maml:name>
           <maml:description>
             <maml:para>This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
+
+The -Minimum parameter has the alias -min.
 
 Note:
 A negative number will always cause this assertion to pass.</maml:para>
@@ -2254,13 +2283,15 @@ The argument for this parameter must come from the pipeline.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
-          <maml:name>Maximum</maml:name>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
+          <maml:name>NotEquals</maml:name>
           <maml:description>
-            <maml:para>This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+            <maml:para>This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+The -NotEquals parameter has the alias -ne.
 
 Note:
-A negative number will always cause this assertion to fail.</maml:para>
+A negative number will always cause this assertion to pass.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         </command:parameter>
@@ -2282,10 +2313,12 @@ The argument for this parameter must come from the pipeline.</maml:para>
         </dev:type>
         <dev:defaultValue />
       </command:parameter>
-      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="eq">
         <maml:name>Equals</maml:name>
         <maml:description>
           <maml:para>This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+The -Equals parameter has the alias -eq.
 
 Note:
 A negative number will always cause this assertion to fail.</maml:para>
@@ -2297,10 +2330,29 @@ A negative number will always cause this assertion to fail.</maml:para>
         </dev:type>
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="max">
+        <maml:name>Maximum</maml:name>
+        <maml:description>
+          <maml:para>This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+
+The -Maximum parameter has the alias -max.
+
+Note:
+A negative number will always cause this assertion to fail.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
+        <dev:type>
+          <maml:name>Int64</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="min">
         <maml:name>Minimum</maml:name>
         <maml:description>
           <maml:para>This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
+
+The -Minimum parameter has the alias -min.
 
 Note:
 A negative number will always cause this assertion to pass.</maml:para>
@@ -2312,13 +2364,15 @@ A negative number will always cause this assertion to pass.</maml:para>
         </dev:type>
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
-        <maml:name>Maximum</maml:name>
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
+        <maml:name>NotEquals</maml:name>
         <maml:description>
-          <maml:para>This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+          <maml:para>This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+The -NotEquals parameter has the alias -ne.
 
 Note:
-A negative number will always cause this assertion to fail.</maml:para>
+A negative number will always cause this assertion to pass.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         <dev:type>
@@ -2420,6 +2474,20 @@ $d = myFunc4 | Assert-PipelineCount -Minimum 3 | Assert-PipelineCount -Maximum 1
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
+        <dev:code>$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount -NotEquals 100</dev:code>
+        <dev:remarks>
+          <maml:para>Throws an error if Get-Random -Count 10 returns exactly one hundred objects.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
         <dev:code>$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount 10 -Verbose</dev:code>
         <dev:remarks>
           <maml:para>Throws an error if Get-Random -Count 10 does not return exactly ten objects.
@@ -2431,7 +2499,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
@@ -2446,7 +2514,7 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 7 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
