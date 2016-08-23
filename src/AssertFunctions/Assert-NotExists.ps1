@@ -20,8 +20,9 @@ function Assert-NotExists
     $fail = $true
     if ($Collection -is [System.Collections.ICollection]) {
         $fail = $false
+        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
 
-        foreach ($item in $Collection.psbase.GetEnumerator()) {
+        foreach ($item in $enumerator) {
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
