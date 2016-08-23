@@ -23,13 +23,63 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.7.6.0
+#Assert Library version 1.7.7.0
+#https://github.com/imfrancisd/PowerShell-Assert-Library
 #
 #PowerShell requirements
 #requires -version 2.0
 
 
-New-Module -Name 'AssertLibrary_en-US_v1.7.6.0' -ScriptBlock {
+
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Scope='Function', Justification='The output type is System.Object. The function just outputs the objects it receives from the pipeline and those objects can be of different types.', Target='Assert-PipelineAll')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Scope='Function', Justification='The output type is System.Object. The function just outputs the objects it receives from the pipeline and those objects can be of different types.', Target='Assert-PipelineAny')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Scope='Function', Justification='The output type is System.Object. The function just outputs the objects it receives from the pipeline and those objects can be of different types.', Target='Assert-PipelineCount')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Scope='Function', Justification='The output type is System.Object. The function just outputs the objects it receives from the pipeline and those objects can be of different types.', Target='Assert-PipelineExists')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Scope='Function', Justification='The output type is System.Object. The function just outputs the objects it receives from the pipeline and those objects can be of different types.', Target='Assert-PipelineNotExists')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Scope='Function', Justification='The output type is System.Object. The function just outputs the objects it receives from the pipeline and those objects can be of different types.', Target='Assert-PipelineSingle')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Scope='Function', Justification='The operation is known as "there exists" by testers, programmers, logicians, mathematicians, and philosophers.', Target='Assert-Exists')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Scope='Function', Justification='The operation is known as "there exists" by testers, programmers, logicians, mathematicians, and philosophers.', Target='Assert-NotExists')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Scope='Function', Justification='The operation is known as "there exists" by testers, programmers, logicians, mathematicians, and philosophers.', Target='Assert-PipelineExists')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Scope='Function', Justification='The operation is known as "there exists" by testers, programmers, logicians, mathematicians, and philosophers.', Target='Assert-PipelineNotExists')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Scope='Function', Justification='The operation is known as "there exists" by testers, programmers, logicians, mathematicians, and philosophers.', Target='Test-Exists')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Scope='Function', Justification='The operation is known as "there exists" by testers, programmers, logicians, mathematicians, and philosophers.', Target='Test-NotExists')]
+[CmdletBinding()]
+Param()
+
+
+
+New-Module -Name 'AssertLibrary_en-US_v1.7.7.0' -ScriptBlock {
+
+Microsoft.PowerShell.Core\Set-StrictMode -Off
+
+
+$_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator = {
+    [CmdletBinding()]
+    [OutputType([System.Collections.IEnumerator])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.Collections.IEnumerable]
+        $InputObject
+    )
+
+    #NOTE about compatibility
+    #
+    #In PowerShell, it is possible to override properties and methods of an object.
+    #
+    #The psbase property in all objects allows access to the real properties and methods.
+    #
+    #The properties of hashtables, however, can sometimes be hidden depending on what is
+    #inside the hashtable and the version of PowerShell. This means that we cannot always
+    #access the psbase property, which means that we cannot use psbase to access the
+    #"real" GetEnumerator method of hashtables.
+    #
+    #Explicit .NET reflection must be used if you want to make sure that you are calling
+    #the "real" GetEnumerator method of collections in different versions of PowerShell.
+
+    ,$_7ddd17460d1743b2b6e683ef649e01b7_getEnumeratorMethod.Invoke($InputObject, $null)
+}
+
+$_7ddd17460d1743b2b6e683ef649e01b7_getEnumeratorMethod = [System.Collections.IEnumerable].GetMethod('GetEnumerator', [System.Type]::EmptyTypes)
 
 
 $_7ddd17460d1743b2b6e683ef649e01b7_getListElementType = {
@@ -926,8 +976,9 @@ function Assert-All
     $fail = $true
     if ($Collection -is [System.Collections.ICollection]) {
         $fail = $false
+        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
 
-        foreach ($item in $Collection.psbase.GetEnumerator()) {
+        foreach ($item in $enumerator) {
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
@@ -1064,7 +1115,9 @@ function Assert-Exists
 
     $fail = $true
     if ($Collection -is [System.Collections.ICollection]) {
-        foreach ($item in $Collection.psbase.GetEnumerator()) {
+        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+
+        foreach ($item in $enumerator) {
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
@@ -1305,8 +1358,9 @@ function Assert-NotExists
     $fail = $true
     if ($Collection -is [System.Collections.ICollection]) {
         $fail = $false
+        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
 
-        foreach ($item in $Collection.psbase.GetEnumerator()) {
+        foreach ($item in $enumerator) {
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
@@ -2042,7 +2096,7 @@ Assert the number of objects in the pipeline.
 .Description
 This function is useful for asserting that a function outputs the correct number of objects.
 
-See the -Equals, -Minimum, and -Maximum parameters for more details.
+See the -Equals, -Maximum, -Minimum, and -NotEquals parameters for more details.
 
 Note:
 This function will output all pipeline objects it receives until an error is thrown, or until there are no more objects left in the pipeline.
@@ -2054,18 +2108,31 @@ The argument for this parameter must come from the pipeline.
 .Parameter Equals
 This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
 
+The -Equals parameter has the alias -eq.
+
+Note:
+A negative number will always cause this assertion to fail.
+.Parameter Maximum
+This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+
+The -Maximum parameter has the alias -max.
+
 Note:
 A negative number will always cause this assertion to fail.
 .Parameter Minimum
 This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
 
-Note:
-A negative number will always cause this assertion to pass.
-.Parameter Maximum
-This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+The -Minimum parameter has the alias -min.
 
 Note:
-A negative number will always cause this assertion to fail.
+A negative number will always cause this assertion to pass.
+.Parameter NotEquals
+This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+The -NotEquals parameter has the alias -ne.
+
+Note:
+A negative number will always cause this assertion to pass.
 .Example
 $nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount 10
 Throws an error if Get-Random -Count 10 does not return exactly ten objects.
@@ -2075,6 +2142,9 @@ Throws an error if Get-Random -Count 10 returns more than ten objects.
 .Example
 $nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount -Minimum 10
 Throws an error if Get-Random -Count 10 returns less than ten objects.
+.Example
+$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount -NotEquals 100
+Throws an error if Get-Random -Count 10 returns exactly one hundred objects.
 .Example
 $nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount 10 -Verbose
 Throws an error if Get-Random -Count 10 does not return exactly ten objects.
@@ -2149,16 +2219,24 @@ function Assert-PipelineCount
         $InputObject,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'Equals', Position = 0)]
+        [Alias('eq')]
         [System.Int64]
         $Equals,
 
+        [Parameter(Mandatory = $true, ParameterSetName = 'Maximum')]
+        [Alias('max')]
+        [System.Int64]
+        $Maximum,
+
         [Parameter(Mandatory = $true, ParameterSetName = 'Minimum')]
+        [Alias('min')]
         [System.Int64]
         $Minimum,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'Maximum')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'NotEquals')]
+        [Alias('ne')]
         [System.Int64]
-        $Maximum
+        $NotEquals
     )
 
     begin
@@ -2187,6 +2265,10 @@ function Assert-PipelineCount
         if ($PSCmdlet.ParameterSetName -eq 'Equals') {
             $failEarly  = {$inputCount -gt $Equals}
             $failAssert = {$inputCount -ne $Equals}
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq 'NotEquals') {
+            $failEarly  = {$false}
+            $failAssert = {$inputCount -eq $NotEquals}
         }
         elseif ($PSCmdlet.ParameterSetName -eq 'Maximum') {
             $failEarly  = {$inputCount -gt $Maximum}
@@ -3724,7 +3806,9 @@ function Test-All
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
     if ($Collection -is [System.Collections.ICollection]) {
-        foreach ($item in $Collection.psbase.GetEnumerator()) {
+        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+
+        foreach ($item in $enumerator) {
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
@@ -4314,7 +4398,9 @@ function Test-Exists
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
     if ($Collection -is [System.Collections.ICollection]) {
-        foreach ($item in $Collection.psbase.GetEnumerator()) {
+        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+
+        foreach ($item in $enumerator) {
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
@@ -4973,7 +5059,9 @@ function Test-NotExists
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
     if ($Collection -is [System.Collections.ICollection]) {
-        foreach ($item in $Collection.psbase.GetEnumerator()) {
+        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+
+        foreach ($item in $enumerator) {
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}

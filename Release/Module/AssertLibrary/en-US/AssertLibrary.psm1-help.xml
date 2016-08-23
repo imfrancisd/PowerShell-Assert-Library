@@ -127,7 +127,7 @@ Assert-All $numbers {param($n) $n % 2 -eq 0}</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-All @(1, 2, 3, 4, 5) {param($n) $n -gt 0}</dev:code>
         <dev:remarks>
@@ -141,7 +141,7 @@ Assert-All $numbers {param($n) $n % 2 -eq 0}</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-All @() {param($n) $n -gt 0}</dev:code>
         <dev:remarks>
@@ -159,7 +159,7 @@ This is known as vacuous truth.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-All @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 5} -Verbose</dev:code>
         <dev:remarks>
@@ -174,7 +174,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-All @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 5} -Debug</dev:code>
         <dev:remarks>
@@ -377,7 +377,7 @@ Assert-Exists $numbers {param($n) $n % 2 -eq 0}</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}</dev:code>
         <dev:remarks>
@@ -391,7 +391,7 @@ Assert-Exists $numbers {param($n) $n % 2 -eq 0}</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-Exists @() {param($n) $n -gt 3}</dev:code>
         <dev:remarks>
@@ -408,7 +408,7 @@ This assertion will always fail because the array is empty.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25} -Verbose</dev:code>
         <dev:remarks>
@@ -423,7 +423,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25} -Debug</dev:code>
         <dev:remarks>
@@ -589,7 +589,7 @@ Assert-False ($a -eq $b)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-False ($a -eq $b)</dev:code>
         <dev:remarks>
@@ -603,7 +603,7 @@ Assert-False ($a -eq $b)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-False ($a -eq $b) -Verbose</dev:code>
         <dev:remarks>
@@ -618,7 +618,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-False ($a -eq $b) -Debug</dev:code>
         <dev:remarks>
@@ -821,7 +821,7 @@ Assert-NotExists $numbers {param($n) $n % 2 -ne 0}</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotExists @(1, 2, 3, 4, 5) {param($n) $n -gt 10}</dev:code>
         <dev:remarks>
@@ -835,7 +835,7 @@ Assert-NotExists $numbers {param($n) $n % 2 -ne 0}</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotExists @() {param($n) $n -gt 10}</dev:code>
         <dev:remarks>
@@ -852,7 +852,7 @@ This assertion will always pass because the array is empty.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0} -Verbose</dev:code>
         <dev:remarks>
@@ -867,7 +867,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0} -Debug</dev:code>
         <dev:remarks>
@@ -1031,7 +1031,7 @@ Assert-NotFalse ($a -eq $b)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotFalse ($a -eq $b)</dev:code>
         <dev:remarks>
@@ -1045,7 +1045,7 @@ Assert-NotFalse ($a -eq $b)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotFalse ($a -eq $b) -Verbose</dev:code>
         <dev:remarks>
@@ -1060,7 +1060,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotFalse ($a -eq $b) -Debug</dev:code>
         <dev:remarks>
@@ -1224,7 +1224,7 @@ Assert-NotNull $c</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotNull $a</dev:code>
         <dev:remarks>
@@ -1238,7 +1238,7 @@ Assert-NotNull $c</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotNull $a -Verbose</dev:code>
         <dev:remarks>
@@ -1253,7 +1253,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotNull $a -Debug</dev:code>
         <dev:remarks>
@@ -1417,7 +1417,7 @@ Assert-NotTrue ($a -eq $b)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotTrue ($a -eq $b)</dev:code>
         <dev:remarks>
@@ -1431,7 +1431,7 @@ Assert-NotTrue ($a -eq $b)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotTrue ($a -eq $b) -Verbose</dev:code>
         <dev:remarks>
@@ -1446,7 +1446,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-NotTrue ($a -eq $b) -Debug</dev:code>
         <dev:remarks>
@@ -1610,7 +1610,7 @@ Assert-Null $c</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-Null $a</dev:code>
         <dev:remarks>
@@ -1624,7 +1624,7 @@ Assert-Null $c</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-Null $a -Verbose</dev:code>
         <dev:remarks>
@@ -1639,7 +1639,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-Null $a -Debug</dev:code>
         <dev:remarks>
@@ -1842,7 +1842,7 @@ $numbers = myNumberGenerator |
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@(1, 2, 3, 4, 5) | Assert-PipelineAll {param($n) $n -gt 0}</dev:code>
         <dev:remarks>
@@ -1856,7 +1856,7 @@ $numbers = myNumberGenerator |
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@() | Assert-PipelineAll {param($n) $n -gt 0}</dev:code>
         <dev:remarks>
@@ -1874,7 +1874,7 @@ This is known as vacuous truth.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineAll {param($entry) $entry.Value -gt 5} -Verbose</dev:code>
         <dev:remarks>
@@ -1892,7 +1892,7 @@ The GetEnumerator() method must be used in order to pipe the entries of a hashta
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineAll {param($entry) $entry.Value -gt 5} -Debug</dev:code>
         <dev:remarks>
@@ -2069,7 +2069,7 @@ $c = myFunc3 | Assert-PipelineAny</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$letter = 'a', 'b', 'c' | Get-Random | Assert-PipelineAny</dev:code>
         <dev:remarks>
@@ -2083,7 +2083,7 @@ $c = myFunc3 | Assert-PipelineAny</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$letter = 'a', 'b', 'c' | Get-Random | Assert-PipelineAny -Verbose</dev:code>
         <dev:remarks>
@@ -2098,7 +2098,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$letter = 'a', 'b', 'c' | Get-Random | Assert-PipelineAny -Debug</dev:code>
         <dev:remarks>
@@ -2190,7 +2190,7 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
     <maml:description>
       <maml:para>This function is useful for asserting that a function outputs the correct number of objects.
 
-See the -Equals, -Minimum, and -Maximum parameters for more details.
+See the -Equals, -Maximum, -Minimum, and -NotEquals parameters for more details.
 
 Note:
 This function will output all pipeline objects it receives until an error is thrown, or until there are no more objects left in the pipeline.</maml:para>
@@ -2208,10 +2208,12 @@ The argument for this parameter must come from the pipeline.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="eq">
           <maml:name>Equals</maml:name>
           <maml:description>
             <maml:para>This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+The -Equals parameter has the alias -eq.
 
 Note:
 A negative number will always cause this assertion to fail.</maml:para>
@@ -2231,10 +2233,37 @@ The argument for this parameter must come from the pipeline.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="max">
+          <maml:name>Maximum</maml:name>
+          <maml:description>
+            <maml:para>This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+
+The -Maximum parameter has the alias -max.
+
+Note:
+A negative number will always cause this assertion to fail.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Assert-PipelineCount</maml:name>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named" aliases="">
+          <maml:name>InputObject</maml:name>
+          <maml:description>
+            <maml:para>The object from the pipeline.
+
+Note:
+The argument for this parameter must come from the pipeline.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="min">
           <maml:name>Minimum</maml:name>
           <maml:description>
             <maml:para>This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
+
+The -Minimum parameter has the alias -min.
 
 Note:
 A negative number will always cause this assertion to pass.</maml:para>
@@ -2254,13 +2283,15 @@ The argument for this parameter must come from the pipeline.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
-          <maml:name>Maximum</maml:name>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
+          <maml:name>NotEquals</maml:name>
           <maml:description>
-            <maml:para>This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+            <maml:para>This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+The -NotEquals parameter has the alias -ne.
 
 Note:
-A negative number will always cause this assertion to fail.</maml:para>
+A negative number will always cause this assertion to pass.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         </command:parameter>
@@ -2282,10 +2313,12 @@ The argument for this parameter must come from the pipeline.</maml:para>
         </dev:type>
         <dev:defaultValue />
       </command:parameter>
-      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="eq">
         <maml:name>Equals</maml:name>
         <maml:description>
           <maml:para>This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+The -Equals parameter has the alias -eq.
 
 Note:
 A negative number will always cause this assertion to fail.</maml:para>
@@ -2297,10 +2330,29 @@ A negative number will always cause this assertion to fail.</maml:para>
         </dev:type>
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="max">
+        <maml:name>Maximum</maml:name>
+        <maml:description>
+          <maml:para>This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+
+The -Maximum parameter has the alias -max.
+
+Note:
+A negative number will always cause this assertion to fail.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
+        <dev:type>
+          <maml:name>Int64</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="min">
         <maml:name>Minimum</maml:name>
         <maml:description>
           <maml:para>This function will throw an error if the number of objects in the pipeline is less than the number specified by this parameter.
+
+The -Minimum parameter has the alias -min.
 
 Note:
 A negative number will always cause this assertion to pass.</maml:para>
@@ -2312,13 +2364,15 @@ A negative number will always cause this assertion to pass.</maml:para>
         </dev:type>
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
-        <maml:name>Maximum</maml:name>
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="ne">
+        <maml:name>NotEquals</maml:name>
         <maml:description>
-          <maml:para>This function will throw an error if the number of objects in the pipeline is more than the number specified by this parameter.
+          <maml:para>This function will throw an error if the number of objects in the pipeline is not equal to the number specified by this parameter.
+
+The -NotEquals parameter has the alias -ne.
 
 Note:
-A negative number will always cause this assertion to fail.</maml:para>
+A negative number will always cause this assertion to pass.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         <dev:type>
@@ -2376,7 +2430,7 @@ $d = myFunc4 | Assert-PipelineCount -Minimum 3 | Assert-PipelineCount -Maximum 1
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount 10</dev:code>
         <dev:remarks>
@@ -2390,7 +2444,7 @@ $d = myFunc4 | Assert-PipelineCount -Minimum 3 | Assert-PipelineCount -Maximum 1
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount -Maximum 10</dev:code>
         <dev:remarks>
@@ -2404,7 +2458,7 @@ $d = myFunc4 | Assert-PipelineCount -Minimum 3 | Assert-PipelineCount -Maximum 1
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount -Minimum 10</dev:code>
         <dev:remarks>
@@ -2418,7 +2472,21 @@ $d = myFunc4 | Assert-PipelineCount -Minimum 3 | Assert-PipelineCount -Maximum 1
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount -NotEquals 100</dev:code>
+        <dev:remarks>
+          <maml:para>Throws an error if Get-Random -Count 10 returns exactly one hundred objects.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount 10 -Verbose</dev:code>
         <dev:remarks>
@@ -2431,9 +2499,9 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$nums = 1..100 | Get-Random -Count 10 | Assert-PipelineCount 10 -Debug</dev:code>
         <dev:remarks>
@@ -2446,9 +2514,9 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 7 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$a = Get-ChildItem 'a*' | Assert-PipelineCount -Minimum 5 | Assert-PipelineCount -Maximum 10</dev:code>
         <dev:remarks>
@@ -2619,7 +2687,7 @@ myFunc3 | Assert-PipelineEmpty</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Get-ChildItem 'aFileThatDoesNotExist*' | Assert-PipelineEmpty</dev:code>
         <dev:remarks>
@@ -2633,7 +2701,7 @@ myFunc3 | Assert-PipelineEmpty</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Get-ChildItem 'aFileThatDoesNotExist*' | Assert-PipelineEmpty -Verbose</dev:code>
         <dev:remarks>
@@ -2648,7 +2716,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Get-ChildItem 'aFileThatDoesNotExist*' | Assert-PipelineEmpty -Debug</dev:code>
         <dev:remarks>
@@ -2851,7 +2919,7 @@ $numbers = myNumberGenerator |
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@(1, 2, 3, 4, 5) | Assert-PipelineExists {param($n) $n -gt 3}</dev:code>
         <dev:remarks>
@@ -2865,7 +2933,7 @@ $numbers = myNumberGenerator |
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@() | Assert-PipelineExists {param($n) $n -gt 3}</dev:code>
         <dev:remarks>
@@ -2882,7 +2950,7 @@ This assertion will always fail because the array is empty.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Verbose</dev:code>
         <dev:remarks>
@@ -2900,7 +2968,7 @@ The GetEnumerator() method must be used in order to pipe the entries of a hashta
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Debug</dev:code>
         <dev:remarks>
@@ -3106,7 +3174,7 @@ $numbers = myNumberGenerator |
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@(1, 2, 3, 4, 5) | Assert-PipelineNotExists {param($n) $n -gt 10}</dev:code>
         <dev:remarks>
@@ -3120,7 +3188,7 @@ $numbers = myNumberGenerator |
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@() | Assert-PipelineNotExists {param($n) $n -gt 10}</dev:code>
         <dev:remarks>
@@ -3137,7 +3205,7 @@ This assertion will always pass because the array is empty.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Verbose</dev:code>
         <dev:remarks>
@@ -3155,7 +3223,7 @@ The GetEnumerator() method must be used in order to pipe the entries of a hashta
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Debug</dev:code>
         <dev:remarks>
@@ -3333,7 +3401,7 @@ $c = myFunc3 | Assert-PipelineSingle</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$letter = 'a', 'b', 'c' | Get-Random | Assert-PipelineSingle</dev:code>
         <dev:remarks>
@@ -3347,7 +3415,7 @@ $c = myFunc3 | Assert-PipelineSingle</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$letter = 'a', 'b', 'c' | Get-Random | Assert-PipelineSingle -Verbose</dev:code>
         <dev:remarks>
@@ -3362,7 +3430,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>$letter = 'a', 'b', 'c' | Get-Random | Assert-PipelineSingle -Debug</dev:code>
         <dev:remarks>
@@ -3528,7 +3596,7 @@ Assert-True ($a -eq $b)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-True ($a -eq $b)</dev:code>
         <dev:remarks>
@@ -3542,7 +3610,7 @@ Assert-True ($a -eq $b)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-True ($a -eq $b) -Verbose</dev:code>
         <dev:remarks>
@@ -3557,7 +3625,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Assert-True ($a -eq $b) -Debug</dev:code>
         <dev:remarks>
@@ -4364,7 +4432,7 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -pair @(10, 20, 30, 40, 50)</dev:code>
         <dev:remarks>
@@ -4385,7 +4453,7 @@ Note that using nested lists in the PowerShell pipeline will cause subtle bugs, 
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -pair $numbers | assert-pipelineall {param($pair) $a, $b = $pair.Items; $a -le $b} | out-null</dev:code>
         <dev:remarks>
@@ -4410,7 +4478,7 @@ then the this example is equivalent to
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -window @(1, 2, 3, 5, 8, 13, 21) -size 3</dev:code>
         <dev:remarks>
@@ -4432,7 +4500,7 @@ then the this example is equivalent to
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -window $numbers -size 3 | assert-pipelineall {param($window) $a, $b, $c = $window.Items; ($a + $b) -eq $c} | out-null</dev:code>
         <dev:remarks>
@@ -4458,7 +4526,7 @@ then the example is equivalent to
       <command:example>
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -rotateLeft @('a', 'b', 'c', $null)</dev:code>
         <dev:remarks>
@@ -4481,7 +4549,7 @@ See also the -RotateRight parameter.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -rotateLeft $strings | assert-pipelineall {param($rotations) (sortedJoin $rotations.Items) -eq 'abc'} | out-null</dev:code>
         <dev:remarks>
@@ -4509,7 +4577,7 @@ See also the -RotateRight parameter.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 7 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -combine @('a', 'b', 'c', 'd', 'e') -size 3</dev:code>
         <dev:remarks>
@@ -4536,7 +4604,7 @@ See also the -RotateRight parameter.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 8 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -combine $words -size 3 | assert-pipelineall {param($combinations) ($combinations.Items -join ' ').length -lt 10} | out-null</dev:code>
         <dev:remarks>
@@ -4567,7 +4635,7 @@ then the example is equivalent to
       <command:example>
         <maml:title>-------------------------- EXAMPLE 9 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -permute @(10, 20, 30)</dev:code>
         <dev:remarks>
@@ -4590,7 +4658,7 @@ then the example is equivalent to
       <command:example>
         <maml:title>-------------------------- EXAMPLE 10 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -permute $numbers | assert-pipelineall {param($permutations) (add $permutations.Items) -eq 60} | out-null</dev:code>
         <dev:remarks>
@@ -4618,7 +4686,7 @@ then the example is equivalent to
       <command:example>
         <maml:title>-------------------------- EXAMPLE 11 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -cartesianProduct @(0), @(-2, -1, 0, 1, 2), @('stop', 'silentlycontinue')</dev:code>
         <dev:remarks>
@@ -4645,7 +4713,7 @@ then the example is equivalent to
       <command:example>
         <maml:title>-------------------------- EXAMPLE 12 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -cartesianProduct @(0), $numbers, $ea | assert-pipelineall {param($cProduct) $a, $b, $c = $cProduct.Items; (add $a $b -erroraction $c) -eq $b} | out-null</dev:code>
         <dev:remarks>
@@ -4678,7 +4746,7 @@ then the example is equivalent to
       <command:example>
         <maml:title>-------------------------- EXAMPLE 13 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -coveringArray @('a1','a2','a3'), @('b1','b2','b3','b4','b5'), @('c1','c2') -strength 1</dev:code>
         <dev:remarks>
@@ -4707,7 +4775,7 @@ See the -Strength parameter for more details.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 14 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -coveringArray $aList, $bList, $cList -strength 1 | assert-pipelineall {param($cArray) $a, $b, $c = $cArray.Items; $null -ne (f $a $b $c)} | out-null</dev:code>
         <dev:remarks>
@@ -4736,7 +4804,7 @@ then the example is equivalent to
       <command:example>
         <maml:title>-------------------------- EXAMPLE 15 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -zip @('a', 'b', 'c'), @(1, 2, 3, 4, 5)</dev:code>
         <dev:remarks>
@@ -4761,7 +4829,7 @@ In this example, the list with the fewest items (@('a', 'b', 'c')) only has 3 it
       <command:example>
         <maml:title>-------------------------- EXAMPLE 16 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>group-listItem -zip $aList, $bList | assert-pipelineall {param($zipped) $a, $b = $zipped.Items; $a -eq $b} | out-null</dev:code>
         <dev:remarks>
@@ -4977,7 +5045,7 @@ assert-exists $items {param($a) all? $a.cArray {param($c) $c -eq 0}}</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-All @(1, 2, 3, 4, 5) {param($n) $n -gt 0}</dev:code>
         <dev:remarks>
@@ -4991,7 +5059,7 @@ assert-exists $items {param($a) all? $a.cArray {param($c) $c -eq 0}}</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-All @() {param($n) $n -gt 0}</dev:code>
         <dev:remarks>
@@ -5009,7 +5077,7 @@ This is known as vacuous truth.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-All @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 5}</dev:code>
         <dev:remarks>
@@ -6270,7 +6338,7 @@ assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, d
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-DateTime $a</dev:code>
         <dev:remarks>
@@ -6284,7 +6352,7 @@ assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, d
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-DateTime $a -kind utc</dev:code>
         <dev:remarks>
@@ -6298,7 +6366,7 @@ assert (datetime? $a -eq $b -matchkind -kind utc, local -property year, month, d
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-DateTime $a -eq $b</dev:code>
         <dev:remarks>
@@ -6313,7 +6381,7 @@ Returns $null if $a or $b is not a DateTime object.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-DateTime $a -eq $b -matchkind</dev:code>
         <dev:remarks>
@@ -6328,7 +6396,7 @@ Returns $null if $a or $b is not a DateTime object, or $a and $b do not have the
       <command:example>
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-DateTime $a -eq $b -property year, month, day</dev:code>
         <dev:remarks>
@@ -6510,7 +6578,7 @@ assert-exists $items {param($a) exists? $a.cArray {param($c) $c -eq 0}}</maml:pa
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}</dev:code>
         <dev:remarks>
@@ -6524,7 +6592,7 @@ assert-exists $items {param($a) exists? $a.cArray {param($c) $c -eq 0}}</maml:pa
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Exists @() {param($n) $n -gt 3}</dev:code>
         <dev:remarks>
@@ -6541,7 +6609,7 @@ This test will always return $false because the array is empty.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25}</dev:code>
         <dev:remarks>
@@ -6678,7 +6746,7 @@ assert-exists $items {param($a) (false? $a.d) -xor (false? $a.e)}</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-False 0</dev:code>
         <dev:remarks>
@@ -6698,7 +6766,7 @@ and see how tests can become confusing if those numbers were stored in variables
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-False @($false)</dev:code>
         <dev:remarks>
@@ -7661,7 +7729,7 @@ assert-true (guid? $a -ne $b -variant standard -version 1,3,4,5 -matchvariant -m
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Guid $a</dev:code>
         <dev:remarks>
@@ -7675,7 +7743,7 @@ assert-true (guid? $a -ne $b -variant standard -version 1,3,4,5 -matchvariant -m
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Guid $a -variant standard, microsoft</dev:code>
         <dev:remarks>
@@ -7691,7 +7759,7 @@ See the -Variant parameter for more details.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Guid $a -variant standard -version 1, 4</dev:code>
         <dev:remarks>
@@ -7707,7 +7775,7 @@ See the -Variant and -Version parameters for more details.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Guid $a -lt $b</dev:code>
         <dev:remarks>
@@ -7722,7 +7790,7 @@ Returns $null if $a or $b is not a GUID.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Guid $a -lt $b -matchvariant</dev:code>
         <dev:remarks>
@@ -7739,7 +7807,7 @@ See the -MatchVariant and -Variant parameters for more details.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Guid $a -lt $b -variant standard -matchversion</dev:code>
         <dev:remarks>
@@ -7919,7 +7987,7 @@ assert-exists $items {param($a) notExists? $a.cArray {param($c) $c -eq 0}}</maml
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-NotExists @(1, 2, 3, 4, 5) {param($n) $n -gt 10}</dev:code>
         <dev:remarks>
@@ -7933,7 +8001,7 @@ assert-exists $items {param($a) notExists? $a.cArray {param($c) $c -eq 0}}</maml
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-NotExists @() {param($n) $n -gt 10}</dev:code>
         <dev:remarks>
@@ -7950,7 +8018,7 @@ This test will always return $true because the array is empty.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0}</dev:code>
         <dev:remarks>
@@ -8087,7 +8155,7 @@ assert-exists $items {param($a) (notFalse? $a.d) -xor (notFalse? $a.e)}</maml:pa
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-NotFalse 0</dev:code>
         <dev:remarks>
@@ -8107,7 +8175,7 @@ and see how tests can become confusing if those numbers were stored in variables
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-NotFalse @($false)</dev:code>
         <dev:remarks>
@@ -8249,7 +8317,7 @@ assert-exists $items {param($a) (notNull? $a.d) -xor (notNull? $a.e)}</maml:para
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-NotNull @(1)</dev:code>
         <dev:remarks>
@@ -8392,7 +8460,7 @@ assert-exists $items {param($a) (notTrue? $a.d) -xor (notTrue? $a.e)}</maml:para
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-NotTrue 1</dev:code>
         <dev:remarks>
@@ -8412,7 +8480,7 @@ and see how tests can become confusing if those numbers were stored in variables
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-NotTrue @($true)</dev:code>
         <dev:remarks>
@@ -8554,7 +8622,7 @@ assert-exists $items {param($a) (null? $a.d) -xor (null? $a.e)}</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Null @(1)</dev:code>
         <dev:remarks>
@@ -9480,7 +9548,7 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)</maml:
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Number $n</dev:code>
         <dev:remarks>
@@ -9494,7 +9562,7 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)</maml:
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Number $n -Type Int32</dev:code>
         <dev:remarks>
@@ -9508,7 +9576,7 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)</maml:
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Number $n -Type Int32, Double, Decimal</dev:code>
         <dev:remarks>
@@ -9522,7 +9590,7 @@ assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)</maml:
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Number $x -lt $y</dev:code>
         <dev:remarks>
@@ -9537,7 +9605,7 @@ Returns $null if $x or $y is not a number.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Number $x -lt $y -MatchType</dev:code>
         <dev:remarks>
@@ -9552,7 +9620,7 @@ Returns $null if $x or $y is not a number, or $x and $y do not have the same typ
       <command:example>
         <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Number $x -lt $y -Type Int32, Int64, Double</dev:code>
         <dev:remarks>
@@ -10972,7 +11040,7 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-String $a</dev:code>
         <dev:remarks>
@@ -10986,7 +11054,7 @@ assert (string? $a -notStartsWith $c -casesensitive -formcompatible)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-String $a -eq $b</dev:code>
         <dev:remarks>
@@ -11003,7 +11071,7 @@ Returns $null if $a or $b is not a string.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-String $a -eq $b -CaseSensitive</dev:code>
         <dev:remarks>
@@ -11020,7 +11088,7 @@ Returns $null if $a or $b is not a string.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-String $a -Normalization FormC</dev:code>
         <dev:remarks>
@@ -11037,7 +11105,7 @@ NOTE: See the -Normalization parameter for more details.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-String $a -eq $b -FormCompatible</dev:code>
         <dev:remarks>
@@ -11054,7 +11122,7 @@ NOTE: See the -Normalization parameter for more details.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-String $a -eq $b -FormCompatible -Normalization FormKC, FormKD</dev:code>
         <dev:remarks>
@@ -12260,7 +12328,7 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)</
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Text $a</dev:code>
         <dev:remarks>
@@ -12274,7 +12342,7 @@ assert (text? $greeting -startswith 'Hello' -casesensitive -usecurrentculture)</
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Text $a -eq $b</dev:code>
         <dev:remarks>
@@ -12289,7 +12357,7 @@ Returns $null if $a or $b is not text.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Text $a -eq $b -CaseSensitive -UseCurrentCulture</dev:code>
         <dev:remarks>
@@ -12304,7 +12372,7 @@ Returns $null if $a or $b is not text.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Text $a -match $b</dev:code>
         <dev:remarks>
@@ -12972,7 +13040,7 @@ assert-true (timespan? $a -eq $b -property days, hours, minutes)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-TimeSpan $a</dev:code>
         <dev:remarks>
@@ -12986,7 +13054,7 @@ assert-true (timespan? $a -eq $b -property days, hours, minutes)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-TimeSpan $a -eq $b</dev:code>
         <dev:remarks>
@@ -13001,7 +13069,7 @@ Returns $null if $a or $b is not a TimeSpan object.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-TimeSpan $a -eq $b -property days, hours</dev:code>
         <dev:remarks>
@@ -13133,7 +13201,7 @@ assert-exists $items {param($a) (true? $a.d) -xor (true? $a.e)}</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-True 1</dev:code>
         <dev:remarks>
@@ -13153,7 +13221,7 @@ and see how tests can become confusing if those numbers were stored in variables
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-True @($true)</dev:code>
         <dev:remarks>
@@ -13834,7 +13902,7 @@ assert-true (version? $a -eq $b -property major, minor, build)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Version $a</dev:code>
         <dev:remarks>
@@ -13848,7 +13916,7 @@ assert-true (version? $a -eq $b -property major, minor, build)</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Version $a -eq $b</dev:code>
         <dev:remarks>
@@ -13863,7 +13931,7 @@ Returns $null if $a or $b is not a Version object.</maml:para>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <maml:introduction>
-          <maml:para>C:\PS&gt;</maml:para>
+          <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
         <dev:code>Test-Version $a -eq $b -property major, minor</dev:code>
         <dev:remarks>

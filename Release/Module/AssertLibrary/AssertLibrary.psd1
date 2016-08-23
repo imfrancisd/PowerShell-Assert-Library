@@ -4,7 +4,7 @@
 ModuleToProcess = 'AssertLibrary.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.7.6.0'
+ModuleVersion = '1.7.7.0'
 
 # ID used to uniquely identify this module
 GUID = '7ddd1746-0d17-43b2-b6e6-83ef649e01b7'
@@ -33,4 +33,18 @@ VariablesToExport = @()
 # Aliases to export from this module
 AliasesToExport = @()
 
+# Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
+PrivateData = @{
+
+    PSData = @{
+
+        # Tags applied to this module. These help with module discovery in online galleries.
+        Tags = @('Assert', 'Test', 'List Processing', 'Combinatorial')
+
+        # A URL to the main website for this project.
+        ProjectUri = 'https://github.com/imfrancisd/PowerShell-Assert-Library'
+
+    } # End of PSData hashtable
+
+} # End of PrivateData hashtable
 }
