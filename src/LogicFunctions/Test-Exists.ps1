@@ -19,7 +19,9 @@ function Test-Exists
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
     if ($Collection -is [System.Collections.ICollection]) {
-        foreach ($item in $Collection.psbase.GetEnumerator()) {
+        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+
+        foreach ($item in $enumerator) {
             $result = $null
             try   {$result = do {& $Predicate $item} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
