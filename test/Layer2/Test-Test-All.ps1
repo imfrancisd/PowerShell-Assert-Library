@@ -903,7 +903,7 @@ $predicates = @{
             psobject = @{}.psobject
             values = @()
         }
-        Add-Member -InputObject $badHashtable -MemberType ScriptMethod -Name GetEnumerator -Value {@{}.GetEnumerator()} -Force
+        Add-Member -InputObject $badHashtable -MemberType ScriptMethod -Name GetEnumerator -Value {,@{}.GetEnumerator()} -Force
         Add-Member -InputObject $badHashtable -MemberType ScriptMethod -Name Contains -Value {$false} -Force
         Add-Member -InputObject $badHashtable -MemberType ScriptMethod -Name ContainsKey -Value {$false} -Force
         Add-Member -InputObject $badHashtable -MemberType ScriptMethod -Name ContainsValue -Value {$false} -Force
