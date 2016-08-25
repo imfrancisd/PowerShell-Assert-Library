@@ -173,6 +173,13 @@ function buildScriptAnalysisSuppressBlock
         Sort-Object
 }
 
+function buildRemoveInheritedGlobals
+{
+    'if ($PSVersionTable.PSVersion.Major -gt 2) {'
+    '    $PSDefaultParameterValues.Clear()'
+    '}'
+}
+
 function buildStrictMode
 {
     switch ($StrictMode) {
@@ -205,6 +212,7 @@ function buildScript
             ''
             'New-Module -Name {0} -ScriptBlock {{' -f "'AssertLibrary_$($dir.BaseName)_v$LibraryVersion'"
             ''
+            buildRemoveInheritedGlobals
             buildStrictMode
             ''
             foreach ($item in $functionFiles) {
@@ -254,6 +262,7 @@ function buildModule
         ''
         ''
         ''
+        buildRemoveInheritedGlobals
         buildStrictMode
         ''
         foreach ($item in $functionFiles) {
