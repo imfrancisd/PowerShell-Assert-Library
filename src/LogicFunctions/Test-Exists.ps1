@@ -39,17 +39,9 @@ function Test-Exists
                     $exists = $true
                     break
                 }
-                if ($Quantity -eq 'Single') {
-                    if ($found -gt 1) {
-                        $exists = $false
-                        break
-                    }
-                }
-                if ($Quantity -eq 'Multiple') {
-                    if ($found -gt 1) {
-                        $exists = $true
-                        break
-                    }
+                if ($found -gt 1) {
+                    $exists = $Quantity -eq 'Multiple'
+                    break
                 }
             }
         }
