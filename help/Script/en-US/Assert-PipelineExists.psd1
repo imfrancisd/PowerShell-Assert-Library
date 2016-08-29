@@ -2,13 +2,14 @@
 .Synopsis
 Assert that a predicate is true for some objects in the pipeline.
 .Description
-This function throws an error if any of the following conditions are met:
-    *the predicate is not true for any object in the pipeline
+This function throws an error if there does not exist an item in the pipeline that makes predicate true.
+
+The meaning of "to exist" can be modified with the -Quantity parameter.
 
 Note:
 The assertion will always fail if the pipeline is empty.
 
-*See the -InputObject and -Predicate parameters for more details.
+*See the -InputObject, -Predicate, and -Quantity parameters for more details.
 .Parameter InputObject
 The object that is used to test the predicate.
 .Parameter Predicate
@@ -19,6 +20,10 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
+.Parameter Quantity
+The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion pass.
+
+The default is 'Any'.
 .Example
 @(1, 2, 3, 4, 5) | Assert-PipelineExists {param($n) $n -gt 3}
 Assert that at least one item in the array is greater than 3, and outputs each item one at a time.
@@ -28,6 +33,12 @@ Assert that at least one item in the array is greater than 3, and outputs each i
 
 Note:
 This assertion will always fail because the array is empty.
+.Example
+@('H', 'E', 'L', 'L', 'O') | Assert-PipelineExists {param($c) $c -eq 'L'} -Quantity Multiple
+Assert that there are multiple 'L' in the array.
+.Example
+@('H', 'E', 'L', 'L', 'O') | Assert-PipelineExists {param($c) $c -eq 'H'} -Quantity Single
+Assert that there is only a single 'H' in the array.
 .Example
 @{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Verbose
 Assert that at least one entry in the hashtable has a value greater than 25, and outputs each entry one at a time.

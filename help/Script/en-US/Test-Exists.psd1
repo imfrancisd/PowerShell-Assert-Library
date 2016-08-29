@@ -7,11 +7,13 @@ This function tests if a predicate is $true for some of the items in a collectio
     Return Value   Condition
     ------------   ---------
     $null          the collection is not of type System.Collections.ICollection
-    $false         the predicate never returns the System.Boolean value $true
+    $false         there does not exist* an item in the collection that makes the predicate true
                    the collection is empty
-    $true          the predicate returns the System.Boolean value $true one or more times
+    $true          there exists* an item in the collection that makes the predicate true
 
-*See the -Collection and -Predicate parameters for more details.
+    *The meaning of "to exist" can be modified with the -Quantity parameter.
+
+*See the -Collection, -Predicate, and -Quantity parameters for more details.
 .Parameter Collection
 The collection of items used to test the predicate.
 
@@ -24,6 +26,10 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
+.Parameter Quantity
+The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the test return $true.
+
+The default is 'Any'.
 .Example
 Test-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}
 Test that at least one item in the array is greater than 3.
@@ -33,6 +39,12 @@ Test that at least one item in the array is greater than 3.
 
 Note:
 This test will always return $false because the array is empty.
+.Example
+Test-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'L'} -Quantity Multiple
+Test that there are multiple 'L' in the array.
+.Example
+Test-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'H'} -Quantity Single
+Test that there is only a single 'H' in the array.
 .Example
 Test-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25}
 Test that at least one entry in the hashtable has a value greater than 25.

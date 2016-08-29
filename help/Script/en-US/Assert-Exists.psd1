@@ -2,13 +2,14 @@
 .Synopsis
 Assert that a predicate is true for some of the items in a collection.
 .Description
-This function throws an error if any of the following conditions are met:
-    *the predicate is not true for any item in the collection
+This function throws an error if there does not exist an item in the collection that makes predicate true.
+
+The meaning of "to exist" can be modified with the -Quantity parameter.
 
 Note:
 The assertion will always fail if the collection is empty.
 
-*See the -Collection and -Predicate parameters for more details.
+*See the -Collection, -Predicate, and -Quantity parameters for more details.
 .Parameter Collection
 The collection of items used to test the predicate.
 
@@ -21,6 +22,10 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
+.Parameter Quantity
+The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion pass.
+
+The default is 'Any'.
 .Example
 Assert-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}
 Assert that at least one item in the array is greater than 3.
@@ -30,6 +35,12 @@ Assert that at least one item in the array is greater than 3.
 
 Note:
 This assertion will always fail because the array is empty.
+.Example
+Assert-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'L'} -Quantity Multiple
+Assert that there are multiple 'L' in the array.
+.Example
+Assert-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'H'} -Quantity Single
+Assert that there is only a single 'H' in the array.
 .Example
 Assert-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25} -Verbose
 Assert that at least one entry in the hashtable has a value greater than 25.

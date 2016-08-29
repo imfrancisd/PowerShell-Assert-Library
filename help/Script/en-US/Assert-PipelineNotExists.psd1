@@ -2,13 +2,14 @@
 .Synopsis
 Assert that a predicate is not true for any object in the pipeline.
 .Description
-This function throws an error if any of the following conditions are met:
-    *the predicate is true for some of the objects in the pipeline
+This function throws an error if there exists an item in the pipeline that makes predicate true.
+
+The meaning of "to exist" can be modified with the -Quantity parameter.
 
 Note:
 The assertion will always pass if the pipeline is empty.
 
-*See the -InputObject and -Predicate parameters for more details.
+*See the -InputObject, -Predicate, and -Quantity parameters for more details.
 .Parameter InputObject
 The object that is used to test the predicate.
 .Parameter Predicate
@@ -19,6 +20,10 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
+.Parameter Quantity
+The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion fail.
+
+The default is 'Any'.
 .Example
 @(1, 2, 3, 4, 5) | Assert-PipelineNotExists {param($n) $n -gt 10}
 Assert that no item in the array is greater than 10, and outputs each item one at a time.
@@ -28,6 +33,12 @@ Assert that no item in the array is greater than 10, and outputs each item one a
 
 Note:
 This assertion will always pass because the array is empty.
+.Example
+@('H', 'E', 'L', 'L', 'O') | Assert-PipelineNotExists {param($c) $c -eq 'H'} -Quantity Multiple
+Assert that it is not the case that there are multiple 'H' in the array.
+.Example
+@('H', 'E', 'L', 'L', 'O') | Assert-PipelineNotExists {param($c) $c -eq 'L'} -Quantity Single
+Assert that it is not the case that there is only a single 'L' in the array.
 .Example
 @{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Verbose
 Assert that no entry in the hashtable has a value less than 0, and outputs each entry one at a time.
