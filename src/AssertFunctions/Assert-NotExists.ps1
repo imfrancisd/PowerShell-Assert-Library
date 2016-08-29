@@ -9,17 +9,23 @@ function Assert-NotExists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
         $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
-
     $fail = $true
+
     if ($Collection -is [System.Collections.ICollection]) {
-        $fail = $false
+        $exists = $false
+        $found = 0
         $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
 
         foreach ($item in $enumerator) {
@@ -28,10 +34,19 @@ function Assert-NotExists
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
             if (($result -is [System.Boolean]) -and $result) {
-                $fail = $true
-                break
+                $found++
+                if ($Quantity -eq 'Any') {
+                    $exists = $true
+                    break
+                }
+                if ($found -gt 1) {
+                    $exists = $Quantity -eq 'Multiple'
+                    break
+                }
             }
         }
+
+        $fail = $exists -or (($found -eq 1) -and ($Quantity -eq 'Single'))
     }
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
