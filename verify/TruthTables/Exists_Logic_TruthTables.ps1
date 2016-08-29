@@ -1,7 +1,7 @@
 $functions   = @('Test-Exists', 'Test-NotExists')
 $collections = @('@()', '@(5)', '@(4, 5)', '@(1..5)')
 $predicates  = @('{param($n) $n -eq 4}', '{param($n) $n -eq 5}', '{param($n) $n -eq 6}', '{param($n) $n -ge 4}')
-$quantity    = @('', 'Any', 'Single', 'Multiple')
+$quantity    = @('', '-Quantity Any', '-Quantity Single', '-Quantity Multiple')
 
 'Exists (Logic) Truth Tables'
 '==========================='

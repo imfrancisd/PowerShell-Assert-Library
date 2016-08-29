@@ -12,7 +12,7 @@ function Test-Exists
         [System.Management.Automation.ScriptBlock]
         $Predicate,
 
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, Position = 2)]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
         [ValidateSet('Any', 'Single', 'Multiple')]
         [System.String]
         $Quantity = 'Any'
