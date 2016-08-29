@@ -23,31 +23,32 @@ function Test-Exists
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
-    if ($Collection -is [System.Collections.ICollection]) {
-        $exists = $false
-        $found = 0
-        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
-
-        foreach ($item in $enumerator) {
-            $result = $null
-            try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-
-            if (($result -is [System.Boolean]) -and $result) {
-                $found++
-                if ($Quantity -eq 'Any') {
-                    $exists = $true
-                    break
-                }
-                if ($found -gt 1) {
-                    $exists = $Quantity -eq 'Multiple'
-                    break
-                }
-            }
-        }
-        $exists -or (($found -eq 1) -and ($Quantity -eq 'Single'))
+    if ($Collection -isnot [System.Collections.ICollection]) {
+        $null
         return
     }
 
-    $null
+    $exists = $false
+    $found = 0
+    $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+
+    foreach ($item in $enumerator) {
+        $result = $null
+        try   {$result = do {& $Predicate $item} while ($false)}
+        catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+
+        if (($result -is [System.Boolean]) -and $result) {
+            $found++
+            if ($Quantity -eq 'Any') {
+                $exists = $true
+                break
+            }
+            if ($found -gt 1) {
+                $exists = $Quantity -eq 'Multiple'
+                break
+            }
+        }
+    }
+
+    $exists -or (($found -eq 1) -and ($Quantity -eq 'Single'))
 }
