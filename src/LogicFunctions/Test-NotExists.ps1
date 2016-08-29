@@ -10,7 +10,12 @@ function Test-NotExists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     #Do not use the return keyword to return the value
@@ -18,22 +23,32 @@ function Test-NotExists
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
-    if ($Collection -is [System.Collections.ICollection]) {
-        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
-
-        foreach ($item in $enumerator) {
-            $result = $null
-            try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-
-            if (($result -is [System.Boolean]) -and $result) {
-                $false
-                return
-            }
-        }
-        $true
+    if ($Collection -isnot [System.Collections.ICollection]) {
+        $null
         return
     }
 
-    $null
+    $exists = $false
+    $found = 0
+    $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+
+    foreach ($item in $enumerator) {
+        $result = $null
+        try   {$result = do {& $Predicate $item} while ($false)}
+        catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+
+        if (($result -is [System.Boolean]) -and $result) {
+            $found++
+            if ($Quantity -eq 'Any') {
+                $exists = $true
+                break
+            }
+            if ($found -gt 1) {
+                $exists = $Quantity -eq 'Multiple'
+                break
+            }
+        }
+    }
+
+    -not ($exists -or (($found -eq 1) -and ($Quantity -eq 'Single')))
 }
