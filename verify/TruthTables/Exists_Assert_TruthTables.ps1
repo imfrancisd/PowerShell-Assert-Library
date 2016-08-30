@@ -1,7 +1,7 @@
 $functions   = @('Assert-Exists', 'Assert-NotExists')
 $collections = @('@()', '@(5)', '@(4, 5)', '@(1..5)')
 $predicates  = @('{param($n) $n -eq 4}', '{param($n) $n -eq 5}', '{param($n) $n -eq 6}', '{param($n) $n -ge 4}')
-$quantity = @('', '-Quantity Any', '-Quantity Single', '-Quantity Multiple')
+$quantity    = @('', '-Quantity Any', '-Quantity Single', '-Quantity Multiple')
 
 'Exists (Assert) Truth Tables'
 '============================'
@@ -13,7 +13,7 @@ Group-ListItem -CartesianProduct $functions, $collections, $predicates, $quantit
             Collection = $_.Items[1]
             Predicate  = $_.Items[2]
             Quantity   = $_.Items[3]
-            Output     = (& {try {& $cmd} catch {$_}} | Out-String).Trim()
+            Output     = & {try {& $cmd} catch {$_}} | Out-String
         }
         New-Object psobject -property $props
     } |

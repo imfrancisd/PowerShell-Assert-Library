@@ -13,7 +13,7 @@ Group-ListItem -CartesianProduct $functions, $collections, $predicates, $quantit
             Collection = $_.Items[1]
             Predicate  = $_.Items[2]
             Quantity   = $_.Items[3]
-            Output     = (& {try {& $cmd} catch {$_}} | Out-String).Trim()
+            Output     = & {try {& $cmd} catch {$_}} | Out-String
         }
         New-Object psobject -property $props
     } |
