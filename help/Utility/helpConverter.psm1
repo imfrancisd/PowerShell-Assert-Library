@@ -1318,3 +1318,23 @@ function Add-MamlHelpCommand
 
 
 Clear-MamlHelp
+
+write-host ''
+write-host '    =================================================================================='
+write-host '    Help Converter Sample Usage'
+write-host '    =================================================================================='
+write-host '    #Get the functions with the help files you want.'
+write-host '    remove-module assertlibrary*'
+write-host '    .\Debug\Script\AssertLibrary_en-US.ps1'
+write-host ''
+write-host '    #Convert the function help files to maml.'
+write-host '    clear-mamlhelp'
+write-host '    (get-module assertlibrary*).exportedfunctions.keys |'
+write-host '        sort-object |'
+write-host '        foreach-object {add-mamlhelpcommand $_}'
+write-host ''
+write-host '    #Save maml to xml file (make sure to use utf8 encoding)'
+write-host '    get-mamlhelp |'
+write-host '        out-file .\help\Module\en-US\AssertLibrary.psm1-help.xml -encoding utf8 -force'
+write-host '    =================================================================================='
+write-host ''
