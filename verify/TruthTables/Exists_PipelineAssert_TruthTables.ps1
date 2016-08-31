@@ -1,6 +1,6 @@
 $collections = @('@()', '@(5)', '@(4, 5)', '@(1..5)')
 $functions   = @('Assert-PipelineExists', 'Assert-PipelineNotExists')
-$predicates  = @('{param($n) $n -eq 4}', '{param($n) $n -eq 5}', '{param($n) $n -eq 6}', '{param($n) $n -ge 4}')
+$predicates  = @('{param($n) $n -eq 4}', '{param($n) $n -eq 5}', '{param($n) $n -eq 6}', '{param($n) $n -ge 3}', '{param($n) $n -ge 4}')
 $quantity    = @('', '-Quantity Any', '-Quantity Single', '-Quantity Multiple')
 
 'Exists (Pipeline Assert) Truth Tables'
