@@ -264,13 +264,14 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
       <dev:version />
     </command:details>
     <maml:description>
-      <maml:para>This function throws an error if any of the following conditions are met:
-    *the predicate is not true for any item in the collection
+      <maml:para>This function throws an error if there does not exist an item in the collection that makes predicate true.
+
+The meaning of "to exist" can be modified with the -Quantity parameter.
 
 Note:
 The assertion will always fail if the collection is empty.
 
-*See the -Collection and -Predicate parameters for more details.</maml:para>
+*See the -Collection, -Predicate, and -Quantity parameters for more details.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -296,6 +297,15 @@ The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+          <maml:name>Quantity</maml:name>
+          <maml:description>
+            <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion pass.
+
+The default is 'Any'.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -331,6 +341,20 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
           <maml:uri />
         </dev:type>
         <dev:defaultValue />
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <maml:name>Quantity</maml:name>
+        <maml:description>
+          <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion pass.
+
+The default is 'Any'.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>Any</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
@@ -410,6 +434,34 @@ This assertion will always fail because the array is empty.</maml:para>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
+        <dev:code>Assert-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'L'} -Quantity Multiple</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that there are multiple 'L' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>Assert-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'H'} -Quantity Single</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that there is only a single 'H' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
         <dev:code>Assert-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25} -Verbose</dev:code>
         <dev:remarks>
           <maml:para>Assert that at least one entry in the hashtable has a value greater than 25.
@@ -421,7 +473,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
@@ -708,13 +760,14 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
       <dev:version />
     </command:details>
     <maml:description>
-      <maml:para>This function throws an error if any of the following conditions are met:
-    *the predicate is true for some of the items in the collection
+      <maml:para>This function throws an error if there exists an item in the collection that makes predicate true.
+
+The meaning of "to exist" can be modified with the -Quantity parameter.
 
 Note:
 The assertion will always pass if the collection is empty.
 
-*See the -Collection and -Predicate parameters for more details.</maml:para>
+*See the -Collection, -Predicate, and -Quantity parameters for more details.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -740,6 +793,15 @@ The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+          <maml:name>Quantity</maml:name>
+          <maml:description>
+            <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion fail.
+
+The default is 'Any'.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -775,6 +837,20 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
           <maml:uri />
         </dev:type>
         <dev:defaultValue />
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <maml:name>Quantity</maml:name>
+        <maml:description>
+          <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion fail.
+
+The default is 'Any'.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>Any</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
@@ -854,6 +930,34 @@ This assertion will always pass because the array is empty.</maml:para>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
+        <dev:code>Assert-NotExists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'H'} -Quantity Multiple</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that it is not the case that there are multiple 'H' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>Assert-NotExists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'L'} -Quantity Single</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that it is not the case that there is only a single 'L' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
         <dev:code>Assert-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0} -Verbose</dev:code>
         <dev:remarks>
           <maml:para>Assert that no entry in the hashtable has a value less than 0.
@@ -865,7 +969,7 @@ The -Verbose switch will output the result of the assertion to the Verbose strea
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
@@ -2806,13 +2910,14 @@ The -Debug switch gives you a chance to investigate a failing assertion before a
       <dev:version />
     </command:details>
     <maml:description>
-      <maml:para>This function throws an error if any of the following conditions are met:
-    *the predicate is not true for any object in the pipeline
+      <maml:para>This function throws an error if there does not exist an item in the pipeline that makes predicate true.
+
+The meaning of "to exist" can be modified with the -Quantity parameter.
 
 Note:
 The assertion will always fail if the pipeline is empty.
 
-*See the -InputObject and -Predicate parameters for more details.</maml:para>
+*See the -InputObject, -Predicate, and -Quantity parameters for more details.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -2836,6 +2941,15 @@ The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+          <maml:name>Quantity</maml:name>
+          <maml:description>
+            <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion pass.
+
+The default is 'Any'.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -2869,6 +2983,20 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
           <maml:uri />
         </dev:type>
         <dev:defaultValue />
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <maml:name>Quantity</maml:name>
+        <maml:description>
+          <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion pass.
+
+The default is 'Any'.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>Any</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
@@ -2952,6 +3080,34 @@ This assertion will always fail because the array is empty.</maml:para>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
+        <dev:code>@('H', 'E', 'L', 'L', 'O') | Assert-PipelineExists {param($c) $c -eq 'L'} -Quantity Multiple</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that there are multiple 'L' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>@('H', 'E', 'L', 'L', 'O') | Assert-PipelineExists {param($c) $c -eq 'H'} -Quantity Single</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that there is only a single 'H' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
         <dev:code>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Verbose</dev:code>
         <dev:remarks>
           <maml:para>Assert that at least one entry in the hashtable has a value greater than 25, and outputs each entry one at a time.
@@ -2966,7 +3122,7 @@ The GetEnumerator() method must be used in order to pipe the entries of a hashta
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
@@ -3061,13 +3217,14 @@ The GetEnumerator() method must be used in order to pipe the entries of a hashta
       <dev:version />
     </command:details>
     <maml:description>
-      <maml:para>This function throws an error if any of the following conditions are met:
-    *the predicate is true for some of the objects in the pipeline
+      <maml:para>This function throws an error if there exists an item in the pipeline that makes predicate true.
+
+The meaning of "to exist" can be modified with the -Quantity parameter.
 
 Note:
 The assertion will always pass if the pipeline is empty.
 
-*See the -InputObject and -Predicate parameters for more details.</maml:para>
+*See the -InputObject, -Predicate, and -Quantity parameters for more details.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -3091,6 +3248,15 @@ The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+          <maml:name>Quantity</maml:name>
+          <maml:description>
+            <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion fail.
+
+The default is 'Any'.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -3124,6 +3290,20 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
           <maml:uri />
         </dev:type>
         <dev:defaultValue />
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <maml:name>Quantity</maml:name>
+        <maml:description>
+          <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion fail.
+
+The default is 'Any'.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>Any</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
@@ -3207,6 +3387,34 @@ This assertion will always pass because the array is empty.</maml:para>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
+        <dev:code>@('H', 'E', 'L', 'L', 'O') | Assert-PipelineNotExists {param($c) $c -eq 'H'} -Quantity Multiple</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that it is not the case that there are multiple 'H' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>@('H', 'E', 'L', 'L', 'O') | Assert-PipelineNotExists {param($c) $c -eq 'L'} -Quantity Single</dev:code>
+        <dev:remarks>
+          <maml:para>Assert that it is not the case that there is only a single 'L' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
         <dev:code>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Verbose</dev:code>
         <dev:remarks>
           <maml:para>Assert that no entry in the hashtable has a value less than 0, and outputs each entry one at a time.
@@ -3221,7 +3429,7 @@ The GetEnumerator() method must be used in order to pipe the entries of a hashta
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
@@ -6457,11 +6665,13 @@ Note that the order of the properties specified is significant. See the -Propert
     Return Value   Condition
     ------------   ---------
     $null          the collection is not of type System.Collections.ICollection
-    $false         the predicate never returns the System.Boolean value $true
+    $false         there does not exist* an item in the collection that makes the predicate true
                    the collection is empty
-    $true          the predicate returns the System.Boolean value $true one or more times
+    $true          there exists* an item in the collection that makes the predicate true
 
-*See the -Collection and -Predicate parameters for more details.</maml:para>
+    *The meaning of "to exist" can be modified with the -Quantity parameter.
+
+*See the -Collection, -Predicate, and -Quantity parameters for more details.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -6487,6 +6697,15 @@ The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+          <maml:name>Quantity</maml:name>
+          <maml:description>
+            <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the test return $true.
+
+The default is 'Any'.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -6522,6 +6741,20 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
           <maml:uri />
         </dev:type>
         <dev:defaultValue />
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <maml:name>Quantity</maml:name>
+        <maml:description>
+          <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the test return $true.
+
+The default is 'Any'.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>Any</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
@@ -6608,6 +6841,34 @@ This test will always return $false because the array is empty.</maml:para>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>Test-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'L'} -Quantity Multiple</dev:code>
+        <dev:remarks>
+          <maml:para>Test that there are multiple 'L' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>Test-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'H'} -Quantity Single</dev:code>
+        <dev:remarks>
+          <maml:para>Test that there is only a single 'H' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
@@ -7866,11 +8127,13 @@ Returns $null if $a or $b is not a standard variant GUID, or $a and $b do not ha
     Return Value   Condition
     ------------   ---------
     $null          the collection is not of type System.Collections.ICollection
-    $false         the predicate returns the System.Boolean value $true one or more times
-    $true          the predicate never returns the System.Boolean value $true
+    $false         there exists* an item in the collection that makes the predicate true
+    $true          there does not exist* an item in the collection that makes the predicate true
                    the collection is empty
 
-*See the -Collection and -Predicate parameters for more details.</maml:para>
+    *The meaning of "to exist" can be modified with the -Quantity parameter.
+
+*See the -Collection, -Predicate, and -Quantity parameters for more details.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -7896,6 +8159,15 @@ The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+          <maml:name>Quantity</maml:name>
+          <maml:description>
+            <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the test return $false.
+
+The default is 'Any'.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -7931,6 +8203,20 @@ An InvalidOperationException is thrown if the predicate throws an error.</maml:p
           <maml:uri />
         </dev:type>
         <dev:defaultValue />
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="">
+        <maml:name>Quantity</maml:name>
+        <maml:description>
+          <maml:para>The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the test return $false.
+
+The default is 'Any'.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>Any</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
@@ -8017,6 +8303,34 @@ This test will always return $true because the array is empty.</maml:para>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>Test-NotExists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'H'} -Quantity Multiple</dev:code>
+        <dev:remarks>
+          <maml:para>Test that it is not the case that there are multiple 'H' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS C:\&gt;</maml:para>
+        </maml:introduction>
+        <dev:code>Test-NotExists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'L'} -Quantity Single</dev:code>
+        <dev:remarks>
+          <maml:para>Test that it is not the case that there is only a single 'L' in the array.</maml:para>
+          <maml:para />
+          <maml:para />
+          <maml:para />
+          <maml:para />
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>PS C:\&gt;</maml:para>
         </maml:introduction>
