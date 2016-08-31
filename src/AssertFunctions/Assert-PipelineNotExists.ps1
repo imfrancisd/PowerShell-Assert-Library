@@ -64,7 +64,6 @@ function Assert-PipelineNotExists
                     Write-Debug -Message $message
                     $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
                 }
-
             }
 
             $runPredicate = -not (($found -gt 1) -and ($Quantity -eq 'Single'))
