@@ -10,7 +10,12 @@ function Assert-PipelineExists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     begin
@@ -33,25 +38,35 @@ function Assert-PipelineExists
             $InputObject = $null
         }
 
-        $fail = $true
+        $found = 0
+        $runPredicate = $true
     }
 
     process
     {
-        if ($fail) {
+        if ($runPredicate) {
             $result = $null
             try   {$result = do {& $Predicate $InputObject} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
             if (($result -is [System.Boolean]) -and $result) {
-                $fail = $false
+                $found++
+                $runPredicate = -not (($Quantity -eq 'Any') -or ($found -gt 1))
             }
         }
+
         ,$InputObject
     }
 
     end
     {
+        $exists =
+            (($found -gt 0) -and ($Quantity -eq 'Any')) -or
+            (($found -eq 1) -and ($Quantity -eq 'Single')) -or
+            (($found -gt 1) -and ($Quantity -eq 'Multiple'))
+
+        $fail = -not $exists
+
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
