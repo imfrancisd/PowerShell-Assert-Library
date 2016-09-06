@@ -172,16 +172,26 @@ function buildDocs
         `$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
         `$PSDefaultParameterValues = @{}
         `$WhatIfPreference = `$$WhatIfPreference
-        Remove-Module assertlibrary*
-        & '$scriptEnUs'
-        `$VerbosePreference = '$VerbosePreference'
-        Set-Location -Path '$basePath'
-        Copy-Item -Path '$aboutTxt' -Destination '$readmeTxt' -verbose:`$verbosepreference
-        (Get-Module assertlibrary*).exportedfunctions.getenumerator() |
-            ForEach-Object {
-                `$githubDoc = Join-Path -Path '$githubDocsDir' -ChildPath (`$_.Key + '.txt')
-                Get-Help `$_.Key -full |
-                    Out-File `$githubDoc -encoding utf8 -force -verbose:`$verbosepreference}
+        `$oldSize = `$Host.UI.RawUI.BufferSize 
+        try {
+            if (`$oldSize.Width -ne 120) {
+                try {`$Host.UI.RawUI.BufferSize = New-Object System.Management.Automation.Host.Size -ArgumentList @(120, 9001)}
+                catch {Write-Warning -Message 'Could not change the width of the PowerShell buffer to 120.`r`nDocs may changed unnecessarily.'}
+            }
+
+            Set-Location -Path '$basePath'
+            Remove-Module assertlibrary*
+            & '$scriptEnUs'
+
+            `$VerbosePreference = [System.Management.Automation.ActionPreference]::$VerbosePreference
+            Copy-Item -Path '$aboutTxt' -Destination '$readmeTxt' -verbose:`$verbosepreference
+            (Get-Module assertlibrary*).exportedfunctions.getenumerator() |
+                ForEach-Object {
+                    `$githubDoc = Join-Path -Path '$githubDocsDir' -ChildPath (`$_.Key + '.txt')
+                    Get-Help `$_.Key -full |
+                        Out-File `$githubDoc -encoding utf8 -force -verbose:`$verbosepreference}
+        }
+        finally {try {`$Host.UI.RawUI.BufferSize = `$oldSize} catch{}}
 "@
 
     powershell.exe -noprofile -noninteractive -executionpolicy remotesigned -command $command
