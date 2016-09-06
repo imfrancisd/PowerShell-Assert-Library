@@ -32,7 +32,7 @@ You only need 1 of these files.
 #### What kinds of things can I do with these functions?
 Online, see the following link
 ````
-    https://github.com/imfrancisd/powershell-assert-library/docs/README.txt
+    https://github.com/imfrancisd/PowerShell-Assert-Library/blob/master/docs/README.txt
 ````
 
 In PowerShell, if you imported the module, you can get an overview of the available functions using this command:
@@ -53,7 +53,7 @@ You can even use these functions directly in the shell.
 #### What are the names of the functions?
 Online, you can find the documentation for all functions in:
 ````
-    https://github.com/imfrancisd/powershell-assert-library/docs
+    https://github.com/imfrancisd/PowerShell-Assert-Library/tree/master/docs
 ````
 
 In PowerShell, you can find the names of the functions with this command:
@@ -64,7 +64,7 @@ In PowerShell, you can find the names of the functions with this command:
 #### How do I use the functions?
 Online, you can find the documentation for all functions in:
 ````
-    https://github.com/imfrancisd/powershell-assert-library/docs
+    https://github.com/imfrancisd/PowerShell-Assert-Library/tree/master/docs
 ````
 
 In PowerShell, you can view the help file for each function using PowerShell's Get-Help cmdlet.
