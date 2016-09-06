@@ -1,0 +1,170 @@
+TOPIC
+    about_AssertLibrary
+
+SHORT DESCRIPTION
+    A library of PowerShell functions that gives testers complete control over
+    the meaning of their assertions. Well, at least that's the goal.
+
+LONG DESCRIPTION
+    A library of PowerShell functions that gives you a high degree of control
+    over the meaning of your assertions.
+
+    The control comes from being able to combine the functions in many
+    different ways. Also, the functions are fully documented so you will know
+    exactly what each function is supposed to do.
+
+
+    Kinds of functions
+    ==================
+    There are four kinds of functions in this library:
+    * Assert Functions
+    * Collection Functions
+    * Comparison Functions
+    * Logic Functions.
+
+
+    Assert Functions
+    ================
+    The assert functions throw an error if some condition is not met.
+
+        #EXAMPLES
+
+        #assert a comparison
+        Assert-True ($a -eq $b)
+
+        #assert a predicate to items in a collection
+        Assert-All $arrayOfNumbers {param($n) 0 -le $n}
+
+        #assert multiple predicates to items in a pipeline
+        $arrayOfNumbers |
+            Assert-PipelineAny |
+            Assert-PipelineAll    {param($n) 0 -le $n} |
+            Assert-PipelineExists {param($n) 0 -eq ($n % 2)} |
+            Out-Null
+
+
+    Collection Functions
+    ====================
+    The collection functions can be used to analyze data or to create data.
+
+        #EXAMPLES
+
+        #assert that a list is sorted
+        $pairs = @(Group-ListItem -Pair $listOfNumbers)
+        Assert-All $pairs {param($p) $p.Items[0] -le $p.Items[1]}
+
+        #assert that joining any 3 words from a list will have < 10 chars
+        $combinations = @(Group-ListItem -Combine $words -Size 3)
+        Assert-All $combinations {param($c) ($c.Items -join ' ').Length -lt 10}
+
+        #run scripts using different configurations
+        $configurations = @(Group-ListItem -CartesianProduct $versions, $files)
+        foreach ($c in $configurations) {
+            powershell -version $c.Items[0] -noninteractive -file $c.Items[1]
+        }
+
+
+    Comparison Functions
+    ====================
+    The comparison functions compares objects at a high level.
+
+        #EXAMPLES
+
+        #compare programmatic strings
+        Test-String $greeting -eq 'hello' -caseSensitive -normalization FormC
+
+        #compare linguistic texts
+        Test-Text $greeting -eq 'hello' -caseSensitive -useCurrentCulture
+
+        #compare the year and month of two dates only if they are both UTC
+        Test-DateTime $a -eq $b -property year, month -kind utc
+
+        #compare two numbers only if their types are Int32, Int64 or Double
+        #and both numbers must have the same type
+        Test-Number $x -eq $y -type int32, int64, double -matchtype
+
+
+    Logic Functions
+    ===============
+    The logic functions helps you avoid some quirks in the PowerShell language.
+
+        #EXAMPLES
+
+        #test if a value is $true
+        Test-True $value
+
+        #test if a value is convertible to $true
+        Test-True ([bool]$value)
+
+        #test a predicate to items in a collection
+        Test-All $numbers {param($n) 0 -lt $n}
+
+
+    Combining the functions
+    =======================
+    In general, the functions "communicate" with each other using truth values:
+    $true, $false, and $null.
+
+        First the comparison functions converts one or more objects of any type
+        into a truth value.
+
+        Then the logic functions converts truth values into other truth values.
+
+        Finally the assert functions converts the truth values into errors.
+
+    The Assert-Pipeline* functions are special assert functions that can also
+    be combined together using the pipeline.
+
+
+    Control of meaning
+    ==================
+    The control of the meaning of your assertions comes from being able to
+    choose which functions are combined together and how they are combined
+    together to express your assertions.
+    
+    If that is not enough, you can even use these functions as building blocks
+    to create more expressive logic and comparison functions which can then be
+    used to create more expressive assertions.
+
+
+SEE ALSO
+    Assert-True
+    Assert-False
+    Assert-Null
+    Assert-NotTrue
+    Assert-NotFalse
+    Assert-NotNull
+
+    Assert-All
+    Assert-Exists
+    Assert-NotExists
+
+    Assert-PipelineAll
+    Assert-PipelineExists
+    Assert-PipelineNotExists
+
+    Assert-PipelineAny
+    Assert-PipelineCount
+    Assert-PipelineEmpty
+    Assert-PipelineSingle
+
+    Group-ListItem
+
+    Test-DateTime
+    Test-Guid
+    Test-Number
+    Test-String
+    Test-Text
+    Test-TimeSpan
+    Test-Version
+
+    Test-True
+    Test-False
+    Test-Null
+    Test-NotTrue
+    Test-NotFalse
+    Test-NotNull
+
+    Test-All
+    Test-Exists
+    Test-NotExists

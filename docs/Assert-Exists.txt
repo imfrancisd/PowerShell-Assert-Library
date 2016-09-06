@@ -1,0 +1,152 @@
+﻿
+NAME
+    Assert-Exists
+    
+SYNOPSIS
+    Assert that a predicate is true for some of the items in a collection.
+    
+SYNTAX
+    Assert-Exists [-Collection] <Object> [-Predicate] <ScriptBlock> [<CommonParameters>]
+    
+    
+DESCRIPTION
+    This function throws an error if any of the following conditions are met:
+        *the predicate is not true for any item in the collection
+    
+    Note:
+    The assertion will always fail if the collection is empty.
+    
+    *See the -Collection and -Predicate parameters for more details.
+    
+
+PARAMETERS
+    -Collection <Object>
+        The collection of items used to test the predicate.
+        
+        The order in which the items in the collection are tested is determined by the collection's GetEnumerator 
+        method.
+        
+        Required?                    true
+        Position?                    1
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -Predicate <ScriptBlock>
+        The script block that will be invoked on each item in the collection.
+        
+        The script block must take one argument and return a value.
+        
+        Note:
+        The -ErrorAction parameter has NO effect on the predicate.
+        An InvalidOperationException is thrown if the predicate throws an error.
+        
+        Required?                    true
+        Position?                    2
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    <CommonParameters>
+        This cmdlet supports the common parameters: Verbose, Debug,
+        ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+        OutBuffer, PipelineVariable, and OutVariable. For more information, see 
+        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216). 
+    
+INPUTS
+    None
+    
+    This function does not accept input from the pipeline.
+        
+    
+    
+    
+OUTPUTS
+    None
+        
+    
+    
+    
+NOTES
+    
+    
+        An example of how this function might be used in a unit test.
+        
+        #display passing assertions
+        $VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+        
+        #display debug prompt on failing assertions
+        $DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+        
+        Assert-Exists $numbers {param($n) $n -is [system.int32]}
+        Assert-Exists $numbers {param($n) $n % 2 -eq 0}
+    
+    -------------------------- EXAMPLE 1 --------------------------
+    
+    PS C:\>Assert-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}
+    
+    
+    Assert that at least one item in the array is greater than 3.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 2 --------------------------
+    
+    PS C:\>Assert-Exists @() {param($n) $n -gt 3}
+    
+    
+    Assert that at least one item in the array is greater than 3.
+    
+    Note:
+    This assertion will always fail because the array is empty.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 3 --------------------------
+    
+    PS C:\>Assert-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25} -Verbose
+    
+    
+    Assert that at least one entry in the hashtable has a value greater than 25.
+    The -Verbose switch will output the result of the assertion to the Verbose stream.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 4 --------------------------
+    
+    PS C:\>Assert-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25} -Debug
+    
+    
+    Assert that at least one entry in the hashtable has a value greater than 25.
+    The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
+    
+    
+    
+    
+    
+    
+RELATED LINKS
+    Assert-True 
+    Assert-False 
+    Assert-Null 
+    Assert-NotTrue 
+    Assert-NotFalse 
+    Assert-NotNull 
+    Assert-All 
+    Assert-NotExists 
+    Assert-PipelineAll 
+    Assert-PipelineExists 
+    Assert-PipelineNotExists 
+    Assert-PipelineEmpty 
+    Assert-PipelineAny 
+    Assert-PipelineSingle 
+    Assert-PipelineCount 
+
+
+

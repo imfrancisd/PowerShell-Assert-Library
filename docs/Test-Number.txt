@@ -1,0 +1,370 @@
+﻿
+NAME
+    Test-Number
+    
+SYNOPSIS
+    An alternative to PowerShell's comparison operators when testing numbers in unit test scenarios.
+    
+SYNTAX
+    Test-Number [-Value] <Object> [-IsNumber] [-Type <String[]>] [<CommonParameters>]
+    
+    Test-Number [-Value] <Object> -Equals <Object> [-MatchType] [-Type <String[]>] [<CommonParameters>]
+    
+    Test-Number [-Value] <Object> -NotEquals <Object> [-MatchType] [-Type <String[]>] [<CommonParameters>]
+    
+    Test-Number [-Value] <Object> -LessThan <Object> [-MatchType] [-Type <String[]>] [<CommonParameters>]
+    
+    Test-Number [-Value] <Object> -LessThanOrEqualTo <Object> [-MatchType] [-Type <String[]>] [<CommonParameters>]
+    
+    Test-Number [-Value] <Object> -GreaterThan <Object> [-MatchType] [-Type <String[]>] [<CommonParameters>]
+    
+    Test-Number [-Value] <Object> -GreaterThanOrEqualTo <Object> [-MatchType] [-Type <String[]>] [<CommonParameters>]
+    
+    
+DESCRIPTION
+    This function tests a number for type and equality without the filtering semantics of the PowerShell comparison 
+    operators.
+    
+    This function also gives you some control over how different types of numbers should be compared. See the -Type 
+    and -MatchType parameters for more details.
+    
+    This function will return one of the following values:
+        $true
+        $false
+        $null
+    
+    A return value of $null indicates an invalid test. See each parameter for specific conditions that causes this 
+    function to return $true, $false, or $null.
+    
+    Note:
+    NaN, PositiveInfinity, and NegativeInfinity are not considered to be numbers by this function.
+    
+
+PARAMETERS
+    -Value <Object>
+        The value to test.
+        
+        Required?                    true
+        Position?                    1
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -IsNumber [<SwitchParameter>]
+        Tests if the value is a number.
+        
+        Return Value   Condition
+        ------------   ---------
+        $null          never
+        $false         value is not a number*
+        $true          value is a number*
+        
+        * See -Type parameter for more details.
+        
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -Equals <Object>
+        Tests if the first value is equal to the second.
+        
+        The -Equals parameter has the alias -eq.
+        
+        Return Value   Condition
+        ------------   ---------
+        $null          one or both of the values is not a number*
+                       -MatchType is set and values are not of the same type
+        $false         PowerShell's -eq operator returns $false
+        $true          PowerShell's -eq operator returns $true
+        
+        * See -Type parameter for more details.
+        
+        Required?                    true
+        Position?                    named
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -NotEquals <Object>
+        Tests if the first value is not equal to the second.
+        
+        The -NotEquals parameter has the alias -ne.
+        
+        Return Value   Condition
+        ------------   ---------
+        $null          one or both of the values is not a number*
+                       -MatchType is set and values are not of the same type
+        $false         PowerShell's -ne operator returns $false
+        $true          PowerShell's -ne operator returns $true
+        
+        * See -Type parameter for more details.
+        
+        Required?                    true
+        Position?                    named
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -LessThan <Object>
+        Tests if the first value is less than the second.
+        
+        The -LessThan parameter has the alias -lt.
+        
+        Return Value   Condition
+        ------------   ---------
+        $null          one or both of the values is not a number*
+                       -MatchType is set and values are not of the same type
+        $false         PowerShell's -lt operator returns $false
+        $true          PowerShell's -lt operator returns $true
+        
+        * See -Type parameter for more details.
+        
+        Required?                    true
+        Position?                    named
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -LessThanOrEqualTo <Object>
+        Tests if the first value is less than or equal to the second.
+        
+        The -LessThanOrEqualTo parameter has the alias -le.
+        
+        Return Value   Condition
+        ------------   ---------
+        $null          one or both of the values is not a number*
+                       -MatchType is set and values are not of the same type
+        $false         PowerShell's -le operator returns $false
+        $true          PowerShell's -le operator returns $true
+        
+        * See -Type parameter for more details.
+        
+        Required?                    true
+        Position?                    named
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -GreaterThan <Object>
+        Tests if the first value is greater than the second.
+        
+        The -GreaterThan parameter has the alias -gt.
+        
+        Return Value   Condition
+        ------------   ---------
+        $null          one or both of the values is not a number*
+                       -MatchType is set and values are not of the same type
+        $false         PowerShell's -gt operator returns $false
+        $true          PowerShell's -gt operator returns $true
+        
+        * See -Type parameter for more details.
+        
+        Required?                    true
+        Position?                    named
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -GreaterThanOrEqualTo <Object>
+        Tests if the first value is greater than or equal to the second.
+        
+        The -GreaterThanOrEqualTo parameter has the alias -ge.
+        
+        Return Value   Condition
+        ------------   ---------
+        $null          one or both of the values is not a number*
+                       -MatchType is set and values are not of the same type
+        $false         PowerShell's -ge operator returns $false
+        $true          PowerShell's -ge operator returns $true
+        
+        * See -Type parameter for more details.
+        
+        Required?                    true
+        Position?                    named
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -MatchType [<SwitchParameter>]
+        Causes the comparison of two numbers to return $null if they do not have the same type.
+        
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -Type <String[]>
+        One or more strings that can be used to define which numeric types are to be considered numeric types.
+        
+        These types are considered to be numeric types:
+           System.Byte, System.SByte,
+           System.Int16, System.Int32, System.Int64,
+           System.UInt16, System.UInt32, System.UInt64,
+           System.Single, System.Double, System.Decimal, System.Numerics.BigInteger
+        
+        You can use this parameter to specify which of the types above are to be considered numeric types.
+        
+        Each type can be specified by its type name or by its full type name.
+        
+        Note:
+        NaN, PositiveInfinity, and NegativeInfinity are never considered to be numbers by this function.
+        Specifying this parameter with a $null or an empty array will cause this function to treat all objects as 
+        non-numbers.
+        
+        For example:
+            $a = [uint32]0
+            $b = [double]10.0
+        
+            #$a (uint32) is not considered a number
+            #
+            Test-Number $a -lt $b -Type Double
+            Test-Number $a -lt $b -Type Double, Decimal
+            Test-Number $a -lt $b -Type Double, Decimal, Int32
+            Test-Number $a -lt $b -Type Double, Decimal, System.Int32
+        
+            #$b (double) is not considered a number
+            #
+            Test-Number $a -lt $b -Type UInt32
+            Test-Number $a -lt $b -Type UInt32, Byte
+            Test-Number $a -lt $b -Type UInt32, Byte, Int64
+            Test-Number $a -lt $b -Type UInt32, System.Byte, Int64
+        
+            #$a and $b are considered numbers
+            #
+            Test-Number $a -lt $b
+            Test-Number $a -lt $b -Type UInt32, Double
+            Test-Number $a -lt $b -Type Double, UInt32
+            Test-Number $a -lt $b -Type Byte, Double, System.SByte, System.UInt32
+        
+        Required?                    false
+        Position?                    named
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    <CommonParameters>
+        This cmdlet supports the common parameters: Verbose, Debug,
+        ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+        OutBuffer, PipelineVariable, and OutVariable. For more information, see 
+        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216). 
+    
+INPUTS
+    None
+    
+    This function does not accept input from the pipeline.
+        
+    
+    
+    
+OUTPUTS
+    System.Boolean
+    
+    This function returns a Boolean if the test can be performed.
+        
+    
+    
+    $null
+    
+    This function returns $null if the test cannot be performed.
+        
+    
+    
+    
+NOTES
+    
+    
+        An example of how this function might be used in a unit test.
+        
+        #recommended alias
+        set-alias 'number?' 'test-number'
+        
+        #if you have an assert function, you can write assertions like this
+        assert (number? $n)
+        assert (number? $x -lt $y)
+        assert (number? $x -lt $y -MatchType)
+        assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double)
+        assert (number? $x -lt $y -Type Int32, Int64, Decimal, Double -MatchType)
+    
+    -------------------------- EXAMPLE 1 --------------------------
+    
+    PS C:\>Test-Number $n
+    
+    
+    Tests if $n is a number.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 2 --------------------------
+    
+    PS C:\>Test-Number $n -Type Int32
+    
+    
+    Tests if $n is a number of type Int32.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 3 --------------------------
+    
+    PS C:\>Test-Number $n -Type Int32, Double, Decimal
+    
+    
+    Tests if $n is a number of type Int32, Double, or Decimal.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 4 --------------------------
+    
+    PS C:\>Test-Number $x -lt $y
+    
+    
+    Returns the result of ($x -lt $y) if $x and $y are numbers.
+    Returns $null if $x or $y is not a number.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 5 --------------------------
+    
+    PS C:\>Test-Number $x -lt $y -MatchType
+    
+    
+    Returns the result of ($x -lt $y) if $x and $y are numbers of the same type.
+    Returns $null if $x or $y is not a number, or $x and $y do not have the same type.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 6 --------------------------
+    
+    PS C:\>Test-Number $x -lt $y -Type Int32, Int64, Double
+    
+    
+    Returns the result of ($x -lt $y) if both $x and $y are numbers of type Int32, Int64, or Double.
+    Returns $null if $x or $y is not of type Int32, Int64, or Double.
+    
+    
+    
+    
+    
+    
+RELATED LINKS
+    Test-DateTime 
+    Test-Guid 
+    Test-String 
+    Test-Text 
+    Test-TimeSpan 
+    Test-Version 
+
+
+

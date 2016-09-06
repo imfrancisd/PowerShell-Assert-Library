@@ -2,46 +2,39 @@
 
 <#
 .Synopsis
-Build a single script or a single module from the files in the "src" directory.
+Create scripts and module from the files in the "src" directory.
 .Description
-Build a single script or a single module from the files in the "src" directory.
-
-The output will be in a directory called "Debug".
-
-Use the -Release switch to build the "Release" directory.
+Create scripts and module from the files in the "src" directory.
 .Example
-.\build.ps1 -All -Verbose
-Build a script and a module and store them in the "Debug" directory.
+.\build.ps1
+Create scripts and module and store them in the "Debug" directory.
+
+Use "-Configuration Release" to create scripts and module in the "Release" directory.
 .Example
-.\build.ps1 -Clean -Verbose
+.\build.ps1 -Clean
 Remove the "Debug" directory.
+
+Use "-Configuration Release" to remove the "Release" directory.
 .Example
-.\build.ps1 -All -WhatIf
+.\build.ps1 -Target All -Configuration Release -Clean -WhatIf
 See which files and directories will be modified without actually modifying those files and directories.
 #>
-[CmdletBinding(DefaultParameterSetName='All', SupportsShouldProcess=$true)]
+[CmdletBinding(SupportsShouldProcess=$true)]
 Param(
-    #Build "Debug\".
-    #Build "Release\" if the -Release switch is used.
-    [Parameter(Mandatory=$false, ParameterSetName='All')]
-    [System.Management.Automation.SwitchParameter]
-    $All = $true,
+    #Create all, script, or module.
+    [Parameter(Mandatory = $false, Position = 0)]
+    [ValidateSet('All', 'Docs', 'Module', 'Script')]
+    [System.String]
+    $Target = 'All',
 
-    #Build "Debug\Script\".
-    #Build "Release\Script\" if the -Release switch is used.
-    [Parameter(Mandatory=$true, ParameterSetName='Script')]
-    [System.Management.Automation.SwitchParameter]
-    $Script,
+    #Create all, script, or module, in "Debug" or "Release" directory.
+    [Parameter(Mandatory = $false)]
+    [ValidateSet('Debug', 'Release')]
+    [System.String]
+    $Configuration = 'Debug',
 
-    #Build "Debug\Module\".
-    #Build "Release\Module\" if the -Release switch is used.
-    [Parameter(Mandatory=$true, ParameterSetName='Module')]
-    [System.Management.Automation.SwitchParameter]
-    $Module,
-
-    #Clean "Debug\".
-    #Clean "Release\" if the -Release switch is used.
-    [Parameter(Mandatory=$true, ParameterSetName='Clean')]
+    #Clean all, script, or module, in "Debug" or "Release" directory.
+    [Parameter(Mandatory = $false)]
     [System.Management.Automation.SwitchParameter]
     $Clean,
 
@@ -70,20 +63,20 @@ Param(
     [Parameter(Mandatory=$false)]
     [ValidateSet('Off', '1.0', '2.0', 'Latest', 'Scope')]
     [System.String]
-    $StrictMode = 'Off',
-
-    #Perform actions on "Release\" directory.
-    [System.Management.Automation.SwitchParameter]
-    $Release
+    $StrictMode = 'Off'
 )
+
+
 
 $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
 $basePath = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
 
-$buildDir = Join-Path -Path $basePath -ChildPath $(if ($Release) {'Release'} else {'Debug'})
+$buildDir = Join-Path -Path $basePath -ChildPath $(if ($Configuration -eq 'Release') {'Release'} else {'Debug'})
 $buildScriptDir = Join-Path -Path $buildDir -ChildPath 'Script'
 $buildModuleDir = Join-Path -Path $buildDir -ChildPath 'Module\AssertLibrary'
+
+$githubDocsDir = Join-Path -Path $basePath -ChildPath 'docs'
 
 $licenseFile   = Join-Path -Path $basePath -ChildPath 'LICENSE.txt'
 $scriptHelpDir = Join-Path -Path $basePath -ChildPath 'help\Script'
@@ -95,40 +88,24 @@ $functionFiles = @(
         Sort-Object -Property 'Name'
 )
 
-function main($target)
+
+
+function main
 {
-    switch ($target) {
-        'All' {
-            if ($All) {
-                cleanAll
-                buildScript
-                buildModule
-            }
-            return
-        }
-        'Clean' {
-            if ($Clean) {
-                cleanAll
-            }
-            return
-        }
-        'Script' {
-            if ($Script) {
-                cleanScript
-                buildScript
-            }
-            return
-        }
-        'Module' {
-            if ($Module) {
-                cleanModule
-                buildModule
-            }
-            return
-        }
-        default {
-            throw "Cannot build unknown target: $target."
-        }
+    $action = if ($Clean) {'clean'} else {'build'}
+
+    switch ("$action-$Target") {
+        'clean-All'    {cleanAll}
+        'clean-Docs'   {cleanDocs}
+        'clean-Script' {cleanScript}
+        'clean-Module' {cleanModule}
+
+        'build-All'    {cleanAll; buildAll}
+        'build-Docs'   {cleanDocs; buildDocs}
+        'build-Script' {cleanScript; buildScript}
+        'build-Module' {cleanModule; buildModule}
+
+        default {throw "Cannot $action unknown target: $target."}
     }
 }
 
@@ -136,6 +113,17 @@ function cleanAll
 {
     if (Test-Path -LiteralPath $buildDir) {
         Remove-Item -LiteralPath $buildDir -Recurse -Verbose:$VerbosePreference
+    }
+
+    if ($Configuration -eq 'Release') {
+        cleanDocs
+    }
+}
+
+function cleanDocs
+{
+    if (Test-Path -LiteralPath $githubDocsDir) {
+        Remove-Item -LiteralPath $githubDocsDir -Recurse -Verbose:$VerbosePreference
     }
 }
 
@@ -153,43 +141,50 @@ function cleanModule
     }
 }
 
-function buildHeader
+function buildAll
 {
-    '<#'
-    Get-Content -LiteralPath $licenseFile
-    '#>'
-    ''
-    "#Assert Library version $($LibraryVersion.ToString())"
-    "#$LibraryUri"
-    '#'
-    '#PowerShell requirements'
-    "#requires -version $($PowerShellVersion.ToString(2))"
-}
+    buildScript
+    buildModule
 
-function buildScriptAnalysisSuppressBlock
-{
-    Get-ChildItem -LiteralPath $suppressMsgDir -Filter '*.psd1' -Recurse |
-        Get-Content |
-        Sort-Object
-}
-
-function buildRemoveInheritedGlobals
-{
-    'if ($PSVersionTable.PSVersion.Major -gt 2) {'
-    '    $PSDefaultParameterValues.Clear()'
-    '}'
-}
-
-function buildStrictMode
-{
-    switch ($StrictMode) {
-        'Off'       {'Microsoft.PowerShell.Core\Set-StrictMode -Off'}
-        '1.0'       {"Microsoft.PowerShell.Core\Set-StrictMode -Version '1.0'"}
-        '2.0'       {"Microsoft.PowerShell.Core\Set-StrictMode -Version '2.0'"}
-        'Latest'    {"Microsoft.PowerShell.Core\Set-StrictMode -Version 'Latest'"}
-        'Scope'     {'#WARNING: StrictMode setting is inherited from a higher scope.'}
-        default     {throw "Unknown Strict Mode '$StrictMode'."}
+    if ($Configuration -eq 'Release') {
+        buildDocs
     }
+}
+
+function buildDocs
+{
+    $scriptEnUs = Join-Path -Path $buildScriptDir -ChildPath 'AssertLibrary_en-US.ps1'
+    $aboutTxt = Join-Path -Path $buildModuleDir -ChildPath (Join-Path -Path 'en-US' -ChildPath 'about_AssertLibrary.help.txt')
+    $readmeTxt = Join-Path -Path $githubDocsDir -ChildPath 'README.txt'
+
+    if ($Configuration -ne 'Release') {
+        throw "Docs can only be created from the Release directory.`r`nTry: .\build.ps1 -Target Docs -Configuration Release"
+    }
+    if (-not (Test-Path -Path $scriptEnUs)) {
+        throw "Cannot build docs directory without the file '$scriptEnUs'."
+    }
+    if (-not (Test-Path -Path $aboutTxt)) {
+        throw "Cannot build docs directory without the file '$aboutTxt'."
+    }
+    $null = New-Item -Path $githubDocsDir -ItemType Directory -Force -Verbose:$VerbosePreference
+
+    $command = @"
+        `$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
+        `$PSDefaultParameterValues = @{}
+        `$WhatIfPreference = `$$WhatIfPreference
+        Remove-Module assertlibrary*
+        & '$scriptEnUs'
+        `$VerbosePreference = '$VerbosePreference'
+        Set-Location -Path '$basePath'
+        Copy-Item -Path '$aboutTxt' -Destination '$readmeTxt' -verbose:`$verbosepreference
+        (Get-Module assertlibrary*).exportedfunctions.getenumerator() |
+            ForEach-Object {
+                `$githubDoc = Join-Path -Path '$githubDocsDir' -ChildPath (`$_.Key + '.txt')
+                Get-Help `$_.Key -full |
+                    Out-File `$githubDoc -encoding utf8 -force -verbose:`$verbosepreference}
+"@
+
+    powershell.exe -noprofile -noninteractive -executionpolicy remotesigned -command $command
 }
 
 function buildScript
@@ -200,11 +195,21 @@ function buildScript
         $scriptLocalizedHelpDir = Join-Path -Path $scriptHelpDir -ChildPath $dir.BaseName
 
         $lines = @(& {
-            buildHeader
+            '<#'
+            Get-Content -LiteralPath $licenseFile
+            '#>'
+            ''
+            "#Assert Library version $($LibraryVersion.ToString())"
+            "#$LibraryUri"
+            '#'
+            '#PowerShell requirements'
+            "#requires -version $($PowerShellVersion.ToString(2))"
             ''
             ''
             ''
-            buildScriptAnalysisSuppressBlock
+            Get-ChildItem -LiteralPath $suppressMsgDir -Filter '*.psd1' -Recurse |
+                Get-Content |
+                Sort-Object
             '[CmdletBinding()]'
             'Param()'
             ''
@@ -212,8 +217,17 @@ function buildScript
             ''
             'New-Module -Name {0} -ScriptBlock {{' -f "'AssertLibrary_$($dir.BaseName)_v$LibraryVersion'"
             ''
-            buildRemoveInheritedGlobals
-            buildStrictMode
+            'if ($PSVersionTable.PSVersion.Major -gt 2) {'
+            '    $PSDefaultParameterValues.Clear()'
+            '}'
+            switch ($StrictMode) {
+                'Off'       {'Microsoft.PowerShell.Core\Set-StrictMode -Off'}
+                '1.0'       {"Microsoft.PowerShell.Core\Set-StrictMode -Version '1.0'"}
+                '2.0'       {"Microsoft.PowerShell.Core\Set-StrictMode -Version '2.0'"}
+                'Latest'    {"Microsoft.PowerShell.Core\Set-StrictMode -Version 'Latest'"}
+                'Scope'     {'#WARNING: StrictMode setting is inherited from a higher scope.'}
+                default     {throw "Unknown Strict Mode '$StrictMode'."}
+            }
             ''
             foreach ($item in $functionFiles) {
                 ''
@@ -252,18 +266,37 @@ function buildModule
     Copy-Item -LiteralPath $licenseFile -Destination $buildModuleDir -Verbose:$VerbosePreference
 
     $(& {
-        buildHeader
+        '<#'
+        Get-Content -LiteralPath $licenseFile
+        '#>'
+        ''
+        "#Assert Library version $($LibraryVersion.ToString())"
+        "#$LibraryUri"
+        '#'
+        '#PowerShell requirements'
+        "#requires -version $($PowerShellVersion.ToString(2))"
         ''
         ''
         ''
-        buildScriptAnalysisSuppressBlock
+        Get-ChildItem -LiteralPath $suppressMsgDir -Filter '*.psd1' -Recurse |
+            Get-Content |
+            Sort-Object
         '[CmdletBinding()]'
         'Param()'
         ''
         ''
         ''
-        buildRemoveInheritedGlobals
-        buildStrictMode
+        'if ($PSVersionTable.PSVersion.Major -gt 2) {'
+        '    $PSDefaultParameterValues.Clear()'
+        '}'
+        switch ($StrictMode) {
+            'Off'       {'Microsoft.PowerShell.Core\Set-StrictMode -Off'}
+            '1.0'       {"Microsoft.PowerShell.Core\Set-StrictMode -Version '1.0'"}
+            '2.0'       {"Microsoft.PowerShell.Core\Set-StrictMode -Version '2.0'"}
+            'Latest'    {"Microsoft.PowerShell.Core\Set-StrictMode -Version 'Latest'"}
+            'Scope'     {'#WARNING: StrictMode setting is inherited from a higher scope.'}
+            default     {throw "Unknown Strict Mode '$StrictMode'."}
+        }
         ''
         foreach ($item in $functionFiles) {
             ''
@@ -328,7 +361,7 @@ function buildModule
         "    } # End of PSData hashtable"
         ""
         "} # End of PrivateData hashtable"
-
+        ""
         "}"
     ) | Out-File -FilePath $psd1 -Encoding utf8 -Verbose:$VerbosePreference
 
@@ -339,4 +372,4 @@ function buildModule
     }
 }
 
-main $PSCmdlet.ParameterSetName
+main

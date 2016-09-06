@@ -1,0 +1,112 @@
+﻿
+NAME
+    Test-NotTrue
+    
+SYNOPSIS
+    Test that a value is not the Boolean value $true.
+    
+SYNTAX
+    Test-NotTrue [-Value] <Object> [<CommonParameters>]
+    
+    
+DESCRIPTION
+    This function tests if a value is not $true without the implicit conversions or the filtering semantics from the 
+    PowerShell comparison operators.
+    
+        Return Value   Condition
+        ------------   ---------
+        $null          never
+        $false         value is the System.Boolean value $true
+        $true          value is not of type System.Boolean
+                       value is $false
+    
+
+PARAMETERS
+    -Value <Object>
+        The value to test.
+        
+        Required?                    true
+        Position?                    1
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    <CommonParameters>
+        This cmdlet supports the common parameters: Verbose, Debug,
+        ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+        OutBuffer, PipelineVariable, and OutVariable. For more information, see 
+        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216). 
+    
+INPUTS
+    None
+    
+    This function does not accept input from the pipeline.
+        
+    
+    
+    
+OUTPUTS
+    System.Boolean
+        
+    
+    
+    
+NOTES
+    
+    
+        An example of how this function might be used in a unit test.
+        
+        #recommended alias
+        set-alias 'notTrue?' 'test-notTrue'
+        
+        assert-all    $items {param($a) (notTrue? $a.b) -and (notTrue? $a.c)}
+        assert-exists $items {param($a) (notTrue? $a.d) -xor (notTrue? $a.e)}
+    
+    -------------------------- EXAMPLE 1 --------------------------
+    
+    PS C:\>Test-NotTrue 1
+    
+    
+    Test if the number 1 is not $true without performing any implicit conversions.
+    
+    Note:
+    Compare the example above with the following expressions:
+        1 -ne $true
+        10 -ne $true
+    and see how tests can become confusing if those numbers were stored in variables.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 2 --------------------------
+    
+    PS C:\>Test-NotTrue @($true)
+    
+    
+    Test if the array is not $true without filtering semantics.
+    
+    Note:
+    Compare the example above with the following expressions:
+        @(1, $true) -ne $true
+        @(-1, 0, 1, 2, 3) -ne $true
+    and see how tests can become confusing if the value is stored in a variable or if the value is not expected to be 
+    an array.
+    
+    
+    
+    
+    
+    
+RELATED LINKS
+    Test-True 
+    Test-False 
+    Test-Null 
+    Test-NotFalse 
+    Test-NotNull 
+    Test-All 
+    Test-Exists 
+    Test-NotExists 
+
+
+

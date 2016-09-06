@@ -1,0 +1,116 @@
+﻿
+NAME
+    Assert-NotFalse
+    
+SYNOPSIS
+    Assert that a value is not the Boolean value $false.
+    
+SYNTAX
+    Assert-NotFalse [-Value] <Object> [<CommonParameters>]
+    
+    
+DESCRIPTION
+    This function throws an error if any of the following conditions are met:
+        *the value being asserted is the System.Boolean value $false
+    
+
+PARAMETERS
+    -Value <Object>
+        The value to assert.
+        
+        Required?                    true
+        Position?                    1
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    <CommonParameters>
+        This cmdlet supports the common parameters: Verbose, Debug,
+        ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+        OutBuffer, PipelineVariable, and OutVariable. For more information, see 
+        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216). 
+    
+INPUTS
+    None
+    
+    This function does not accept input from the pipeline.
+        
+    
+    
+    
+OUTPUTS
+    None
+        
+    
+    
+    
+NOTES
+    
+    
+        An example of how this function might be used in a unit test.
+        
+        #display passing assertions
+        $VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+        
+        #display debug prompt on failing assertions
+        $DebugPreference = [System.Management.Automation.ActionPreference]::Inquire
+        
+        Assert-NotFalse ($null -eq $a)
+        Assert-NotFalse ($null -eq $b)
+        Assert-NotFalse ($a -eq $b)
+    
+    -------------------------- EXAMPLE 1 --------------------------
+    
+    PS C:\>Assert-NotFalse ($a -eq $b)
+    
+    
+    Throws an error if the expression ($a -eq $b) evaluates to $false.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 2 --------------------------
+    
+    PS C:\>Assert-NotFalse ($a -eq $b) -Verbose
+    
+    
+    Throws an error if the expression ($a -eq $b) evaluates to $false.
+    The -Verbose switch will output the result of the assertion to the Verbose stream.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 3 --------------------------
+    
+    PS C:\>Assert-NotFalse ($a -eq $b) -Debug
+    
+    
+    Throws an error if the expression ($a -eq $b) evaluates to $false.
+    The -Debug switch gives you a chance to investigate a failing assertion before an error is thrown.
+    
+    
+    
+    
+    
+    
+RELATED LINKS
+    Assert-True 
+    Assert-False 
+    Assert-Null 
+    Assert-NotTrue 
+    Assert-NotNull 
+    Assert-All 
+    Assert-Exists 
+    Assert-NotExists 
+    Assert-PipelineAll 
+    Assert-PipelineExists 
+    Assert-PipelineNotExists 
+    Assert-PipelineEmpty 
+    Assert-PipelineAny 
+    Assert-PipelineSingle 
+    Assert-PipelineCount 
+
+
+

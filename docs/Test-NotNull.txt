@@ -1,0 +1,94 @@
+﻿
+NAME
+    Test-NotNull
+    
+SYNOPSIS
+    Test that a value is not $null.
+    
+SYNTAX
+    Test-NotNull [-Value] <Object> [<CommonParameters>]
+    
+    
+DESCRIPTION
+    This function tests if a value is not $null without the filtering semantics from the PowerShell comparison 
+    operators.
+    
+        Return Value   Condition
+        ------------   ---------
+        $null          never
+        $false         value is $null
+        $true          value is not $null
+    
+
+PARAMETERS
+    -Value <Object>
+        The value to test.
+        
+        Required?                    true
+        Position?                    1
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    <CommonParameters>
+        This cmdlet supports the common parameters: Verbose, Debug,
+        ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+        OutBuffer, PipelineVariable, and OutVariable. For more information, see 
+        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216). 
+    
+INPUTS
+    None
+    
+    This function does not accept input from the pipeline.
+        
+    
+    
+    
+OUTPUTS
+    System.Boolean
+        
+    
+    
+    
+NOTES
+    
+    
+        An example of how this function might be used in a unit test.
+        
+        #recommended alias
+        set-alias 'notNull?' 'test-notnull'
+        
+        assert-all    $items {param($a) (notNull? $a.b) -and (notNull? $a.c)}
+        assert-exists $items {param($a) (notNull? $a.d) -xor (notNull? $a.e)}
+    
+    -------------------------- EXAMPLE 1 --------------------------
+    
+    PS C:\>Test-NotNull @(1)
+    
+    
+    Test if the value is not $null without filtering semantics.
+    
+    Note:
+    Compare the example above with the following expressions:
+        10 -ne $null
+        @(10) -ne $null
+    and see how tests can become confusing if the value is stored in a variable or if the value is not expected to be 
+    an array.
+    
+    
+    
+    
+    
+    
+RELATED LINKS
+    Test-True 
+    Test-False 
+    Test-Null 
+    Test-NotTrue 
+    Test-NotFalse 
+    Test-All 
+    Test-Exists 
+    Test-NotExists 
+
+
+

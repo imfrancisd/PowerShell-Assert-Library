@@ -15,12 +15,6 @@ or you can import the module
     Import-Module .\Release\Module\AssertLibrary
 ```
 
-The functions are fully documented with specifications and examples.
-
-Use PowerShell's Get-Help cmdlet to see the documentation for each function.
-
-The functions were tested on PowerShell versions 2 and 4.
-
 #### What do I need?
 You need PowerShell version 2 or higher.
 
@@ -36,28 +30,15 @@ The only difference between these script files is the language used to write the
 You only need 1 of these files.
 
 #### What kinds of things can I do with these functions?
-There are four kinds of functions in this library:
-* Assert Functions
-* Collection Functions
-* Comparison Functions
-* Logic Functions.
+Online, see the following link
+````
+    https://github.com/imfrancisd/powershell-assert-library/docs/README.txt
+````
 
-The Assert Functions will throw an error if some condition is not met. For example, you can:
-* assert that the result of a comparison is true
-* assert that a pipeline is empty in order to make sure that a function doesn't return anything
-* assert that a predicate is true for all objects in a collection.
-
-The Collection Functions will allow you to process collections. For example, you can:
-* pair up adjacent items in a list in order to assert that a list is sorted
-* zip one or more lists together to test them for equality
-* create the Cartesian product of multiple lists to generate test cases.
-
-The Comparison Functions will allow you to make comparisons at a high level. For example, you can:
-* compare strings as programmatic strings or linguistic texts
-* compare the month, day, and year of two dates only if they are both in UTC
-* compare two numbers only if their types are Int32, Int64 or Double, but their types don't have to match.
-
-The logic functions helps you avoid some quirks in the PowerShell language when you write predicates.
+In PowerShell, if you imported the module, you can get an overview of the available functions using this command:
+````
+    get-help about_assertlibrary
+````
 
 #### Can I use these functions in PowerShell testing frameworks?
 Yes.
@@ -70,54 +51,26 @@ Yes.
 You can even use these functions directly in the shell.
 
 #### What are the names of the functions?
-If you are using the module, you can get a list of all the functions using this command:
+Online, you can find the documentation for all functions in:
 ````
-    get-help about_assertlibrary
-````
-or by using this command:
-````
-    (get-module assertlibrary).exportedfunctions.keys
+    https://github.com/imfrancisd/powershell-assert-library/docs
 ````
 
-If you are not using the module, here are the names of the functions:
-* Assert-True
-* Assert-False
-* Assert-Null
-* Assert-NotTrue
-* Assert-NotFalse
-* Assert-NotNull
-* Assert-All
-* Assert-Exists
-* Assert-NotExists
-* Assert-PipelineAll
-* Assert-PipelineExists
-* Assert-PipelineNotExists
-* Assert-PipelineAny
-* Assert-PipelineCount
-* Assert-PipelineEmpty
-* Assert-PipelineSingle
-* Group-ListItem
-* Test-DateTime
-* Test-Guid
-* Test-Number
-* Test-String
-* Test-Text
-* Test-TimeSpan
-* Test-Version
-* Test-True
-* Test-False
-* Test-Null
-* Test-NotTrue
-* Test-NotFalse
-* Test-NotNull
-* Test-All
-* Test-Exists
-* Test-NotExists.
+In PowerShell, you can find the names of the functions with this command:
+````
+    (get-module assertlibrary*).exportedfunctions.keys
+````
 
 #### How do I use the functions?
-You can view the help file for each function using PowerShell's Get-Help cmdlet.
+Online, you can find the documentation for all functions in:
+````
+    https://github.com/imfrancisd/powershell-assert-library/docs
+````
+
+In PowerShell, you can view the help file for each function using PowerShell's Get-Help cmdlet.
 ````
     # this will display the help file for Group-ListItem
     Get-Help Group-ListItem -Full
 ````
+
 The help file contains detailed information about the function as well as examples of how to use the function.

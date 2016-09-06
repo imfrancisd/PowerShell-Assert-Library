@@ -1,0 +1,140 @@
+﻿
+NAME
+    Test-NotExists
+    
+SYNOPSIS
+    Test that a predicate is never true for any item in a collection.
+    
+SYNTAX
+    Test-NotExists [-Collection] <Object> [-Predicate] <ScriptBlock> [<CommonParameters>]
+    
+    
+DESCRIPTION
+    This function tests if a predicate is never $true for any item in a collection.
+    
+        Return Value   Condition
+        ------------   ---------
+        $null          the collection is not of type System.Collections.ICollection
+        $false         the predicate returns the System.Boolean value $true one or more times
+        $true          the predicate never returns the System.Boolean value $true
+                       the collection is empty
+    
+    *See the -Collection and -Predicate parameters for more details.
+    
+
+PARAMETERS
+    -Collection <Object>
+        The collection of items used to test the predicate.
+        
+        The order in which the items in the collection are tested is determined by the collection's GetEnumerator 
+        method.
+        
+        Required?                    true
+        Position?                    1
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -Predicate <ScriptBlock>
+        The script block that will be invoked on each item in the collection.
+        
+        The script block must take one argument and return a value.
+        
+        Note:
+        The -ErrorAction parameter has NO effect on the predicate.
+        An InvalidOperationException is thrown if the predicate throws an error.
+        
+        Required?                    true
+        Position?                    2
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    <CommonParameters>
+        This cmdlet supports the common parameters: Verbose, Debug,
+        ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+        OutBuffer, PipelineVariable, and OutVariable. For more information, see 
+        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216). 
+    
+INPUTS
+    None
+    
+    This function does not accept input from the pipeline.
+        
+    
+    
+    
+OUTPUTS
+    System.Boolean
+    
+    This function returns a Boolean if the test can be performed.
+        
+    
+    
+    $null
+    
+    This function returns $null if the test cannot be performed.
+        
+    
+    
+    
+NOTES
+    
+    
+        An example of how this function might be used in a unit test.
+        
+        #recommended alias
+        set-alias 'notExists?' 'test-notexists'
+        
+        assert-all    $items {param($a) notExists? $a.bArray {param($b) $b -gt 10}}
+        assert-exists $items {param($a) notExists? $a.cArray {param($c) $c -eq 0}}
+    
+    -------------------------- EXAMPLE 1 --------------------------
+    
+    PS C:\>Test-NotExists @(1, 2, 3, 4, 5) {param($n) $n -gt 10}
+    
+    
+    Test that no item in the array is greater than 10.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 2 --------------------------
+    
+    PS C:\>Test-NotExists @() {param($n) $n -gt 10}
+    
+    
+    Test that no item in the array is greater than 10.
+    
+    Note:
+    This test will always return $true because the array is empty.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 3 --------------------------
+    
+    PS C:\>Test-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0}
+    
+    
+    Test that no entry in the hashtable has a value less than 0.
+    
+    
+    
+    
+    
+    
+RELATED LINKS
+    Test-True 
+    Test-False 
+    Test-Null 
+    Test-NotTrue 
+    Test-NotFalse 
+    Test-NotNull 
+    Test-All 
+    Test-Exists 
+
+
+

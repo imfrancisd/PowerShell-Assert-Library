@@ -1,0 +1,93 @@
+﻿
+NAME
+    Test-Null
+    
+SYNOPSIS
+    Test that a value is $null.
+    
+SYNTAX
+    Test-Null [-Value] <Object> [<CommonParameters>]
+    
+    
+DESCRIPTION
+    This function tests if a value is $null without the filtering semantics from the PowerShell comparison operators.
+    
+        Return Value   Condition
+        ------------   ---------
+        $null          never
+        $false         value is not $null
+        $true          value is $null
+    
+
+PARAMETERS
+    -Value <Object>
+        The value to test.
+        
+        Required?                    true
+        Position?                    1
+        Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    <CommonParameters>
+        This cmdlet supports the common parameters: Verbose, Debug,
+        ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+        OutBuffer, PipelineVariable, and OutVariable. For more information, see 
+        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216). 
+    
+INPUTS
+    None
+    
+    This function does not accept input from the pipeline.
+        
+    
+    
+    
+OUTPUTS
+    System.Boolean
+        
+    
+    
+    
+NOTES
+    
+    
+        An example of how this function might be used in a unit test.
+        
+        #recommended alias
+        set-alias 'null?' 'test-null'
+        
+        assert-all    $items {param($a) (null? $a.b) -and (null? $a.c)}
+        assert-exists $items {param($a) (null? $a.d) -xor (null? $a.e)}
+    
+    -------------------------- EXAMPLE 1 --------------------------
+    
+    PS C:\>Test-Null @(1)
+    
+    
+    Test if the value is $null without filtering semantics.
+    
+    Note:
+    Compare the example above with the following expressions:
+        1 -eq $null
+        @(1) -eq $null
+    and see how tests can become confusing if the value is stored in a variable or if the value is not expected to be 
+    an array.
+    
+    
+    
+    
+    
+    
+RELATED LINKS
+    Test-True 
+    Test-False 
+    Test-NotTrue 
+    Test-NotFalse 
+    Test-NotNull 
+    Test-All 
+    Test-Exists 
+    Test-NotExists 
+
+
+
