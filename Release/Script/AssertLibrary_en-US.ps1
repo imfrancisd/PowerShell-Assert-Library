@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.7.7.0
+#Assert Library version 1.7.8.0
 #https://github.com/imfrancisd/PowerShell-Assert-Library
 #
 #PowerShell requirements
@@ -48,8 +48,9 @@ Param()
 
 
 
-New-Module -Name 'AssertLibrary_en-US_v1.7.7.0' -ScriptBlock {
+New-Module -Name 'AssertLibrary_en-US_v1.7.8.0' -ScriptBlock {
 
+$PSDefaultParameterValues = @{'Disabled' = $true}
 Microsoft.PowerShell.Core\Set-StrictMode -Off
 
 
@@ -1010,13 +1011,14 @@ function Assert-All
 .Synopsis
 Assert that a predicate is true for some of the items in a collection.
 .Description
-This function throws an error if any of the following conditions are met:
-    *the predicate is not true for any item in the collection
+This function throws an error if there does not exist an item in the collection that makes predicate true.
+
+The meaning of "to exist" can be modified with the -Quantity parameter.
 
 Note:
 The assertion will always fail if the collection is empty.
 
-*See the -Collection and -Predicate parameters for more details.
+*See the -Collection, -Predicate, and -Quantity parameters for more details.
 .Parameter Collection
 The collection of items used to test the predicate.
 
@@ -1029,6 +1031,10 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
+.Parameter Quantity
+The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion pass.
+
+The default is 'Any'.
 .Example
 Assert-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}
 Assert that at least one item in the array is greater than 3.
@@ -1038,6 +1044,12 @@ Assert that at least one item in the array is greater than 3.
 
 Note:
 This assertion will always fail because the array is empty.
+.Example
+Assert-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'L'} -Quantity Multiple
+Assert that there are multiple 'L' in the array.
+.Example
+Assert-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'H'} -Quantity Single
+Assert that there is only a single 'H' in the array.
 .Example
 Assert-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25} -Verbose
 Assert that at least one entry in the hashtable has a value greater than 25.
@@ -1105,16 +1117,23 @@ function Assert-Exists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
         $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
-
     $fail = $true
+
     if ($Collection -is [System.Collections.ICollection]) {
+        $exists = $false
+        $found = 0
         $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
 
         foreach ($item in $enumerator) {
@@ -1123,10 +1142,19 @@ function Assert-Exists
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
             if (($result -is [System.Boolean]) -and $result) {
-                $fail = $false
-                break
+                $found++
+                if ($Quantity -eq 'Any') {
+                    $exists = $true
+                    break
+                }
+                if ($found -gt 1) {
+                    $exists = $Quantity -eq 'Multiple'
+                    break
+                }
             }
         }
+
+        $fail = -not ($exists -or (($found -eq 1) -and ($Quantity -eq 'Single')))
     }
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
@@ -1252,13 +1280,14 @@ function Assert-False
 .Synopsis
 Assert that a predicate is not true for any item in a collection.
 .Description
-This function throws an error if any of the following conditions are met:
-    *the predicate is true for some of the items in the collection
+This function throws an error if there exists an item in the collection that makes predicate true.
+
+The meaning of "to exist" can be modified with the -Quantity parameter.
 
 Note:
 The assertion will always pass if the collection is empty.
 
-*See the -Collection and -Predicate parameters for more details.
+*See the -Collection, -Predicate, and -Quantity parameters for more details.
 .Parameter Collection
 The collection of items used to test the predicate.
 
@@ -1271,6 +1300,10 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
+.Parameter Quantity
+The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion fail.
+
+The default is 'Any'.
 .Example
 Assert-NotExists @(1, 2, 3, 4, 5) {param($n) $n -gt 10}
 Assert that no item in the array is greater than 10.
@@ -1280,6 +1313,12 @@ Assert that no item in the array is greater than 10.
 
 Note:
 This assertion will always pass because the array is empty.
+.Example
+Assert-NotExists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'H'} -Quantity Multiple
+Assert that it is not the case that there are multiple 'H' in the array.
+.Example
+Assert-NotExists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'L'} -Quantity Single
+Assert that it is not the case that there is only a single 'L' in the array.
 .Example
 Assert-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0} -Verbose
 Assert that no entry in the hashtable has a value less than 0.
@@ -1347,17 +1386,23 @@ function Assert-NotExists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
         $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
-
     $fail = $true
+
     if ($Collection -is [System.Collections.ICollection]) {
-        $fail = $false
+        $exists = $false
+        $found = 0
         $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
 
         foreach ($item in $enumerator) {
@@ -1366,10 +1411,19 @@ function Assert-NotExists
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
             if (($result -is [System.Boolean]) -and $result) {
-                $fail = $true
-                break
+                $found++
+                if ($Quantity -eq 'Any') {
+                    $exists = $true
+                    break
+                }
+                if ($found -gt 1) {
+                    $exists = $Quantity -eq 'Multiple'
+                    break
+                }
             }
         }
+
+        $fail = $exists -or (($found -eq 1) -and ($Quantity -eq 'Single'))
     }
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
@@ -2457,13 +2511,14 @@ function Assert-PipelineEmpty
 .Synopsis
 Assert that a predicate is true for some objects in the pipeline.
 .Description
-This function throws an error if any of the following conditions are met:
-    *the predicate is not true for any object in the pipeline
+This function throws an error if there does not exist an item in the pipeline that makes predicate true.
+
+The meaning of "to exist" can be modified with the -Quantity parameter.
 
 Note:
 The assertion will always fail if the pipeline is empty.
 
-*See the -InputObject and -Predicate parameters for more details.
+*See the -InputObject, -Predicate, and -Quantity parameters for more details.
 .Parameter InputObject
 The object that is used to test the predicate.
 .Parameter Predicate
@@ -2474,6 +2529,10 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
+.Parameter Quantity
+The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion pass.
+
+The default is 'Any'.
 .Example
 @(1, 2, 3, 4, 5) | Assert-PipelineExists {param($n) $n -gt 3}
 Assert that at least one item in the array is greater than 3, and outputs each item one at a time.
@@ -2483,6 +2542,12 @@ Assert that at least one item in the array is greater than 3, and outputs each i
 
 Note:
 This assertion will always fail because the array is empty.
+.Example
+@('H', 'E', 'L', 'L', 'O') | Assert-PipelineExists {param($c) $c -eq 'L'} -Quantity Multiple
+Assert that there are multiple 'L' in the array.
+.Example
+@('H', 'E', 'L', 'L', 'O') | Assert-PipelineExists {param($c) $c -eq 'H'} -Quantity Single
+Assert that there is only a single 'H' in the array.
 .Example
 @{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} -Verbose
 Assert that at least one entry in the hashtable has a value greater than 25, and outputs each entry one at a time.
@@ -2561,7 +2626,12 @@ function Assert-PipelineExists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     begin
@@ -2584,25 +2654,49 @@ function Assert-PipelineExists
             $InputObject = $null
         }
 
-        $fail = $true
+        $found = 0
+        $runPredicate = $true
     }
 
     process
     {
-        if ($fail) {
+        if ($runPredicate) {
             $result = $null
             try   {$result = do {& $Predicate $InputObject} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
             if (($result -is [System.Boolean]) -and $result) {
-                $fail = $false
+                $found++
+                $earlyFail = ($found -gt 1) -and ($Quantity -eq 'Single')
+
+                if ($earlyFail) {
+                    $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
+
+                    Write-Verbose -Message $message
+
+                    if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                        $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                    }
+                    Write-Debug -Message $message
+                    $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+                }
+
+                $runPredicate = -not (($Quantity -eq 'Any') -or ($found -gt 1))
             }
         }
+
         ,$InputObject
     }
 
     end
     {
+        $exists =
+            (($found -gt 0) -and ($Quantity -eq 'Any')) -or
+            (($found -eq 1) -and ($Quantity -eq 'Single')) -or
+            (($found -gt 1) -and ($Quantity -eq 'Multiple'))
+
+        $fail = -not $exists
+
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
@@ -2624,13 +2718,14 @@ function Assert-PipelineExists
 .Synopsis
 Assert that a predicate is not true for any object in the pipeline.
 .Description
-This function throws an error if any of the following conditions are met:
-    *the predicate is true for some of the objects in the pipeline
+This function throws an error if there exists an item in the pipeline that makes predicate true.
+
+The meaning of "to exist" can be modified with the -Quantity parameter.
 
 Note:
 The assertion will always pass if the pipeline is empty.
 
-*See the -InputObject and -Predicate parameters for more details.
+*See the -InputObject, -Predicate, and -Quantity parameters for more details.
 .Parameter InputObject
 The object that is used to test the predicate.
 .Parameter Predicate
@@ -2641,6 +2736,10 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
+.Parameter Quantity
+The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion fail.
+
+The default is 'Any'.
 .Example
 @(1, 2, 3, 4, 5) | Assert-PipelineNotExists {param($n) $n -gt 10}
 Assert that no item in the array is greater than 10, and outputs each item one at a time.
@@ -2650,6 +2749,12 @@ Assert that no item in the array is greater than 10, and outputs each item one a
 
 Note:
 This assertion will always pass because the array is empty.
+.Example
+@('H', 'E', 'L', 'L', 'O') | Assert-PipelineNotExists {param($c) $c -eq 'H'} -Quantity Multiple
+Assert that it is not the case that there are multiple 'H' in the array.
+.Example
+@('H', 'E', 'L', 'L', 'O') | Assert-PipelineNotExists {param($c) $c -eq 'L'} -Quantity Single
+Assert that it is not the case that there is only a single 'L' in the array.
 .Example
 @{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineNotExists {param($entry) $entry.Value -lt 0} -Verbose
 Assert that no entry in the hashtable has a value less than 0, and outputs each entry one at a time.
@@ -2728,7 +2833,12 @@ function Assert-PipelineNotExists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     begin
@@ -2750,24 +2860,36 @@ function Assert-PipelineNotExists
             #Even if the $InputObject pipeline variable is not used in the end block, just set it anyway so StrictMode will definitely work.
             $InputObject = $null
         }
+
+        $found = 0
+        $runPredicate = $true
     }
 
     process
     {
-        $result = $null
-        try   {$result = do {& $Predicate $InputObject} while ($false)}
-        catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        if ($runPredicate) {
+            $result = $null
+            try   {$result = do {& $Predicate $InputObject} while ($false)}
+            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
-        if (($result -is [System.Boolean]) -and $result) {
-            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
+            if (($result -is [System.Boolean]) -and $result) {
+                $found++
+                $earlyFail = ($Quantity -eq 'Any') -or (($found -gt 1) -and ($Quantity -eq 'Multiple'))
 
-            Write-Verbose -Message $message
+                if ($earlyFail) {
+                    $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-            if (-not $PSBoundParameters.ContainsKey('Debug')) {
-                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                    Write-Verbose -Message $message
+
+                    if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                        $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                    }
+                    Write-Debug -Message $message
+                    $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+                }
             }
-            Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+
+            $runPredicate = -not (($found -gt 1) -and ($Quantity -eq 'Single'))
         }
 
         ,$InputObject
@@ -2775,9 +2897,25 @@ function Assert-PipelineNotExists
 
     end
     {
-        if (([System.Int32]$VerbosePreference)) {
-            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
+        $exists =
+            (($found -gt 0) -and ($Quantity -eq 'Any')) -or
+            (($found -eq 1) -and ($Quantity -eq 'Single')) -or
+            (($found -gt 1) -and ($Quantity -eq 'Multiple'))
+
+        $fail = $exists
+
+        if ($fail -or ([System.Int32]$VerbosePreference)) {
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+
             Write-Verbose -Message $message
+
+            if ($fail) {
+                if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                    $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                }
+                Write-Debug -Message $message
+                $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $null))
+            }
         }
     }
 }
@@ -4311,11 +4449,13 @@ This function tests if a predicate is $true for some of the items in a collectio
     Return Value   Condition
     ------------   ---------
     $null          the collection is not of type System.Collections.ICollection
-    $false         the predicate never returns the System.Boolean value $true
+    $false         there does not exist* an item in the collection that makes the predicate true
                    the collection is empty
-    $true          the predicate returns the System.Boolean value $true one or more times
+    $true          there exists* an item in the collection that makes the predicate true
 
-*See the -Collection and -Predicate parameters for more details.
+    *The meaning of "to exist" can be modified with the -Quantity parameter.
+
+*See the -Collection, -Predicate, and -Quantity parameters for more details.
 .Parameter Collection
 The collection of items used to test the predicate.
 
@@ -4328,6 +4468,10 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
+.Parameter Quantity
+The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the test return $true.
+
+The default is 'Any'.
 .Example
 Test-Exists @(1, 2, 3, 4, 5) {param($n) $n -gt 3}
 Test that at least one item in the array is greater than 3.
@@ -4337,6 +4481,12 @@ Test that at least one item in the array is greater than 3.
 
 Note:
 This test will always return $false because the array is empty.
+.Example
+Test-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'L'} -Quantity Multiple
+Test that there are multiple 'L' in the array.
+.Example
+Test-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'H'} -Quantity Single
+Test that there is only a single 'H' in the array.
 .Example
 Test-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25}
 Test that at least one entry in the hashtable has a value greater than 25.
@@ -4389,7 +4539,12 @@ function Test-Exists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     #Do not use the return keyword to return the value
@@ -4397,24 +4552,34 @@ function Test-Exists
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
-    if ($Collection -is [System.Collections.ICollection]) {
-        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
-
-        foreach ($item in $enumerator) {
-            $result = $null
-            try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-
-            if (($result -is [System.Boolean]) -and $result) {
-                $true
-                return
-            }
-        }
-        $false
+    if ($Collection -isnot [System.Collections.ICollection]) {
+        $null
         return
     }
 
-    $null
+    $exists = $false
+    $found = 0
+    $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+
+    foreach ($item in $enumerator) {
+        $result = $null
+        try   {$result = do {& $Predicate $item} while ($false)}
+        catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+
+        if (($result -is [System.Boolean]) -and $result) {
+            $found++
+            if ($Quantity -eq 'Any') {
+                $exists = $true
+                break
+            }
+            if ($found -gt 1) {
+                $exists = $Quantity -eq 'Multiple'
+                break
+            }
+        }
+    }
+
+    $exists -or (($found -eq 1) -and ($Quantity -eq 'Single'))
 }
 
 
@@ -4972,11 +5137,13 @@ This function tests if a predicate is never $true for any item in a collection.
     Return Value   Condition
     ------------   ---------
     $null          the collection is not of type System.Collections.ICollection
-    $false         the predicate returns the System.Boolean value $true one or more times
-    $true          the predicate never returns the System.Boolean value $true
+    $false         there exists* an item in the collection that makes the predicate true
+    $true          there does not exist* an item in the collection that makes the predicate true
                    the collection is empty
 
-*See the -Collection and -Predicate parameters for more details.
+    *The meaning of "to exist" can be modified with the -Quantity parameter.
+
+*See the -Collection, -Predicate, and -Quantity parameters for more details.
 .Parameter Collection
 The collection of items used to test the predicate.
 
@@ -4989,6 +5156,10 @@ The script block must take one argument and return a value.
 Note:
 The -ErrorAction parameter has NO effect on the predicate.
 An InvalidOperationException is thrown if the predicate throws an error.
+.Parameter Quantity
+The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the test return $false.
+
+The default is 'Any'.
 .Example
 Test-NotExists @(1, 2, 3, 4, 5) {param($n) $n -gt 10}
 Test that no item in the array is greater than 10.
@@ -4998,6 +5169,12 @@ Test that no item in the array is greater than 10.
 
 Note:
 This test will always return $true because the array is empty.
+.Example
+Test-NotExists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'H'} -Quantity Multiple
+Test that it is not the case that there are multiple 'H' in the array.
+.Example
+Test-NotExists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'L'} -Quantity Single
+Test that it is not the case that there is only a single 'L' in the array.
 .Example
 Test-NotExists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -lt 0}
 Test that no entry in the hashtable has a value less than 0.
@@ -5050,7 +5227,12 @@ function Test-NotExists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     #Do not use the return keyword to return the value
@@ -5058,24 +5240,34 @@ function Test-NotExists
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
-    if ($Collection -is [System.Collections.ICollection]) {
-        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
-
-        foreach ($item in $enumerator) {
-            $result = $null
-            try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-
-            if (($result -is [System.Boolean]) -and $result) {
-                $false
-                return
-            }
-        }
-        $true
+    if ($Collection -isnot [System.Collections.ICollection]) {
+        $null
         return
     }
 
-    $null
+    $exists = $false
+    $found = 0
+    $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+
+    foreach ($item in $enumerator) {
+        $result = $null
+        try   {$result = do {& $Predicate $item} while ($false)}
+        catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+
+        if (($result -is [System.Boolean]) -and $result) {
+            $found++
+            if ($Quantity -eq 'Any') {
+                $exists = $true
+                break
+            }
+            if ($found -gt 1) {
+                $exists = $Quantity -eq 'Multiple'
+                break
+            }
+        }
+    }
+
+    -not ($exists -or (($found -eq 1) -and ($Quantity -eq 'Single')))
 }
 
 

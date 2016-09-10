@@ -5,6 +5,7 @@ A library of PowerShell functions that gives testers complete control over the m
 Well, at least that's the goal.
 
 
+
 == Where do I begin?
 
 You can run the script::
@@ -16,6 +17,7 @@ or you can import the module::
 ----
  Import-Module .\Release\Module\AssertLibrary
 ----
+
 
 
 == What do I need?
@@ -36,6 +38,8 @@ The only difference between these script files is the language used to write the
 You only need 1 of these files.
 ====
 
+
+
 == What kinds of things can I do with these functions?
 
 Online, see the following link::
@@ -45,6 +49,8 @@ In PowerShell, if you imported the module, you can get an overview of the availa
 ----
  get-help about_assertlibrary
 ----
+
+
 
 == Can I use these functions in PowerShell testing frameworks?
 Yes.
@@ -56,6 +62,8 @@ Yes.
 
 You can even use these functions directly in the shell.
 
+
+
 == What are the names of the functions?
 
 Online, see the following link::
@@ -65,6 +73,8 @@ In PowerShell, you can find the names of the functions with this command::
 ----
  (get-module assertlibrary*).exportedfunctions.keys
 ----
+
+
 
 == How do I use the functions?
 

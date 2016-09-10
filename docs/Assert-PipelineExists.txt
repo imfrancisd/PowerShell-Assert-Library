@@ -6,17 +6,18 @@ SYNOPSIS
     Assert that a predicate is true for some objects in the pipeline.
     
 SYNTAX
-    Assert-PipelineExists -InputObject <Object> [-Predicate] <ScriptBlock> [<CommonParameters>]
+    Assert-PipelineExists -InputObject <Object> [-Predicate] <ScriptBlock> [-Quantity <String>] [<CommonParameters>]
     
     
 DESCRIPTION
-    This function throws an error if any of the following conditions are met:
-        *the predicate is not true for any object in the pipeline
+    This function throws an error if there does not exist an item in the pipeline that makes predicate true.
+    
+    The meaning of "to exist" can be modified with the -Quantity parameter.
     
     Note:
     The assertion will always fail if the pipeline is empty.
     
-    *See the -InputObject and -Predicate parameters for more details.
+    *See the -InputObject, -Predicate, and -Quantity parameters for more details.
     
 
 PARAMETERS
@@ -41,6 +42,18 @@ PARAMETERS
         Required?                    true
         Position?                    1
         Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -Quantity <String>
+        The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the assertion 
+        pass.
+        
+        The default is 'Any'.
+        
+        Required?                    false
+        Position?                    named
+        Default value                Any
         Accept pipeline input?       false
         Accept wildcard characters?  false
         
@@ -109,6 +122,28 @@ NOTES
     
     -------------------------- EXAMPLE 3 --------------------------
     
+    PS C:\>@('H', 'E', 'L', 'L', 'O') | Assert-PipelineExists {param($c) $c -eq 'L'} -Quantity Multiple
+    
+    
+    Assert that there are multiple 'L' in the array.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 4 --------------------------
+    
+    PS C:\>@('H', 'E', 'L', 'L', 'O') | Assert-PipelineExists {param($c) $c -eq 'H'} -Quantity Single
+    
+    
+    Assert that there is only a single 'H' in the array.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 5 --------------------------
+    
     PS C:\>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} 
     -Verbose
     
@@ -123,7 +158,7 @@ NOTES
     
     
     
-    -------------------------- EXAMPLE 4 --------------------------
+    -------------------------- EXAMPLE 6 --------------------------
     
     PS C:\>@{a0 = 10; a1 = 20; a2 = 30}.GetEnumerator() | Assert-PipelineExists {param($entry) $entry.Value -gt 25} 
     -Debug

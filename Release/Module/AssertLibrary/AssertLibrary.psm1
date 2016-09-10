@@ -23,7 +23,7 @@ SOFTWARE.
 
 #>
 
-#Assert Library version 1.7.7.0
+#Assert Library version 1.7.8.0
 #https://github.com/imfrancisd/PowerShell-Assert-Library
 #
 #PowerShell requirements
@@ -48,6 +48,7 @@ Param()
 
 
 
+$PSDefaultParameterValues = @{'Disabled' = $true}
 Microsoft.PowerShell.Core\Set-StrictMode -Off
 
 
@@ -928,16 +929,23 @@ function Assert-Exists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
         $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
-
     $fail = $true
+
     if ($Collection -is [System.Collections.ICollection]) {
+        $exists = $false
+        $found = 0
         $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
 
         foreach ($item in $enumerator) {
@@ -946,10 +954,19 @@ function Assert-Exists
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
             if (($result -is [System.Boolean]) -and $result) {
-                $fail = $false
-                break
+                $found++
+                if ($Quantity -eq 'Any') {
+                    $exists = $true
+                    break
+                }
+                if ($found -gt 1) {
+                    $exists = $Quantity -eq 'Multiple'
+                    break
+                }
             }
         }
+
+        $fail = -not ($exists -or (($found -eq 1) -and ($Quantity -eq 'Single')))
     }
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
@@ -1014,17 +1031,23 @@ function Assert-NotExists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
         $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
-
     $fail = $true
+
     if ($Collection -is [System.Collections.ICollection]) {
-        $fail = $false
+        $exists = $false
+        $found = 0
         $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
 
         foreach ($item in $enumerator) {
@@ -1033,10 +1056,19 @@ function Assert-NotExists
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
             if (($result -is [System.Boolean]) -and $result) {
-                $fail = $true
-                break
+                $found++
+                if ($Quantity -eq 'Any') {
+                    $exists = $true
+                    break
+                }
+                if ($found -gt 1) {
+                    $exists = $Quantity -eq 'Multiple'
+                    break
+                }
             }
         }
+
+        $fail = $exists -or (($found -eq 1) -and ($Quantity -eq 'Single'))
     }
 
     if ($fail -or ([System.Int32]$VerbosePreference)) {
@@ -1506,7 +1538,12 @@ function Assert-PipelineExists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     begin
@@ -1529,25 +1566,49 @@ function Assert-PipelineExists
             $InputObject = $null
         }
 
-        $fail = $true
+        $found = 0
+        $runPredicate = $true
     }
 
     process
     {
-        if ($fail) {
+        if ($runPredicate) {
             $result = $null
             try   {$result = do {& $Predicate $InputObject} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
             if (($result -is [System.Boolean]) -and $result) {
-                $fail = $false
+                $found++
+                $earlyFail = ($found -gt 1) -and ($Quantity -eq 'Single')
+
+                if ($earlyFail) {
+                    $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
+
+                    Write-Verbose -Message $message
+
+                    if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                        $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                    }
+                    Write-Debug -Message $message
+                    $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+                }
+
+                $runPredicate = -not (($Quantity -eq 'Any') -or ($found -gt 1))
             }
         }
+
         ,$InputObject
     }
 
     end
     {
+        $exists =
+            (($found -gt 0) -and ($Quantity -eq 'Any')) -or
+            (($found -eq 1) -and ($Quantity -eq 'Single')) -or
+            (($found -gt 1) -and ($Quantity -eq 'Multiple'))
+
+        $fail = -not $exists
+
         if ($fail -or ([System.Int32]$VerbosePreference)) {
             $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
 
@@ -1578,7 +1639,12 @@ function Assert-PipelineNotExists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 0)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     begin
@@ -1600,24 +1666,36 @@ function Assert-PipelineNotExists
             #Even if the $InputObject pipeline variable is not used in the end block, just set it anyway so StrictMode will definitely work.
             $InputObject = $null
         }
+
+        $found = 0
+        $runPredicate = $true
     }
 
     process
     {
-        $result = $null
-        try   {$result = do {& $Predicate $InputObject} while ($false)}
-        catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+        if ($runPredicate) {
+            $result = $null
+            try   {$result = do {& $Predicate $InputObject} while ($false)}
+            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
-        if (($result -is [System.Boolean]) -and $result) {
-            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
+            if (($result -is [System.Boolean]) -and $result) {
+                $found++
+                $earlyFail = ($Quantity -eq 'Any') -or (($found -gt 1) -and ($Quantity -eq 'Multiple'))
 
-            Write-Verbose -Message $message
+                if ($earlyFail) {
+                    $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail
 
-            if (-not $PSBoundParameters.ContainsKey('Debug')) {
-                $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                    Write-Verbose -Message $message
+
+                    if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                        $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                    }
+                    Write-Debug -Message $message
+                    $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+                }
             }
-            Write-Debug -Message $message
-            $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $InputObject))
+
+            $runPredicate = -not (($found -gt 1) -and ($Quantity -eq 'Single'))
         }
 
         ,$InputObject
@@ -1625,9 +1703,25 @@ function Assert-PipelineNotExists
 
     end
     {
-        if (([System.Int32]$VerbosePreference)) {
-            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation
+        $exists =
+            (($found -gt 0) -and ($Quantity -eq 'Any')) -or
+            (($found -eq 1) -and ($Quantity -eq 'Single')) -or
+            (($found -gt 1) -and ($Quantity -eq 'Multiple'))
+
+        $fail = $exists
+
+        if ($fail -or ([System.Int32]$VerbosePreference)) {
+            $message = & $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionStatus -invocation $MyInvocation -fail:$fail
+
             Write-Verbose -Message $message
+
+            if ($fail) {
+                if (-not $PSBoundParameters.ContainsKey('Debug')) {
+                    $DebugPreference = [System.Int32]($PSCmdlet.GetVariableValue('DebugPreference') -as [System.Management.Automation.ActionPreference])
+                }
+                Write-Debug -Message $message
+                $PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newAssertionFailedError -message $message -innerException $null -value $null))
+            }
         }
     }
 }
@@ -2142,7 +2236,12 @@ function Test-Exists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     #Do not use the return keyword to return the value
@@ -2150,24 +2249,34 @@ function Test-Exists
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
-    if ($Collection -is [System.Collections.ICollection]) {
-        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
-
-        foreach ($item in $enumerator) {
-            $result = $null
-            try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-
-            if (($result -is [System.Boolean]) -and $result) {
-                $true
-                return
-            }
-        }
-        $false
+    if ($Collection -isnot [System.Collections.ICollection]) {
+        $null
         return
     }
 
-    $null
+    $exists = $false
+    $found = 0
+    $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+
+    foreach ($item in $enumerator) {
+        $result = $null
+        try   {$result = do {& $Predicate $item} while ($false)}
+        catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+
+        if (($result -is [System.Boolean]) -and $result) {
+            $found++
+            if ($Quantity -eq 'Any') {
+                $exists = $true
+                break
+            }
+            if ($found -gt 1) {
+                $exists = $Quantity -eq 'Multiple'
+                break
+            }
+        }
+    }
+
+    $exists -or (($found -eq 1) -and ($Quantity -eq 'Single'))
 }
 
 
@@ -2470,7 +2579,12 @@ function Test-NotExists
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, Position = 1)]
         [System.Management.Automation.ScriptBlock]
-        $Predicate
+        $Predicate,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false)]
+        [ValidateSet('Any', 'Single', 'Multiple')]
+        [System.String]
+        $Quantity = 'Any'
     )
 
     #Do not use the return keyword to return the value
@@ -2478,24 +2592,34 @@ function Test-NotExists
 
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 
-    if ($Collection -is [System.Collections.ICollection]) {
-        $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
-
-        foreach ($item in $enumerator) {
-            $result = $null
-            try   {$result = do {& $Predicate $item} while ($false)}
-            catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
-
-            if (($result -is [System.Boolean]) -and $result) {
-                $false
-                return
-            }
-        }
-        $true
+    if ($Collection -isnot [System.Collections.ICollection]) {
+        $null
         return
     }
 
-    $null
+    $exists = $false
+    $found = 0
+    $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+
+    foreach ($item in $enumerator) {
+        $result = $null
+        try   {$result = do {& $Predicate $item} while ($false)}
+        catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
+
+        if (($result -is [System.Boolean]) -and $result) {
+            $found++
+            if ($Quantity -eq 'Any') {
+                $exists = $true
+                break
+            }
+            if ($found -gt 1) {
+                $exists = $Quantity -eq 'Multiple'
+                break
+            }
+        }
+    }
+
+    -not ($exists -or (($found -eq 1) -and ($Quantity -eq 'Single')))
 }
 
 

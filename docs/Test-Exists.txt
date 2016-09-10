@@ -6,7 +6,7 @@ SYNOPSIS
     Test that a predicate is true for some of the items in a collection.
     
 SYNTAX
-    Test-Exists [-Collection] <Object> [-Predicate] <ScriptBlock> [<CommonParameters>]
+    Test-Exists [-Collection] <Object> [-Predicate] <ScriptBlock> [-Quantity <String>] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -15,11 +15,13 @@ DESCRIPTION
         Return Value   Condition
         ------------   ---------
         $null          the collection is not of type System.Collections.ICollection
-        $false         the predicate never returns the System.Boolean value $true
+        $false         there does not exist* an item in the collection that makes the predicate true
                        the collection is empty
-        $true          the predicate returns the System.Boolean value $true one or more times
+        $true          there exists* an item in the collection that makes the predicate true
     
-    *See the -Collection and -Predicate parameters for more details.
+        *The meaning of "to exist" can be modified with the -Quantity parameter.
+    
+    *See the -Collection, -Predicate, and -Quantity parameters for more details.
     
 
 PARAMETERS
@@ -47,6 +49,18 @@ PARAMETERS
         Required?                    true
         Position?                    2
         Default value                
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+        
+    -Quantity <String>
+        The quantity of items ('Any', 'Single', 'Multiple') that must make the predicate true to make the test return 
+        $true.
+        
+        The default is 'Any'.
+        
+        Required?                    false
+        Position?                    named
+        Default value                Any
         Accept pipeline input?       false
         Accept wildcard characters?  false
         
@@ -115,6 +129,28 @@ NOTES
     
     
     -------------------------- EXAMPLE 3 --------------------------
+    
+    PS C:\>Test-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'L'} -Quantity Multiple
+    
+    
+    Test that there are multiple 'L' in the array.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 4 --------------------------
+    
+    PS C:\>Test-Exists @('H', 'E', 'L', 'L', 'O') {param($c) $c -eq 'H'} -Quantity Single
+    
+    
+    Test that there is only a single 'H' in the array.
+    
+    
+    
+    
+    
+    -------------------------- EXAMPLE 5 --------------------------
     
     PS C:\>Test-Exists @{a0 = 10; a1 = 20; a2 = 30} {param($entry) $entry.Value -gt 25}
     

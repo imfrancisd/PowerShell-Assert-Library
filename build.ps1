@@ -54,7 +54,7 @@ Param(
     #The version number to attach to the built script and module.
     [Parameter(Mandatory=$false)]
     [System.Version]
-    $LibraryVersion = '1.7.7.0',
+    $LibraryVersion = '1.7.8.0',
 
     #The minimum PowerShell version required by this library.
     [Parameter(Mandatory=$false)]
