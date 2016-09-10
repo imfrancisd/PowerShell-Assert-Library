@@ -2,9 +2,9 @@
 
 <#
 .Synopsis
-Create scripts and module from the files in the "src" directory.
+Create scripts, module, and docs from the files in the "src" directory.
 .Description
-Create scripts and module from the files in the "src" directory.
+Create scripts, module, and docs from the files in the "src" directory.
 .Example
 .\build.ps1
 Create scripts and module and store them in the "Debug" directory.
@@ -21,19 +21,21 @@ See which files and directories will be modified without actually modifying thos
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 Param(
-    #Create all, script, or module.
+    #Create all, docs, script, or module.
     [Parameter(Mandatory = $false, Position = 0)]
     [ValidateSet('All', 'Docs', 'Module', 'Script')]
     [System.String]
     $Target = 'All',
 
     #Create all, script, or module, in "Debug" or "Release" directory.
+    #The "docs" directory will only be updated with a "Release" configuration.
     [Parameter(Mandatory = $false)]
     [ValidateSet('Debug', 'Release')]
     [System.String]
     $Configuration = 'Debug',
 
     #Clean all, script, or module, in "Debug" or "Release" directory.
+    #The "docs" directory will only be cleaned with a "Release" configuration.
     [Parameter(Mandatory = $false)]
     [System.Management.Automation.SwitchParameter]
     $Clean,
@@ -94,29 +96,35 @@ function main
 {
     $action = if ($Clean) {'clean'} else {'build'}
 
-    switch ("$action-$Target") {
-        'clean-All'    {cleanAll}
-        'clean-Docs'   {cleanDocs}
-        'clean-Script' {cleanScript}
-        'clean-Module' {cleanModule}
+    switch ("$action-$Target-$Configuration") {
+        'clean-All-Debug'    {cleanBuild}
+        'clean-Docs-Debug'   {throw "Docs can only be cleaned with a release configuration. Try: .\build.ps1 docs -configuration release -clean"}
+        'clean-Script-Debug' {cleanScript}
+        'clean-Module-Debug' {cleanModule}
 
-        'build-All'    {cleanAll; buildAll}
-        'build-Docs'   {cleanDocs; buildDocs}
-        'build-Script' {cleanScript; buildScript}
-        'build-Module' {cleanModule; buildModule}
+        'build-All-Debug'    {cleanBuild; buildScript; buildModule}
+        'build-Docs-Debug'   {throw "Docs can only be built with a release configuration. Try: .\build.ps1 docs -configuration release"}
+        'build-Script-Debug' {cleanScript; buildScript}
+        'build-Module-Debug' {cleanModule; buildModule}
+
+        'clean-All-Release'    {cleanBuild; cleanDocs}
+        'clean-Docs-Release'   {cleanDocs}
+        'clean-Script-Release' {cleanScript}
+        'clean-Module-Release' {cleanModule}
+
+        'build-All-Release'    {cleanBuild; buildScript; buildModule; cleanDocs; buildDocs}
+        'build-Docs-Release'   {cleanDocs; buildDocs}
+        'build-Script-Release' {cleanScript; buildScript}
+        'build-Module-Release' {cleanModule; buildModule}
 
         default {throw "Cannot $action unknown target: $target."}
     }
 }
 
-function cleanAll
+function cleanBuild
 {
     if (Test-Path -LiteralPath $buildDir) {
         Remove-Item -LiteralPath $buildDir -Recurse -Verbose:$VerbosePreference
-    }
-
-    if ($Configuration -eq 'Release') {
-        cleanDocs
     }
 }
 
@@ -141,32 +149,13 @@ function cleanModule
     }
 }
 
-function buildAll
-{
-    buildScript
-    buildModule
-
-    if ($Configuration -eq 'Release') {
-        buildDocs
-    }
-}
-
 function buildDocs
 {
+    $null = New-Item -Path $githubDocsDir -ItemType Directory -Force -Verbose:$VerbosePreference
+
     $scriptEnUs = Join-Path -Path $buildScriptDir -ChildPath 'AssertLibrary_en-US.ps1'
     $aboutTxt = Join-Path -Path $buildModuleDir -ChildPath (Join-Path -Path 'en-US' -ChildPath 'about_AssertLibrary.help.txt')
     $readmeTxt = Join-Path -Path $githubDocsDir -ChildPath 'README.txt'
-
-    if ($Configuration -ne 'Release') {
-        throw "Docs can only be created from the Release directory.`r`nTry: .\build.ps1 -Target Docs -Configuration Release"
-    }
-    if (-not (Test-Path -Path $scriptEnUs)) {
-        throw "Cannot build docs directory without the file '$scriptEnUs'."
-    }
-    if (-not (Test-Path -Path $aboutTxt)) {
-        throw "Cannot build docs directory without the file '$aboutTxt'."
-    }
-    $null = New-Item -Path $githubDocsDir -ItemType Directory -Force -Verbose:$VerbosePreference
 
     $command = @"
         `$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -176,7 +165,7 @@ function buildDocs
         try {
             if (`$oldSize.Width -ne 120) {
                 try {`$Host.UI.RawUI.BufferSize = New-Object System.Management.Automation.Host.Size -ArgumentList @(120, 9001)}
-                catch {Write-Warning -Message 'Could not change the width of the PowerShell buffer to 120.`r`nDocs may changed unnecessarily.'}
+                catch {Write-Warning -Message 'Could not change the width of the PowerShell buffer to 120.`r`nDocs may change unnecessarily.'}
             }
 
             Set-Location -Path '$basePath'
