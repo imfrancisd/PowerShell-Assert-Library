@@ -159,7 +159,7 @@ function buildDocs
 
     $command = @"
         `$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
-        `$PSDefaultParameterValues = @{}
+        `$PSDefaultParameterValues = @{'Disabled' = `$true}
         `$WhatIfPreference = `$$WhatIfPreference
         `$oldSize = `$Host.UI.RawUI.BufferSize 
         try {
@@ -216,9 +216,7 @@ function buildScript
             ''
             'New-Module -Name {0} -ScriptBlock {{' -f "'AssertLibrary_$($dir.BaseName)_v$LibraryVersion'"
             ''
-            'if ($PSVersionTable.PSVersion.Major -gt 2) {'
-            '    $PSDefaultParameterValues.Clear()'
-            '}'
+            "`$PSDefaultParameterValues = @{'Disabled' = `$true}"
             switch ($StrictMode) {
                 'Off'       {'Microsoft.PowerShell.Core\Set-StrictMode -Off'}
                 '1.0'       {"Microsoft.PowerShell.Core\Set-StrictMode -Version '1.0'"}
@@ -285,9 +283,7 @@ function buildModule
         ''
         ''
         ''
-        'if ($PSVersionTable.PSVersion.Major -gt 2) {'
-        '    $PSDefaultParameterValues.Clear()'
-        '}'
+        "`$PSDefaultParameterValues = @{'Disabled' = `$true}"
         switch ($StrictMode) {
             'Off'       {'Microsoft.PowerShell.Core\Set-StrictMode -Off'}
             '1.0'       {"Microsoft.PowerShell.Core\Set-StrictMode -Version '1.0'"}
