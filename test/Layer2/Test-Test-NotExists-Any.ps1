@@ -2,9 +2,9 @@
 
 <#
 .Synopsis
-Test the Assert-NotExists cmdlet.
+Test the Test-NotExists cmdlet.
 .Description
-Test the Assert-NotExists cmdlet.
+Test the Test-NotExists cmdlet.
 .Inputs
 None
 .Outputs
@@ -17,7 +17,7 @@ None
 #The log entries will be in $simpleLogger.
 #
 $simpleLogger = new-object -typename system.collections.arraylist
-.\Test-Assert-NotExists.ps1 -logger $simpleLogger
+.\Test-Test-NotExists-Any.ps1 -logger $simpleLogger
 
 
 =====================================================================
@@ -40,7 +40,7 @@ add-member scriptmethod Add {
         $this.Entries.RemoveAt(0)
     }
 } -passthru
-.\Test-Assert-NotExists.ps1 -logger $customLogger
+.\Test-Test-NotExists-Any.ps1 -logger $customLogger
 
 
 =====================================================================
@@ -178,95 +178,17 @@ $predicates = @{
 
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists help'
-    $pass = $false
-    try {
-        $test.Data.out = $out = @()
-        $test.Data.in  = @{name = 'Assert-NotExists'}
-        $test.Data.err = try {Get-Help -Name $test.Data.in.name -Full -OutVariable out | Out-Null} catch {$_}
-        $test.Data.out = $out
-
-        Assert-Null $test.Data.err
-        Assert-True ($test.Data.out.Count -eq 1)
-        Assert-True ($test.Data.out[0].Name -is [System.String])
-        Assert-True ($test.Data.out[0].Name.Equals('Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($test.Data.out[0].description -is [System.Collections.ICollection])
-        Assert-True ($test.Data.out[0].description.Count -gt 0)
-        Assert-NotNull $test.Data.out[0].examples
-        Assert-True (0 -lt @($test.Data.out[0].examples.example).Count)
-        Assert-True ('' -ne @($test.Data.out[0].examples.example)[0].code)
-
-        $pass = $true
-    }
-    finally {commitTestLogEntry $test $pass}
-}
-
-& {
-    $test = newTestLogEntry 'Assert-NotExists parameters'
-    $pass = $false
-    try {
-        $test.Data.out = $out = @()
-        $test.Data.in  = @{name = 'Assert-NotExists'}
-        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
-        $test.Data.out = $out
-
-        Assert-Null $test.Data.err
-
-        $paramSets = @($test.Data.out[0].ParameterSets)
-        Assert-True (1 -eq $paramSets.Count)
-
-        $collectionParam = $paramSets[0].Parameters |
-            Where-Object {'Collection'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-        Assert-NotNull $collectionParam
-
-        $predicateParam = $paramSets[0].Parameters |
-            Where-Object {'Predicate'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-        Assert-NotNull $predicateParam
-
-        $quantityParam = $paramSets[0].Parameters |
-            Where-Object {'Quantity'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-
-        Assert-True ($collectionParam.IsMandatory)
-        Assert-True ($collectionParam.ParameterType -eq [System.Object])
-        Assert-False ($collectionParam.ValueFromPipeline)
-        Assert-False ($collectionParam.ValueFromPipelineByPropertyName)
-        Assert-False ($collectionParam.ValueFromRemainingArguments)
-        Assert-True (0 -eq $collectionParam.Position)
-        Assert-True (0 -eq $collectionParam.Aliases.Count)
-
-        Assert-True ($predicateParam.IsMandatory)
-        Assert-True ($predicateParam.ParameterType -eq [System.Management.Automation.ScriptBlock])
-        Assert-False ($predicateParam.ValueFromPipeline)
-        Assert-False ($predicateParam.ValueFromPipelineByPropertyName)
-        Assert-False ($predicateParam.ValueFromRemainingArguments)
-        Assert-True (1 -eq $predicateParam.Position)
-        Assert-True (0 -eq $predicateParam.Aliases.Count)
-
-        Assert-False ($quantityParam.IsMandatory)
-        Assert-True ($quantityParam.ParameterType -eq [System.String])
-        Assert-False ($quantityParam.ValueFromPipeline)
-        Assert-False ($quantityParam.ValueFromPipelineByPropertyName)
-        Assert-False ($quantityParam.ValueFromRemainingArguments)
-        Assert-True (0 -gt $quantityParam.Position)
-        Assert-True (0 -eq $quantityParam.Aliases.Count)
-
-        $pass = $true
-    }
-    finally {commitTestLogEntry $test $pass}
-}
-
-& {
-    $test = newTestLogEntry 'Assert-NotExists with singleton containing $true'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with singleton containing $true'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{collection = @($true); predicate = $predicates.Identity;}
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
-        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($test.Data.out.Count -eq 0)
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-False $test.Data.out[0]
 
         $pass = $true
     }
@@ -274,16 +196,17 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with singleton containing $false'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with singleton containing $false'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{collection = @($false); predicate = $predicates.Identity;}
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-Null $test.Data.err
-        Assert-True ($test.Data.out.Count -eq 0)
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
         
         $pass = $true
     }
@@ -291,16 +214,17 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with singleton containing $null'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with singleton containing $null'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{collection = @($null); predicate = $predicates.Identity;}
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-Null $test.Data.err
-        Assert-True ($test.Data.out.Count -eq 0)
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
 
         $pass = $true
     }
@@ -308,7 +232,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with singleton containing Non-Boolean that is convertible to $true'
+    $testDescription = 'Test-NotExists -Quantity Any with singleton containing Non-Boolean that is convertible to $true'
 
     for ($i = 0; $i -lt $nonBooleanTrue.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -316,11 +240,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = @(,$nonBooleanTrue[$i]); predicate = $predicates.Identity;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null $test.Data.err
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
 
             $pass = $true
         }
@@ -334,7 +259,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with singleton containing Non-Boolean that is convertible to $false'
+    $testDescription = 'Test-NotExists -Quantity Any with singleton containing Non-Boolean that is convertible to $false'
 
     for ($i = 0; $i -lt $nonBooleanFalse.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -342,11 +267,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = @(,$nonBooleanFalse[$i]); predicate = $predicates.Identity;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null $test.Data.err
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
 
             $pass = $true
         }
@@ -360,17 +286,17 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with tuple containing $true'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with tuple containing $true'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{collection = @($true, $true); predicate = $predicates.Identity;}
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
-        Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($test.Data.out.Count -eq 0)
+        Assert-Null $test.Data.err
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-False $test.Data.out[0]
 
         $pass = $true
     }
@@ -378,16 +304,17 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with tuple containing $false'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with tuple containing $false'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{collection = @($false, $false); predicate = $predicates.Identity;}
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-Null $test.Data.err
-        Assert-True ($test.Data.out.Count -eq 0)
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
         
         $pass = $true
     }
@@ -395,16 +322,17 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with tuple containing $null'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with tuple containing $null'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{collection = @($null, $null); predicate = $predicates.Identity;}
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-Null $test.Data.err
-        Assert-True ($test.Data.out.Count -eq 0)
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
 
         $pass = $true
     }
@@ -412,7 +340,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with tuple containing Non-Boolean that is convertible to $true'
+    $testDescription = 'Test-NotExists -Quantity Any with tuple containing Non-Boolean that is convertible to $true'
 
     for ($i = 0; $i -lt $nonBooleanTrue.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -420,11 +348,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = @($nonBooleanTrue[$i], $nonBooleanTrue[$i]); predicate = $predicates.Identity;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null $test.Data.err
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
 
             $pass = $true
         }
@@ -438,7 +367,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with tuple containing Non-Boolean that is convertible to $false'
+    $testDescription = 'Test-NotExists -Quantity Any with tuple containing Non-Boolean that is convertible to $false'
 
     for ($i = 0; $i -lt $nonBooleanFalse.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -446,11 +375,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = @($nonBooleanFalse[$i], $nonBooleanFalse[$i]); predicate = $predicates.Identity;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null $test.Data.err
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
 
             $pass = $true
         }
@@ -464,7 +394,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with null predicate'
+    $testDescription = 'Test-NotExists -Quantity Any with null predicate'
     $collections = @($null, @(), @(1), @('is the', 'loneliest number'), @("three's", 'company', 'too'))
 
     for ($i = 0; $i -lt $collections.Count; $i++) {
@@ -473,11 +403,11 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = $collections[$i]; predicate = $null;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
+            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('ParameterArgumentValidationErrorNullNotAllowed,Test-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
             Assert-True ($test.Data.err.Exception.ParameterName.Equals('Predicate', [System.StringComparison]::OrdinalIgnoreCase))
             Assert-True ($test.Data.out.Count -eq 0)
 
@@ -493,7 +423,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with null collection'
+    $testDescription = 'Test-NotExists -Quantity Any with null collection'
     $predicates = @($predicates.psbase.Values)
 
     for ($i = 0; $i -lt $predicates.Count; $i++) {
@@ -502,12 +432,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = $null; predicate = $predicates[$i];}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
-            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null $test.Data.out[0]
 
             $pass = $true
         }
@@ -521,7 +451,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with collections containing null'
+    $testDescription = 'Test-NotExists -Quantity Any with collections containing null'
     $collections = @(@($null), @(1, $null), @('a', 'b', $null, 'c'), @($null, $null, $null, $null, $null))
 
     for ($i = 0; $i -lt $collections.Count; $i++) {
@@ -530,11 +460,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = $collections[$i]; predicate = $predicates.False;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null $test.Data.err
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
 
             $pass = $true
         }
@@ -548,7 +479,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with empty collection and true predicate'
+    $testDescription = 'Test-NotExists -Quantity Any with empty collection and true predicate'
 
     for ($i = 0; $i -lt $emptyCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -556,11 +487,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = $emptyCollections[$i]; predicate = $predicates.True;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null $test.Data.err
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
 
             $pass = $true
         }
@@ -574,7 +506,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with empty collection and false predicate'
+    $testDescription = 'Test-NotExists -Quantity Any with empty collection and false predicate'
 
     for ($i = 0; $i -lt $emptyCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -582,11 +514,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = $emptyCollections[$i]; predicate = $predicates.False;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null $test.Data.err
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
 
             $pass = $true
         }
@@ -600,7 +533,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with empty collection and identity predicate'
+    $testDescription = 'Test-NotExists -Quantity Any with empty collection and identity predicate'
 
     for ($i = 0; $i -lt $emptyCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -608,11 +541,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = $emptyCollections[$i]; predicate = $predicates.Identity;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null $test.Data.err
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
 
             $pass = $true
         }
@@ -626,7 +560,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with empty collection and error predicate'
+    $testDescription = 'Test-NotExists -Quantity Any with empty collection and error predicate'
 
     for ($i = 0; $i -lt $emptyCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -634,11 +568,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = $emptyCollections[$i]; predicate = $predicates.Error;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null $test.Data.err
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True $test.Data.out[0]
 
             $pass = $true
         }
@@ -652,7 +587,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with scalar and true predicate'
+    $testDescription = 'Test-NotExists -Quantity Any with scalar and true predicate'
 
     for ($i = 0; $i -lt $nonCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -660,12 +595,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = $nonCollections[$i]; predicate = $predicates.True;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
-            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null $test.Data.out[0]
 
             $pass = $true
         }
@@ -679,7 +614,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with scalar and false predicate'
+    $testDescription = 'Test-NotExists -Quantity Any with scalar and false predicate'
 
     for ($i = 0; $i -lt $nonCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -687,12 +622,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = $nonCollections[$i]; predicate = $predicates.False;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
-            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null $test.Data.out[0]
 
             $pass = $true
         }
@@ -706,7 +641,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with scalar and identity predicate'
+    $testDescription = 'Test-NotExists -Quantity Any with scalar and identity predicate'
 
     for ($i = 0; $i -lt $nonCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -714,12 +649,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = $nonCollections[$i]; predicate = $predicates.Identity;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
-            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null $test.Data.out[0]
 
             $pass = $true
         }
@@ -733,7 +668,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-NotExists with scalar and error predicate'
+    $testDescription = 'Test-NotExists -Quantity Any with scalar and error predicate'
 
     for ($i = 0; $i -lt $nonCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -741,12 +676,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{collection = $nonCollections[$i]; predicate = $predicates.Error;}
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
-            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-Null $test.Data.err
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-Null $test.Data.out[0]
 
             $pass = $true
         }
@@ -760,16 +695,16 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with quadruple and a predicate that throws on the first element'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with quadruple and a predicate that throws on the first element'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{collection = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 1) {throw "Bad predicate $a"} else {$false}};}
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Test-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
         Assert-True ($test.Data.err.Exception -is [System.InvalidOperationException])
         Assert-NotNull ($test.Data.err.Exception.InnerException)
         Assert-True ($test.Data.err.Exception.InnerException.Message.Equals('Bad predicate 1', [System.StringComparison]::OrdinalIgnoreCase))
@@ -781,16 +716,16 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with quadruple and a predicate that throws on the second element'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with quadruple and a predicate that throws on the second element'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{collection = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 2) {throw "Bad predicate $a"} else {$false}};}
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Test-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
         Assert-True ($test.Data.err.Exception -is [System.InvalidOperationException])
         Assert-NotNull ($test.Data.err.Exception.InnerException)
         Assert-True ($test.Data.err.Exception.InnerException.Message.Equals('Bad predicate 2', [System.StringComparison]::OrdinalIgnoreCase))
@@ -802,16 +737,16 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with quadruple and a predicate that throws on the third element'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with quadruple and a predicate that throws on the third element'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{collection = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 3) {throw "Bad predicate $a"} else {$false}};}
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Test-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
         Assert-True ($test.Data.err.Exception -is [System.InvalidOperationException])
         Assert-NotNull ($test.Data.err.Exception.InnerException)
         Assert-True ($test.Data.err.Exception.InnerException.Message.Equals('Bad predicate 3', [System.StringComparison]::OrdinalIgnoreCase))
@@ -823,16 +758,16 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with quadruple and a predicate that throws on the fourth element'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with quadruple and a predicate that throws on the fourth element'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{collection = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 4) {throw "Bad predicate $a"} else {$false}};}
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
+        Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('PredicateFailed,Test-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
         Assert-True ($test.Data.err.Exception -is [System.InvalidOperationException])
         Assert-NotNull ($test.Data.err.Exception.InnerException)
         Assert-True ($test.Data.err.Exception.InnerException.Message.Equals('Bad predicate 4', [System.StringComparison]::OrdinalIgnoreCase))
@@ -844,16 +779,17 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with quadruple and a predicate that throws on the fifth element'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with quadruple and a predicate that throws on the fifth element'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{collection = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 5) {throw "Bad predicate $a"} else {$false}};}
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-Null $test.Data.err
-        Assert-True ($test.Data.out.Count -eq 0)
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
 
         $pass = $true
     }
@@ -864,7 +800,7 @@ $predicates = @{
     $numbers = @(1..5)
 
     foreach ($i in @(0, 6, -1)) {
-        $test = newTestLogEntry 'Assert-NotExists normal pass'
+        $test = newTestLogEntry 'Test-NotExists -Quantity Any normal pass'
         $pass = $false
         try {
             $test.Data.out = $out = @()
@@ -879,11 +815,12 @@ $predicates = @{
                     $n -eq $i
                 }
             }
-            $test.Data.err = try {Assert-NotExists $test.Data.in.inputObject $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.inputObject $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True ($test.Data.out[0])
             Assert-True (0 -eq $test.Data.in.remainingCalls)
 
             $pass = $true
@@ -896,7 +833,7 @@ $predicates = @{
     $numbers = @(1, 2, 3, 4)
 
     foreach ($i in @(1..4)) {
-        $test = newTestLogEntry 'Assert-NotExists early fail'
+        $test = newTestLogEntry 'Test-NotExists -Quantity Any early fail'
         $pass = $false
         try {
             $test.Data.out = $out = @()
@@ -911,12 +848,12 @@ $predicates = @{
                     $n -eq $i
                 }
             }
-            $test.Data.err = try {Assert-NotExists $test.Data.in.inputObject $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.inputObject $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
-            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-NotExists', [System.StringComparison]::OrdinalIgnoreCase))
-            Assert-True ($test.Data.out.Count -eq 0)
+            Assert-Null ($test.Data.err)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-False ($test.Data.out[0])
             Assert-True (0 -eq $test.Data.in.remainingCalls)
 
             $pass = $true
@@ -933,7 +870,7 @@ $predicates = @{
     $dictionary.Add('d', 4)
     $dictionary.Add('e', 5)
 
-    $test = newTestLogEntry 'Assert-NotExists with a predicate that contains "break" outside of a loop'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with a predicate that contains "break" outside of a loop'
     $pass = $false
     try {
         $test.Data.out = $out = @()
@@ -951,13 +888,14 @@ $predicates = @{
         }
 
         do {
-            $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         } while ($false)
 
         $test.Data.out = $out
 
         Assert-Null $test.Data.err
-        Assert-True ($test.Data.out.Count -eq 0)
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
         Assert-True (0 -eq $test.Data.in.remainingCalls)
 
         $pass = $true
@@ -966,7 +904,7 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with an arraylist that has its .NET members overriden'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with an arraylist that has its .NET members overriden'
     $pass = $false
 
     try {
@@ -998,11 +936,12 @@ $predicates = @{
                 $false
             }
         }
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-Null $test.Data.err
-        Assert-True ($test.Data.out.Count -eq 0)
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
         Assert-True (0 -eq $test.Data.in.remainingCalls)
 
         Assert-True (7 -eq $test.Data.in.examinedValues.Count)
@@ -1020,7 +959,7 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-NotExists with a hashtable that has its .NET members overriden'
+    $test = newTestLogEntry 'Test-NotExists -Quantity Any with a hashtable that has its .NET members overriden'
     $pass = $false
 
     try {
@@ -1055,11 +994,12 @@ $predicates = @{
                 $false
             }
         }
-        $test.Data.err = try {Assert-NotExists $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {Test-NotExists -Quantity Any $test.Data.in.collection $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-Null $test.Data.err
-        Assert-True ($test.Data.out.Count -eq 0)
+        Assert-True ($test.Data.out.Count -eq 1)
+        Assert-True $test.Data.out[0]
         Assert-True (0 -eq $test.Data.in.remainingCalls)
 
         $test.Data.in.examinedKeys = @($test.Data.in.examinedKeys | Sort-Object)

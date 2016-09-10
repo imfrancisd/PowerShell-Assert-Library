@@ -17,7 +17,7 @@ None
 #The log entries will be in $simpleLogger.
 #
 $simpleLogger = new-object -typename system.collections.arraylist
-.\Test-Assert-PipelineNotExists.ps1 -logger $simpleLogger
+.\Test-Assert-PipelineNotExists-Multiple.ps1 -logger $simpleLogger
 
 
 =====================================================================
@@ -40,7 +40,7 @@ add-member scriptmethod Add {
         $this.Entries.RemoveAt(0)
     }
 } -passthru
-.\Test-Assert-PipelineNotExists.ps1 -logger $customLogger
+.\Test-Assert-PipelineNotExists-Multiple.ps1 -logger $customLogger
 
 
 =====================================================================
@@ -172,85 +172,7 @@ $predicates = @{
 
 
 & {
-    $test = newTestLogEntry 'Assert-PipelineNotExists help'
-    $pass = $false
-    try {
-        $test.Data.out = $out = @()
-        $test.Data.in  = @{name = 'Assert-PipelineNotExists'}
-        $test.Data.err = try {Get-Help -Name $test.Data.in.name -Full -OutVariable out | Out-Null} catch {$_}
-        $test.Data.out = $out
-
-        Assert-Null $test.Data.err
-        Assert-True ($test.Data.out.Count -eq 1)
-        Assert-True ($test.Data.out[0].Name -is [System.String])
-        Assert-True ($test.Data.out[0].Name.Equals('Assert-PipelineNotExists', [System.StringComparison]::OrdinalIgnoreCase))
-        Assert-True ($test.Data.out[0].description -is [System.Collections.ICollection])
-        Assert-True ($test.Data.out[0].description.Count -gt 0)
-        Assert-NotNull $test.Data.out[0].examples
-        Assert-True (0 -lt @($test.Data.out[0].examples.example).Count)
-        Assert-True ('' -ne @($test.Data.out[0].examples.example)[0].code)
-
-        $pass = $true
-    }
-    finally {commitTestLogEntry $test $pass}
-}
-
-& {
-    $test = newTestLogEntry 'Assert-PipelineNotExists parameters'
-    $pass = $false
-    try {
-        $test.Data.out = $out = @()
-        $test.Data.in  = @{name = 'Assert-PipelineNotExists'}
-        $test.Data.err = try {Get-Command -Name $test.Data.in.name -OutVariable out | Out-Null} catch {$_}
-        $test.Data.out = $out
-
-        Assert-Null $test.Data.err
-
-        $paramSets = @($test.Data.out[0].ParameterSets)
-        Assert-True (1 -eq $paramSets.Count)
-
-        $inputObject = $paramSets[0].Parameters |
-            Where-Object {'InputObject'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-        Assert-NotNull $inputObject
-
-        $predicateParam = $paramSets[0].Parameters |
-            Where-Object {'Predicate'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-        Assert-NotNull $predicateParam
-
-        $quantityParam = $paramSets[0].Parameters |
-            Where-Object {'Quantity'.Equals($_.Name, [System.StringComparison]::OrdinalIgnoreCase)}
-
-        Assert-True ($inputObject.IsMandatory)
-        Assert-True ($inputObject.ParameterType -eq [System.Object])
-        Assert-True ($inputObject.ValueFromPipeline)
-        Assert-False ($inputObject.ValueFromPipelineByPropertyName)
-        Assert-False ($inputObject.ValueFromRemainingArguments)
-        Assert-True (0 -gt $inputObject.Position)
-        Assert-True (0 -eq $inputObject.Aliases.Count)
-
-        Assert-True ($predicateParam.IsMandatory)
-        Assert-True ($predicateParam.ParameterType -eq [System.Management.Automation.ScriptBlock])
-        Assert-False ($predicateParam.ValueFromPipeline)
-        Assert-False ($predicateParam.ValueFromPipelineByPropertyName)
-        Assert-False ($predicateParam.ValueFromRemainingArguments)
-        Assert-True (0 -eq $predicateParam.Position)
-        Assert-True (0 -eq $predicateParam.Aliases.Count)
-
-        Assert-False ($quantityParam.IsMandatory)
-        Assert-True ($quantityParam.ParameterType -eq [System.String])
-        Assert-False ($quantityParam.ValueFromPipeline)
-        Assert-False ($quantityParam.ValueFromPipelineByPropertyName)
-        Assert-False ($quantityParam.ValueFromRemainingArguments)
-        Assert-True (0 -gt $quantityParam.Position)
-        Assert-True (0 -eq $quantityParam.Aliases.Count)
-
-        $pass = $true
-    }
-    finally {commitTestLogEntry $test $pass}
-}
-
-& {
-    $testDescription = 'Assert-PipelineNotExists with non-pipeline input'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with non-pipeline input'
     $predicates = @($predicates.psbase.Values)
 
     for ($i = 0; $i -lt $predicates.Count; $i++) {
@@ -259,7 +181,7 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @(1..3); predicate = $predicates[$i];}
-            $test.Data.err = try {Assert-PipelineNotExists -InputObject $test.Data.in.inputObject $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {Assert-PipelineNotExists -Quantity Multiple -InputObject $test.Data.in.inputObject $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
@@ -278,7 +200,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-PipelineNotExists with null predicate'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with null predicate'
     $collections = @($null, @(), @(1), @('is the', 'loneliest number'), @("three's", 'company', 'too'))
 
     for ($i = 0; $i -lt $collections.Count; $i++) {
@@ -287,7 +209,7 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @($collections[$i]); predicate = $null;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
@@ -307,7 +229,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing nothing'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing nothing'
     $predicates = @($predicates.psbase.Values)
 
     for ($i = 0; $i -lt $predicates.Count; $i++) {
@@ -316,7 +238,7 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @(); predicate = $predicates[$i];}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
@@ -334,7 +256,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing one item and true predicate'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing one item and true predicate'
 
     for ($i = 0; $i -lt $nonCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -342,61 +264,7 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @($nonCollections[$i]); predicate = $predicates.True;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
-            $test.Data.out = $out
-
-            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineNotExists', [System.StringComparison]::OrdinalIgnoreCase))
-            Assert-True ($test.Data.out.Count -eq 0)
-
-            $pass = $true
-        }
-        finally {commitTestLogEntry $test $pass}
-    }
-
-    if ($i -eq 0) {
-        commitTestLogEntry (newTestLogEntry $testDescription)
-        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
-    }
-}
-
-& {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing two items and true predicate'
-
-    for ($i = 0; $i -lt $nonCollections.Count; $i++) {
-        $test = newTestLogEntry $testDescription
-        $pass = $false
-        try {
-            $test.Data.out = $out = @()
-            $test.Data.in  = @{inputObject = @($nonCollections[$i], $nonCollections[$i]); predicate = $predicates.True;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
-            $test.Data.out = $out
-
-            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineNotExists', [System.StringComparison]::OrdinalIgnoreCase))
-            Assert-True ($test.Data.out.Count -eq 0)
-
-            $pass = $true
-        }
-        finally {commitTestLogEntry $test $pass}
-    }
-
-    if ($i -eq 0) {
-        commitTestLogEntry (newTestLogEntry $testDescription)
-        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
-    }
-}
-
-& {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing one item and false predicate'
-
-    for ($i = 0; $i -lt $nonCollections.Count; $i++) {
-        $test = newTestLogEntry $testDescription
-        $pass = $false
-        try {
-            $test.Data.out = $out = @()
-            $test.Data.in  = @{inputObject = @($nonCollections[$i]); predicate = $predicates.False;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
@@ -415,7 +283,62 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing two items and false predicate'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing two items and true predicate'
+
+    for ($i = 0; $i -lt $nonCollections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($nonCollections[$i], $nonCollections[$i]); predicate = $predicates.True;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
+            Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineNotExists', [System.StringComparison]::OrdinalIgnoreCase))
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True ($test.Data.in.inputObject[0] -eq $test.Data.out[0])
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing one item and false predicate'
+
+    for ($i = 0; $i -lt $nonCollections.Count; $i++) {
+        $test = newTestLogEntry $testDescription
+        $pass = $false
+        try {
+            $test.Data.out = $out = @()
+            $test.Data.in  = @{inputObject = @($nonCollections[$i]); predicate = $predicates.False;}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.out = $out
+
+            Assert-Null ($test.Data.err)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True ($test.Data.in.inputObject[0] -eq $test.Data.out[0])
+
+            $pass = $true
+        }
+        finally {commitTestLogEntry $test $pass}
+    }
+
+    if ($i -eq 0) {
+        commitTestLogEntry (newTestLogEntry $testDescription)
+        throw New-Object 'System.Exception' -ArgumentList @("No data for $testDescription")
+    }
+}
+
+& {
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing two items and false predicate'
 
     for ($i = 0; $i -lt $nonCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -423,7 +346,7 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @($nonCollections[$i], $nonCollections[$i]); predicate = $predicates.False;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
@@ -443,7 +366,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing one item and identity predicate'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing one item and identity predicate'
 
     for ($i = 0; $i -lt $nonCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -451,18 +374,12 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @($nonCollections[$i]); predicate = $predicates.Identity;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
-            if (Test-True $test.Data.in.inputObject[0]) {
-                Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
-                Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineNotExists', [System.StringComparison]::OrdinalIgnoreCase))
-                Assert-True ($test.Data.out.Count -eq 0)
-            } else {
-                Assert-Null ($test.Data.err)
-                Assert-True ($test.Data.out.Count -eq 1)
-                Assert-True ($test.Data.in.inputObject[0] -eq $test.Data.out[0])
-            }
+            Assert-Null ($test.Data.err)
+            Assert-True ($test.Data.out.Count -eq 1)
+            Assert-True ($test.Data.in.inputObject[0] -eq $test.Data.out[0])
 
             $pass = $true
         }
@@ -476,7 +393,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing one item and error predicate'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing one item and error predicate'
 
     for ($i = 0; $i -lt $nonCollections.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -484,7 +401,7 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @($nonCollections[$i]); predicate = $predicates.Error;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
@@ -503,7 +420,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing one Non-Boolean that is convertible to $true'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing one Non-Boolean that is convertible to $true'
 
     for ($i = 0; $i -lt $nonBooleanTrue.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -511,7 +428,7 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @(,$nonBooleanTrue[$i]); predicate = $predicates.Identity;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
@@ -530,7 +447,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing two Non-Boolean that is convertible to $true'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing two Non-Boolean that is convertible to $true'
 
     for ($i = 0; $i -lt $nonBooleanTrue.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -538,7 +455,7 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @($nonBooleanTrue[$i], $nonBooleanTrue[$i]); predicate = $predicates.Identity;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
@@ -558,7 +475,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing one Non-Boolean that is convertible to $false'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing one Non-Boolean that is convertible to $false'
 
     for ($i = 0; $i -lt $nonBooleanFalse.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -566,7 +483,7 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @(,$nonBooleanFalse[$i]); predicate = $predicates.Identity;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
@@ -585,7 +502,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing two Non-Boolean that is convertible to $false'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing two Non-Boolean that is convertible to $false'
 
     for ($i = 0; $i -lt $nonBooleanFalse.Count; $i++) {
         $test = newTestLogEntry $testDescription
@@ -593,7 +510,7 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @($nonBooleanFalse[$i], $nonBooleanFalse[$i]); predicate = $predicates.Identity;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
@@ -613,7 +530,7 @@ $predicates = @{
 }
 
 & {
-    $testDescription = 'Assert-PipelineNotExists with pipeline containing multiple items'
+    $testDescription = 'Assert-PipelineNotExists -Quantity Multiple with pipeline containing multiple items'
 
     $items = @(
         'hello', 0, 1.0, $true, $false, @(), @('hi', $null, 'world'), @{}, (New-Object -TypeName 'System.Collections.ArrayList')
@@ -625,7 +542,7 @@ $predicates = @{
         try {
             $test.Data.out = $out = @()
             $test.Data.in  = @{inputObject = @($items[0..$i]); predicate = $predicates.False;}
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
@@ -644,12 +561,12 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-PipelineNotExists with a predicate that throws on the first element'
+    $test = newTestLogEntry 'Assert-PipelineNotExists -Quantity Multiple with a predicate that throws on the first element'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{inputObject = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 1) {throw "Bad predicate $a"} else {$false}};}
-        $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
@@ -665,12 +582,12 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-PipelineNotExists with a predicate that throws on the second element'
+    $test = newTestLogEntry 'Assert-PipelineNotExists -Quantity Multiple with a predicate that throws on the second element'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{inputObject = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 2) {throw "Bad predicate $a"} else {$false}};}
-        $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
@@ -687,12 +604,12 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-PipelineNotExists with a predicate that throws on the third element'
+    $test = newTestLogEntry 'Assert-PipelineNotExists -Quantity Multiple with a predicate that throws on the third element'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{inputObject = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 3) {throw "Bad predicate $a"} else {$false}};}
-        $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
@@ -709,12 +626,12 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-PipelineNotExists with a predicate that throws on the fourth element'
+    $test = newTestLogEntry 'Assert-PipelineNotExists -Quantity Multiple with a predicate that throws on the fourth element'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{inputObject = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 4) {throw "Bad predicate $a"} else {$false}};}
-        $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
@@ -731,12 +648,12 @@ $predicates = @{
 }
 
 & {
-    $test = newTestLogEntry 'Assert-PipelineNotExists with a predicate that throws on the fifth element'
+    $test = newTestLogEntry 'Assert-PipelineNotExists -Quantity Multiple with a predicate that throws on the fifth element'
     $pass = $false
     try {
         $test.Data.out = $out = @()
         $test.Data.in  = @{inputObject = @(1, 2, 3, 4); predicate = {param($a) if ($a -eq 5) {throw "Bad predicate $a"} else {$false}};}
-        $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+        $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         $test.Data.out = $out
 
         Assert-Null ($test.Data.err)
@@ -751,8 +668,8 @@ $predicates = @{
 & {
     $numbers = @(1..5)
 
-    foreach ($i in @(0, 6, -1)) {
-        $test = newTestLogEntry 'Assert-PipelineNotExists normal pass'
+    foreach ($i in @(0..($numbers.Length + 1))) {
+        $test = newTestLogEntry 'Assert-PipelineNotExists -Quantity Multiple normal pass'
         $pass = $false
         try {
             $test.Data.out = $out = @()
@@ -767,7 +684,7 @@ $predicates = @{
                     $n -eq $i
                 }
             }
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-Null ($test.Data.err)
@@ -782,17 +699,17 @@ $predicates = @{
 }
 
 & {
-    $numbers = @(1, 2, 3, 4)
+    $numbers = @(1, 2, 3, 4, 1, 2, 3, 4)
 
     foreach ($i in @(1..4)) {
-        $test = newTestLogEntry 'Assert-PipelineNotExists early fail'
+        $test = newTestLogEntry 'Assert-PipelineNotExists -Quantity Multiple early fail'
         $pass = $false
         try {
             $test.Data.out = $out = @()
             $test.Data.in = @{
                 inputObject    = $numbers
-                expectedCalls  = $i
-                remainingCalls = $i
+                expectedCalls  = $i + 4
+                remainingCalls = $i + 4
                 predicate = {
                     param($n)
 
@@ -800,15 +717,13 @@ $predicates = @{
                     $n -eq $i
                 }
             }
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
             $test.Data.out = $out
 
             Assert-True ($test.Data.err -is [System.Management.Automation.ErrorRecord])
             Assert-True ($test.Data.err.FullyQualifiedErrorId.Equals('AssertionFailed,Assert-PipelineNotExists', [System.StringComparison]::OrdinalIgnoreCase))
-            Assert-True ($test.Data.out.Count -eq ($i - 1))
-            if ($i - 1 -gt 0) {
-                Assert-All @(0..($i - 1 - 1)) {param($index) $test.Data.in.inputObject[$index].Equals($test.Data.out[$index])}
-            }
+            Assert-True ($test.Data.out.Count -eq $i + 4 - 1)
+            Assert-All @(0..($i + 4 - 1 - 1)) {param($index) $test.Data.in.inputObject[$index].Equals($test.Data.out[$index])}
             Assert-True (0 -eq $test.Data.in.remainingCalls)
 
             $pass = $true
@@ -825,7 +740,7 @@ $predicates = @{
     $dictionary.Add('d', 4)
     $dictionary.Add('e', 5)
 
-    $test = newTestLogEntry 'Assert-PipelineNotExists with a predicate that contains "break" outside of a loop'
+    $test = newTestLogEntry 'Assert-PipelineNotExists -Quantity Multiple with a predicate that contains "break" outside of a loop'
     $pass = $false
     try {
         $test.Data.out = $out = @()
@@ -843,7 +758,7 @@ $predicates = @{
         }
 
         do {
-            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
+            $test.Data.err = try {$test.Data.in.inputObject | Assert-PipelineNotExists -Quantity Multiple $test.Data.in.predicate -OutVariable out | Out-Null} catch {$_}
         } while ($false)
 
         $test.Data.out = $out
