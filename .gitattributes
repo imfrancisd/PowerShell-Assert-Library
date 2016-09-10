@@ -1,8 +1,9 @@
+*.adoc  eol=crlf
 *.md    eol=crlf
-*.txt   eol=crlf
 *.ps1   eol=crlf
 *.psd1  eol=crlf
 *.psm1  eol=crlf
+*.txt   eol=crlf
 *.xml   eol=crlf
 
 .gitattributes eol=crlf
