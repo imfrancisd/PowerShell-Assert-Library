@@ -40,13 +40,15 @@ function Assert-PipelineNotExists
 
         $found = 0
         $runPredicate = $true
+        [System.Int32]$index = -1
     }
 
     process
     {
         if ($runPredicate) {
+            $index++
             $result = $null
-            try   {$result = do {& $Predicate $InputObject} while ($false)}
+            try   {$result = do {& $Predicate $InputObject $index} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
             if (($result -is [System.Boolean]) -and $result) {

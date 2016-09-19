@@ -20,10 +20,12 @@ function Test-All
 
     if ($Collection -is [System.Collections.ICollection]) {
         $enumerator = & $_7ddd17460d1743b2b6e683ef649e01b7_getEnumerator $Collection
+        [System.Int32]$index = -1
 
         foreach ($item in $enumerator) {
+            $index++
             $result = $null
-            try   {$result = do {& $Predicate $item} while ($false)}
+            try   {$result = do {& $Predicate $item $index} while ($false)}
             catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
             if (-not (($result -is [System.Boolean]) -and $result)) {

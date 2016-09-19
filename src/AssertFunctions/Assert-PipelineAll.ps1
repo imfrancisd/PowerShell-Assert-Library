@@ -32,12 +32,15 @@ function Assert-PipelineAll
             #Even if the $InputObject pipeline variable is not used in the end block, just set it anyway so StrictMode will definitely work.
             $InputObject = $null
         }
+
+        [System.Int32]$index = -1
     }
 
     process
     {
+        $index++
         $result = $null
-        try   {$result = do {& $Predicate $InputObject} while ($false)}
+        try   {$result = do {& $Predicate $InputObject $index} while ($false)}
         catch {$PSCmdlet.ThrowTerminatingError((& $_7ddd17460d1743b2b6e683ef649e01b7_newPredicateFailedError -errorRecord $_ -predicate $Predicate))}
 
         if (-not (($result -is [System.Boolean]) -and $result)) {
